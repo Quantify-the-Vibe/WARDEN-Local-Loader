@@ -373,6 +373,22 @@ final class LoaderShellViewModel: LocalHTTPServerDelegate {
         }
     }
 
+    func httpOpenAIModelsPayload() -> [String: Any] {
+        let now = Int(Date().timeIntervalSince1970)
+        let data = availableModels.map { model in
+            [
+                "id": model.id,
+                "object": "model",
+                "created": now,
+                "owned_by": "warden4-local-loader",
+            ] as [String: Any]
+        }
+        return [
+            "object": "list",
+            "data": data,
+        ]
+    }
+
     func httpLoadModel(modelID: String) async -> HTTPResponse {
         guard let model = availableModels.first(where: { $0.id == modelID }) else {
             return .json(statusCode: 404, ["status": "failed", "error": "model_not_found", "model_id": modelID])

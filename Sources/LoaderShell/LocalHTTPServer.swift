@@ -5,11 +5,18 @@ struct HTTPResponse {
     let statusCode: Int
     let body: Data
     let contentType: String
+    let headers: [String: String]
 
-    init(statusCode: Int, body: Data, contentType: String = "application/json") {
+    init(
+        statusCode: Int,
+        body: Data,
+        contentType: String = "application/json",
+        headers: [String: String] = [:]
+    ) {
         self.statusCode = statusCode
         self.body = body
         self.contentType = contentType
+        self.headers = headers
     }
 
     static func json(statusCode: Int = 200, _ payload: Any) -> HTTPResponse {
@@ -22,6 +29,7 @@ struct HTTPResponse {
 protocol LocalHTTPServerDelegate: AnyObject {
     func httpStatusPayload() -> [String: Any]
     func httpModelsPayload() -> [[String: Any]]
+    func httpOpenAIModelsPayload() -> [String: Any]
     func httpLoadModel(modelID: String) async -> HTTPResponse
     func httpGenerate(prompt: String) async -> HTTPResponse
     func httpReset() async -> HTTPResponse
@@ -153,11 +161,18 @@ final class LocalHTTPServer: @unchecked Sendable {
         }
         if requiresAuthorization(method: method, path: path) {
             if !isAuthorized(headers: headers) {
-                return .json(statusCode: 401, [
-                    "status": "failed",
-                    "error": "unauthorized",
-                    "detail": "Authorization required for this route.",
-                ])
+                return HTTPResponse(
+                    statusCode: 401,
+                    body: ((try? JSONSerialization.data(withJSONObject: [
+                        "status": "failed",
+                        "error": "unauthorized",
+                        "detail": "Authorization required for this route.",
+                        "hint": "Send Authorization: Bearer <W4L_API_TOKEN> or X-Loader-Token: <W4L_API_TOKEN>.",
+                    ], options: [.prettyPrinted])) ?? Data("{}".utf8)),
+                    headers: [
+                        "WWW-Authenticate": #"Bearer realm="W4L Loader", charset="UTF-8""#,
+                    ]
+                )
             }
         }
 
@@ -166,6 +181,8 @@ final class LocalHTTPServer: @unchecked Sendable {
             return .json(delegate?.httpStatusPayload() ?? ["status": "failed", "error": "delegate_missing"])
         case ("GET", "/models"):
             return .json(["models": delegate?.httpModelsPayload() ?? []])
+        case ("GET", "/v1/models"):
+            return .json(delegate?.httpOpenAIModelsPayload() ?? ["object": "list", "data": []])
         case ("POST", "/load"):
             guard let modelID = bodyJSON?["model_id"] as? String, !modelID.isEmpty else {
                 return .json(statusCode: 400, ["status": "failed", "error": "missing_model_id"])
@@ -210,6 +227,9 @@ final class LocalHTTPServer: @unchecked Sendable {
         var payload = Data()
         payload.append("HTTP/1.1 \(response.statusCode) \(statusText)\r\n".data(using: .utf8)!)
         payload.append("Content-Type: \(response.contentType)\r\n".data(using: .utf8)!)
+        for (header, value) in response.headers {
+            payload.append("\(header): \(value)\r\n".data(using: .utf8)!)
+        }
         payload.append("Content-Length: \(response.body.count)\r\n".data(using: .utf8)!)
         payload.append("Connection: close\r\n\r\n".data(using: .utf8)!)
         payload.append(response.body)

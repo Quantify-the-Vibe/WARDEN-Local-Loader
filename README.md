@@ -40,7 +40,7 @@ Implemented now:
 - `MLXBackendLoader` first concrete adapter
 - persistent Python MLX helper
 - control HTTP server on `:8787`
-- OpenAI-compatible bridge on `:8080/v1/chat/completions`
+- OpenAI-compatible bridge on `:8080/v1/*`
 - `pi-mono` connection through the bridge
 - reset path
 - packaged macOS `.app` bundle under `dist/`
@@ -126,9 +126,14 @@ Authenticated route usage:
   - `POST /generate`
   - `POST /reset`
   - `POST /v1/chat/completions`
+- compatibility discovery route (not protected):
+  - `GET /v1/models`
 - accepted auth headers:
   - `Authorization: Bearer <W4L_API_TOKEN>`
   - `X-Loader-Token: <W4L_API_TOKEN>`
+- failed auth returns:
+  - `401 Unauthorized`
+  - `WWW-Authenticate: Bearer realm="W4L Loader", charset="UTF-8"`
 
 ## Launch
 

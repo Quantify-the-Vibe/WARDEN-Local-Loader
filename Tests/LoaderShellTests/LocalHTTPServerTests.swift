@@ -55,4 +55,20 @@ struct LocalHTTPServerTests {
 
         #expect(renderedText.contains("HTTP/1.1 401 Unauthorized"))
     }
+
+    @Test
+    func renderIncludesCustomHeaders() {
+        let response = HTTPResponse(
+            statusCode: 401,
+            body: Data("{}".utf8),
+            headers: [
+                "WWW-Authenticate": #"Bearer realm="W4L Loader", charset="UTF-8""#,
+            ]
+        )
+
+        let rendered = LocalHTTPServer.render(response: response)
+        let renderedText = String(decoding: rendered, as: UTF8.self)
+
+        #expect(renderedText.contains("WWW-Authenticate: Bearer realm=\"W4L Loader\", charset=\"UTF-8\""))
+    }
 }
