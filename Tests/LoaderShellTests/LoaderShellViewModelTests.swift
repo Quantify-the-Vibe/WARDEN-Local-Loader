@@ -443,6 +443,7 @@ struct LoaderShellViewModelTests {
                 constants: .baseline,
                 physicalMemoryBytes: 16 * 1_024 * 1_024 * 1_024
             ),
+            bridgeAutoLoadEnabled: true,
             postLoadSettlementSleep: { _ in },
             startHTTPServers: false
         )
@@ -518,6 +519,7 @@ struct LoaderShellViewModelTests {
                 constants: .baseline,
                 physicalMemoryBytes: 16 * 1_024 * 1_024 * 1_024
             ),
+            bridgeAutoLoadEnabled: true,
             postLoadSettlementSleep: { _ in },
             startHTTPServers: false
         )
@@ -561,6 +563,7 @@ struct LoaderShellViewModelTests {
                 constants: .baseline,
                 physicalMemoryBytes: 16 * 1_024 * 1_024 * 1_024
             ),
+            bridgeAutoLoadEnabled: true,
             startHTTPServers: false
         )
         viewModel.availableModels = [
@@ -597,6 +600,7 @@ struct LoaderShellViewModelTests {
                 constants: .baseline,
                 physicalMemoryBytes: 16 * 1_024 * 1_024 * 1_024
             ),
+            bridgeAutoLoadEnabled: true,
             startHTTPServers: false
         )
         viewModel.availableModels = [
@@ -670,6 +674,7 @@ struct LoaderShellViewModelTests {
                 constants: .baseline,
                 physicalMemoryBytes: 16 * 1_024 * 1_024 * 1_024
             ),
+            bridgeAutoLoadEnabled: true,
             postLoadSettlementSleep: { _ in },
             startHTTPServers: false
         )
@@ -1293,6 +1298,126 @@ struct LoaderShellViewModelTests {
 
     @MainActor
     @Test
+    func openAIBridgeDefaultIsTranslationOnlyAndRequiresExplicitLoad() async throws {
+        let backendLoader = MockBackendLoader()
+        let viewModel = LoaderShellViewModel(
+            backendLoader: backendLoader,
+            piMonoLauncher: .default(),
+            memoryBudgetMonitor: MockMemoryBudgetMonitor(
+                snapshot: MemoryBudgetSnapshot(
+                    measurementSource: "mock_source",
+                    appPID: 111,
+                    helperPID: nil,
+                    appFootprintBytes: 1_024,
+                    helperFootprintBytes: 0,
+                    combinedFootprintBytes: 1_024,
+                    constants: .baseline
+                )
+            ),
+            modelCostEstimator: MockModelCostEstimator(estimatedBytes: 1_024),
+            admissionEvaluator: LoadAdmissionEvaluator(
+                constants: .baseline,
+                physicalMemoryBytes: 16 * 1_024 * 1_024 * 1_024
+            ),
+            bridgeAutoLoadEnabled: false,
+            startHTTPServers: false
+        )
+        viewModel.availableModels = [
+            LoaderShellViewModel.ModelRecord(id: "mock", displayName: "mock", localPath: "/tmp/mock")
+        ]
+
+        let response = await viewModel.httpOpenAIChatCompletions(bodyJSON: [
+            "model": "mock",
+            "messages": [["role": "user", "content": "hello"]],
+        ])
+
+        let payload = try #require(JSONSerialization.jsonObject(with: response.body) as? [String: Any])
+        let error = try #require(payload["error"] as? [String: Any])
+        #expect(response.statusCode == 503)
+        #expect(error["type"] as? String == "explicit_load_required")
+        #expect(backendLoader.loadCallCount == 0)
+        #expect(backendLoader.generateChatCallCount == 0)
+    }
+
+    @MainActor
+    @Test
+    func openAIBridgeLegacyAutoloadCanBeEnabledByFlag() async throws {
+        let backendLoader = MockBackendLoader()
+        let viewModel = LoaderShellViewModel(
+            backendLoader: backendLoader,
+            piMonoLauncher: .default(),
+            memoryBudgetMonitor: SequencedMemoryBudgetMonitor(snapshots: [
+                MemoryBudgetSnapshot(
+                    measurementSource: "mock_source",
+                    appPID: 111,
+                    helperPID: nil,
+                    appFootprintBytes: 1 * 1_024 * 1_024 * 1_024,
+                    helperFootprintBytes: 0,
+                    combinedFootprintBytes: 1 * 1_024 * 1_024 * 1_024,
+                    constants: .baseline
+                ),
+                MemoryBudgetSnapshot(
+                    measurementSource: "mock_source",
+                    appPID: 111,
+                    helperPID: 222,
+                    appFootprintBytes: 1 * 1_024 * 1_024 * 1_024,
+                    helperFootprintBytes: 1 * 1_024 * 1_024 * 1_024,
+                    combinedFootprintBytes: 2 * 1_024 * 1_024 * 1_024,
+                    constants: .baseline
+                ),
+                MemoryBudgetSnapshot(
+                    measurementSource: "mock_source",
+                    appPID: 111,
+                    helperPID: 222,
+                    appFootprintBytes: 1 * 1_024 * 1_024 * 1_024,
+                    helperFootprintBytes: 1 * 1_024 * 1_024 * 1_024 + 1 * 1_024 * 1_024,
+                    combinedFootprintBytes: 2 * 1_024 * 1_024 * 1_024 + 1 * 1_024 * 1_024,
+                    constants: .baseline
+                ),
+                MemoryBudgetSnapshot(
+                    measurementSource: "mock_source",
+                    appPID: 111,
+                    helperPID: 222,
+                    appFootprintBytes: 1 * 1_024 * 1_024 * 1_024,
+                    helperFootprintBytes: 1 * 1_024 * 1_024 * 1_024 + 2 * 1_024 * 1_024,
+                    combinedFootprintBytes: 2 * 1_024 * 1_024 * 1_024 + 2 * 1_024 * 1_024,
+                    constants: .baseline
+                ),
+                MemoryBudgetSnapshot(
+                    measurementSource: "mock_source",
+                    appPID: 111,
+                    helperPID: 222,
+                    appFootprintBytes: 1 * 1_024 * 1_024 * 1_024,
+                    helperFootprintBytes: 1 * 1_024 * 1_024 * 1_024,
+                    combinedFootprintBytes: 2 * 1_024 * 1_024 * 1_024,
+                    constants: .baseline
+                ),
+            ]),
+            modelCostEstimator: MockModelCostEstimator(estimatedBytes: 1),
+            admissionEvaluator: LoadAdmissionEvaluator(
+                constants: .baseline,
+                physicalMemoryBytes: 16 * 1_024 * 1_024 * 1_024
+            ),
+            bridgeAutoLoadEnabled: true,
+            postLoadSettlementSleep: { _ in },
+            startHTTPServers: false
+        )
+        viewModel.availableModels = [
+            LoaderShellViewModel.ModelRecord(id: "mock", displayName: "mock", localPath: "/tmp/mock")
+        ]
+
+        let response = await viewModel.httpOpenAIChatCompletions(bodyJSON: [
+            "model": "mock",
+            "messages": [["role": "user", "content": "hello"]],
+        ])
+
+        #expect(response.statusCode == 200)
+        #expect(backendLoader.loadCallCount == 1)
+        #expect(backendLoader.generateChatCallCount == 1)
+    }
+
+    @MainActor
+    @Test
     func openAICompatFailureMapsFailedFastWithRecoveryAction() async throws {
         let supervisor = try! LoaderSupervisor(
             crashLimit: 0,
@@ -1321,6 +1446,7 @@ struct LoaderShellViewModelTests {
                 constants: .baseline,
                 physicalMemoryBytes: 16 * 1_024 * 1_024 * 1_024
             ),
+            bridgeAutoLoadEnabled: true,
             startHTTPServers: false
         )
         viewModel.availableModels = [

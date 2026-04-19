@@ -29,6 +29,7 @@ final class LoaderShellViewModel: LocalHTTPServerDelegate {
     private let admissionEvaluator: LoadAdmissionEvaluator
     private let restartSleep: @Sendable (TimeInterval) async -> Void
     private let autoRestartOnCrash: Bool
+    private let bridgeAutoLoadEnabled: Bool
     private let postLoadSettlementSleep: @Sendable (TimeInterval) async -> Void
     private var controlHTTPServer: LocalHTTPServer?
     private var openAICompatHTTPServer: LocalHTTPServer?
@@ -43,6 +44,7 @@ final class LoaderShellViewModel: LocalHTTPServerDelegate {
     private let postLoadSettlementDeltaToleranceBytes: UInt64 = 8 * 1_024 * 1_024
     private let generateKVBytesPerInputByte: UInt64 = 3 * 1_024
     private let generateKVBytesPerMessage: UInt64 = 128 * 1_024
+    private static let bridgeAutoLoadEnvKey = "W4L_OPENAI_BRIDGE_AUTOLOAD"
 
     let shellTitle = "WARDEN4 Local Loader"
     let shellSubtitle = "MVP operator shell for the local model loader"
@@ -81,6 +83,7 @@ final class LoaderShellViewModel: LocalHTTPServerDelegate {
             try? await Task.sleep(nanoseconds: nanoseconds)
         },
         autoRestartOnCrash: Bool = true,
+        bridgeAutoLoadEnabled: Bool? = nil,
         postLoadSettlementSleep: @escaping @Sendable (TimeInterval) async -> Void = { delay in
             let nanoseconds = UInt64(max(delay, 0) * 1_000_000_000)
             try? await Task.sleep(nanoseconds: nanoseconds)
@@ -95,6 +98,7 @@ final class LoaderShellViewModel: LocalHTTPServerDelegate {
         self.admissionEvaluator = admissionEvaluator
         self.restartSleep = restartSleep
         self.autoRestartOnCrash = autoRestartOnCrash
+        self.bridgeAutoLoadEnabled = bridgeAutoLoadEnabled ?? Self.defaultBridgeAutoLoadEnabledFromEnvironment()
         self.postLoadSettlementSleep = postLoadSettlementSleep
         self.backendLoader.runtimeEventHandler = { [weak self] event in
             self?.handleBackendRuntimeEvent(event)
@@ -453,6 +457,15 @@ final class LoaderShellViewModel: LocalHTTPServerDelegate {
         }
 
         if selectedModel?.id != model.id || status != .ready {
+            guard bridgeAutoLoadEnabled else {
+                statusDetail = "OpenAI-compatible bridge translation-only default refused implicit load."
+                generationSummary = "Bridge refused request until explicit canonical load is completed."
+                return openAICompatibilityFailureResponse(
+                    code: "explicit_load_required",
+                    detail: "Bridge is translation-only by default. Load the requested model through the canonical /load control path before chat completion.",
+                    statusCode: 503
+                )
+            }
             selectedModelID = model.id
             do {
                 _ = try evaluateAdmission(for: model)
@@ -716,7 +729,7 @@ final class LoaderShellViewModel: LocalHTTPServerDelegate {
         case "failed_fast_active", "memory_measurement_unavailable", "memory_ceiling_exceeded",
              "post_load_budget_verification_failed", "reclaim_verification_failed", "model_not_loaded",
              "helper_ready_timeout", "helper_generate_timeout", "generate_memory_ceiling_exceeded",
-             "reclaim_lock_active":
+             "reclaim_lock_active", "explicit_load_required":
             return 503
         default:
             return 500
@@ -1105,6 +1118,18 @@ final class LoaderShellViewModel: LocalHTTPServerDelegate {
             return "degraded_locked"
         }
         return status.contractValue
+    }
+
+    private static func defaultBridgeAutoLoadEnabledFromEnvironment() -> Bool {
+        guard let rawValue = ProcessInfo.processInfo.environment[bridgeAutoLoadEnvKey] else {
+            return false
+        }
+        switch rawValue.lowercased() {
+        case "1", "true", "yes", "on":
+            return true
+        default:
+            return false
+        }
     }
 
 }
