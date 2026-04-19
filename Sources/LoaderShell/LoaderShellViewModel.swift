@@ -41,6 +41,8 @@ final class LoaderShellViewModel: LocalHTTPServerDelegate {
     private let postLoadSettlementMaxWaitSeconds: TimeInterval = 5
     private let postLoadSettlementStableTicksRequired: Int = 3
     private let postLoadSettlementDeltaToleranceBytes: UInt64 = 8 * 1_024 * 1_024
+    private let generateKVBytesPerInputByte: UInt64 = 3 * 1_024
+    private let generateKVBytesPerMessage: UInt64 = 128 * 1_024
 
     let shellTitle = "WARDEN4 Local Loader"
     let shellSubtitle = "MVP operator shell for the local model loader"
@@ -378,6 +380,7 @@ final class LoaderShellViewModel: LocalHTTPServerDelegate {
 
     func httpGenerate(prompt: String) async -> HTTPResponse {
         do {
+            _ = try evaluateGenerateAdmission(promptByteCount: prompt.utf8.count, messageCount: 1)
             let response = try await backendLoader.generate(prompt: prompt)
             generationSummary = "Last prompt completed through the loader boundary."
             activeModelSummary += "\nLast prompt sent through HTTP generate."
@@ -388,7 +391,7 @@ final class LoaderShellViewModel: LocalHTTPServerDelegate {
             ])
         } catch let failure as BackendFailureReport {
             generationSummary = "Generation failed: \(failure.code)"
-            return .json(statusCode: 500, [
+            return .json(statusCode: openAICompatibilityStatusCode(for: failure.code), [
                 "status": "failed",
                 "error": failure.code,
                 "detail": failure.detail,
@@ -498,6 +501,8 @@ final class LoaderShellViewModel: LocalHTTPServerDelegate {
         }
 
         do {
+            let totalInputBytes = chatMessages.reduce(0) { $0 + ($1["content"]?.utf8.count ?? 0) }
+            _ = try evaluateGenerateAdmission(promptByteCount: totalInputBytes, messageCount: chatMessages.count)
             let responseText = try await backendLoader.generateChat(messages: chatMessages)
             generationSummary = "Last prompt completed through the OpenAI-compatible pi-mono bridge."
             let completionID = "chatcmpl-" + UUID().uuidString.replacingOccurrences(of: "-", with: "").lowercased()
@@ -698,7 +703,7 @@ final class LoaderShellViewModel: LocalHTTPServerDelegate {
         switch code {
         case "failed_fast_active", "memory_measurement_unavailable", "memory_ceiling_exceeded",
              "post_load_budget_verification_failed", "reclaim_verification_failed", "model_not_loaded",
-             "helper_ready_timeout", "helper_generate_timeout":
+             "helper_ready_timeout", "helper_generate_timeout", "generate_memory_ceiling_exceeded":
             return 503
         default:
             return 500
@@ -921,6 +926,66 @@ final class LoaderShellViewModel: LocalHTTPServerDelegate {
             code: "post_load_settlement_unstable",
             detail: "Post-load settlement evidence did not stabilize within \(Int(postLoadSettlementMaxWaitSeconds)) seconds. Latest footprint: \(latestFootprint)."
         )
+    }
+
+    private func evaluateGenerateAdmission(promptByteCount: Int, messageCount: Int) throws -> AdmissionDecision {
+        if supervisor.isFailedFastActive {
+            let denied = AdmissionDecision(
+                result: "denied",
+                reasonCode: "failed_fast_active",
+                detail: "Generate admission is blocked while failed_fast is active.",
+                measurementSource: lastMemoryBudgetSnapshot?.measurementSource ?? "resident_size",
+                currentFootprintBytes: lastMemoryBudgetSnapshot?.combinedFootprintBytes ?? 0,
+                projectedModelCostBytes: 0,
+                generationHeadroomBytes: MemoryBudgetConstants.baseline.generationHeadroomBytes,
+                hostReserveBytes: MemoryBudgetConstants.baseline.hostReserveBytes,
+                effectiveCeilingBytes: MemoryBudgetConstants.baseline.loaderMemoryCeilingBytes,
+                projectedTotalBytes: 0
+            )
+            lastAdmissionDecision = denied
+            admissionSummary = denied.summaryText
+            throw BackendFailureReport(code: "failed_fast_active", detail: denied.detail)
+        }
+
+        let snapshot: MemoryBudgetSnapshot
+        do {
+            snapshot = try memoryBudgetMonitor.snapshot(helperPID: backendLoader.activeHelperPID())
+        } catch {
+            throw BackendFailureReport(code: "memory_measurement_unavailable", detail: error.localizedDescription)
+        }
+
+        lastMemoryBudgetSnapshot = snapshot
+        memoryBudgetStatus = "Measurement ready."
+        memoryBudgetSummary = snapshot.summaryText
+
+        let selectedID = selectedModel?.id ?? ""
+        let observedModelCost = observedModelCostBaselineBytes[selectedID] ?? 0
+        let kvProjectedBytes = UInt64(promptByteCount) * generateKVBytesPerInputByte +
+            UInt64(max(messageCount, 1)) * generateKVBytesPerMessage
+        let conservativeProjectedBytes = max(observedModelCost, kvProjectedBytes)
+
+        let decision = admissionEvaluator.evaluate(
+            snapshot: snapshot,
+            projectedModelCostBytes: conservativeProjectedBytes
+        )
+        lastAdmissionDecision = decision
+        admissionSummary = """
+        \(decision.summaryText)
+        Generate Admission:
+        Prompt Input Bytes: \(promptByteCount)
+        Message Count: \(messageCount)
+        KV Projection: \(ByteCountFormatter.loaderString(for: kvProjectedBytes))
+        Observed Model Baseline: \(ByteCountFormatter.loaderString(for: observedModelCost))
+        Conservative Projection Used: \(ByteCountFormatter.loaderString(for: conservativeProjectedBytes))
+        """
+
+        guard decision.result == "allowed" else {
+            throw BackendFailureReport(
+                code: "generate_memory_ceiling_exceeded",
+                detail: "Generate admission denied: projected KV-sensitive footprint exceeds safe ceiling."
+            )
+        }
+        return decision
     }
 
     private func verifyReclaimAfterReset() async -> ReclaimVerificationDecision {

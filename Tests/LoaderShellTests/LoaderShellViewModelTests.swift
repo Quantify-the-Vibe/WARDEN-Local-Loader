@@ -531,6 +531,158 @@ struct LoaderShellViewModelTests {
 
     @MainActor
     @Test
+    func generateRequestUsesPreAdmissionGateAndAllowsSafePrompt() async throws {
+        let backendLoader = MockBackendLoader()
+        let viewModel = LoaderShellViewModel(
+            backendLoader: backendLoader,
+            piMonoLauncher: .default(),
+            memoryBudgetMonitor: MockMemoryBudgetMonitor(
+                snapshot: MemoryBudgetSnapshot(
+                    measurementSource: "mock_source",
+                    appPID: 111,
+                    helperPID: 222,
+                    appFootprintBytes: 512 * 1_024 * 1_024,
+                    helperFootprintBytes: 1 * 1_024 * 1_024 * 1_024,
+                    combinedFootprintBytes: 1536 * 1_024 * 1_024,
+                    constants: .baseline
+                )
+            ),
+            modelCostEstimator: MockModelCostEstimator(estimatedBytes: 1),
+            admissionEvaluator: LoadAdmissionEvaluator(
+                constants: .baseline,
+                physicalMemoryBytes: 16 * 1_024 * 1_024 * 1_024
+            ),
+            startHTTPServers: false
+        )
+        viewModel.availableModels = [
+            LoaderShellViewModel.ModelRecord(id: "mock", displayName: "mock", localPath: "/tmp/mock")
+        ]
+        viewModel.selectedModelID = "mock"
+
+        let response = await viewModel.httpGenerate(prompt: "hello")
+        #expect(response.statusCode == 200)
+        #expect(backendLoader.generateCallCount == 1)
+        #expect(viewModel.admissionSummary.contains("Generate Admission"))
+    }
+
+    @MainActor
+    @Test
+    func overBudgetGenerateIsDeniedBeforeBackendCall() async throws {
+        let backendLoader = MockBackendLoader()
+        let viewModel = LoaderShellViewModel(
+            backendLoader: backendLoader,
+            piMonoLauncher: .default(),
+            memoryBudgetMonitor: MockMemoryBudgetMonitor(
+                snapshot: MemoryBudgetSnapshot(
+                    measurementSource: "mock_source",
+                    appPID: 111,
+                    helperPID: 222,
+                    appFootprintBytes: 11 * 1_024 * 1_024 * 1_024,
+                    helperFootprintBytes: 0,
+                    combinedFootprintBytes: 11 * 1_024 * 1_024 * 1_024,
+                    constants: .baseline
+                )
+            ),
+            modelCostEstimator: MockModelCostEstimator(estimatedBytes: 1),
+            admissionEvaluator: LoadAdmissionEvaluator(
+                constants: .baseline,
+                physicalMemoryBytes: 16 * 1_024 * 1_024 * 1_024
+            ),
+            startHTTPServers: false
+        )
+        viewModel.availableModels = [
+            LoaderShellViewModel.ModelRecord(id: "mock", displayName: "mock", localPath: "/tmp/mock")
+        ]
+        viewModel.selectedModelID = "mock"
+
+        let response = await viewModel.httpGenerate(prompt: String(repeating: "x", count: 8_000))
+        #expect(response.statusCode == 503)
+        #expect(backendLoader.generateCallCount == 0)
+        let payload = try #require(JSONSerialization.jsonObject(with: response.body) as? [String: Any])
+        #expect(payload["error"] as? String == "generate_memory_ceiling_exceeded")
+    }
+
+    @MainActor
+    @Test
+    func overBudgetChatGenerateIsDeniedBeforeGenerateCall() async throws {
+        let backendLoader = MockBackendLoader()
+        let viewModel = LoaderShellViewModel(
+            backendLoader: backendLoader,
+            piMonoLauncher: .default(),
+            memoryBudgetMonitor: SequencedMemoryBudgetMonitor(snapshots: [
+                MemoryBudgetSnapshot(
+                    measurementSource: "mock_source",
+                    appPID: 111,
+                    helperPID: nil,
+                    appFootprintBytes: 1 * 1_024 * 1_024 * 1_024,
+                    helperFootprintBytes: 0,
+                    combinedFootprintBytes: 1 * 1_024 * 1_024 * 1_024,
+                    constants: .baseline
+                ),
+                MemoryBudgetSnapshot(
+                    measurementSource: "mock_source",
+                    appPID: 111,
+                    helperPID: 222,
+                    appFootprintBytes: 1 * 1_024 * 1_024 * 1_024,
+                    helperFootprintBytes: 1 * 1_024 * 1_024 * 1_024,
+                    combinedFootprintBytes: 2 * 1_024 * 1_024 * 1_024,
+                    constants: .baseline
+                ),
+                MemoryBudgetSnapshot(
+                    measurementSource: "mock_source",
+                    appPID: 111,
+                    helperPID: 222,
+                    appFootprintBytes: 1 * 1_024 * 1_024 * 1_024,
+                    helperFootprintBytes: 1 * 1_024 * 1_024 * 1_024 + 1 * 1_024 * 1_024,
+                    combinedFootprintBytes: 2 * 1_024 * 1_024 * 1_024 + 1 * 1_024 * 1_024,
+                    constants: .baseline
+                ),
+                MemoryBudgetSnapshot(
+                    measurementSource: "mock_source",
+                    appPID: 111,
+                    helperPID: 222,
+                    appFootprintBytes: 1 * 1_024 * 1_024 * 1_024,
+                    helperFootprintBytes: 1 * 1_024 * 1_024 * 1_024 + 2 * 1_024 * 1_024,
+                    combinedFootprintBytes: 2 * 1_024 * 1_024 * 1_024 + 2 * 1_024 * 1_024,
+                    constants: .baseline
+                ),
+                MemoryBudgetSnapshot(
+                    measurementSource: "mock_source",
+                    appPID: 111,
+                    helperPID: 222,
+                    appFootprintBytes: 11 * 1_024 * 1_024 * 1_024,
+                    helperFootprintBytes: 0,
+                    combinedFootprintBytes: 11 * 1_024 * 1_024 * 1_024,
+                    constants: .baseline
+                ),
+            ]),
+            modelCostEstimator: MockModelCostEstimator(estimatedBytes: 1),
+            admissionEvaluator: LoadAdmissionEvaluator(
+                constants: .baseline,
+                physicalMemoryBytes: 16 * 1_024 * 1_024 * 1_024
+            ),
+            postLoadSettlementSleep: { _ in },
+            startHTTPServers: false
+        )
+        viewModel.availableModels = [
+            LoaderShellViewModel.ModelRecord(id: "mock", displayName: "mock", localPath: "/tmp/mock")
+        ]
+        viewModel.selectedModelID = "mock"
+
+        let chatResponse = await viewModel.httpOpenAIChatCompletions(bodyJSON: [
+            "model": "mock",
+            "messages": [["role": "user", "content": String(repeating: "y", count: 8_000)]],
+        ])
+        #expect(chatResponse.statusCode == 503)
+        #expect(backendLoader.generateChatCallCount == 0)
+
+        let payload = try #require(JSONSerialization.jsonObject(with: chatResponse.body) as? [String: Any])
+        let error = try #require(payload["error"] as? [String: Any])
+        #expect(error["type"] as? String == "generate_memory_ceiling_exceeded")
+    }
+
+    @MainActor
+    @Test
     func resetReturnsIdleWhenReclaimVerificationPasses() async throws {
         let backendLoader = MockBackendLoader()
         let viewModel = LoaderShellViewModel(
@@ -1072,6 +1224,8 @@ private final class MockBackendLoader: BackendLoader {
     var runtimeEventHandler: ((BackendRuntimeEvent) -> Void)?
     private(set) var shutdownCallCount = 0
     private(set) var loadCallCount = 0
+    private(set) var generateCallCount = 0
+    private(set) var generateChatCallCount = 0
 
     func load(model: LoaderShellViewModel.ModelRecord) async throws -> BackendReadyReport {
         loadCallCount += 1
@@ -1084,8 +1238,15 @@ private final class MockBackendLoader: BackendLoader {
         )
     }
 
-    func generate(prompt: String) async throws -> String { "" }
-    func generateChat(messages: [[String : String]]) async throws -> String { "" }
+    func generate(prompt: String) async throws -> String {
+        generateCallCount += 1
+        return ""
+    }
+
+    func generateChat(messages: [[String : String]]) async throws -> String {
+        generateChatCallCount += 1
+        return ""
+    }
     func shutdown() async { shutdownCallCount += 1 }
     func activeHelperPID() -> Int32? { 222 }
 
