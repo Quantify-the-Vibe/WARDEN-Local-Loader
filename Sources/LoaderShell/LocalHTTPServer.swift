@@ -53,7 +53,6 @@ final class LocalHTTPServer: @unchecked Sendable {
         let parameters = NWParameters.tcp
         parameters.allowLocalEndpointReuse = true
         let desired = NWEndpoint.Port(rawValue: desiredPort)!
-        parameters.requiredLocalEndpoint = .hostPort(host: "127.0.0.1", port: desired)
         let listener = try NWListener(using: parameters, on: desired)
         listener.stateUpdateHandler = { [weak self] state in
             guard let self else { return }
@@ -80,6 +79,10 @@ final class LocalHTTPServer: @unchecked Sendable {
     }
 
     private func handleConnection(_ connection: NWConnection) {
+        if !Self.isLoopbackEndpoint(connection.endpoint) {
+            connection.cancel()
+            return
+        }
         connection.start(queue: queue)
         receiveRequest(on: connection, buffer: Data(), startedAt: Date())
     }
@@ -302,5 +305,20 @@ final class LocalHTTPServer: @unchecked Sendable {
             return true
         }
         return false
+    }
+
+    private static func isLoopbackEndpoint(_ endpoint: NWEndpoint) -> Bool {
+        guard case let .hostPort(host, _) = endpoint else { return false }
+        switch host {
+        case .ipv4(let address):
+            return address.rawValue == IPv4Address.loopback.rawValue
+        case .ipv6(let address):
+            return address.rawValue == IPv6Address.loopback.rawValue
+        case .name(let name, _):
+            let normalized = name.lowercased()
+            return normalized == "localhost" || normalized == "127.0.0.1" || normalized == "::1"
+        @unknown default:
+            return false
+        }
     }
 }
