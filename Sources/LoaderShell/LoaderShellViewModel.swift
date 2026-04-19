@@ -14,6 +14,13 @@ final class LoaderShellViewModel: LocalHTTPServerDelegate {
     private static let modelRoot = "/Users/kikbot/.models/mlx"
     private static let controlPort: UInt16 = 8787
     private static let openAICompatPort: UInt16 = 8080
+    private static func makeDefaultSupervisor() -> LoaderSupervisor {
+        do {
+            return try LoaderSupervisor()
+        } catch {
+            fatalError("Loader supervisor default configuration is invalid: \(error)")
+        }
+    }
     private let backendLoader: BackendLoader
     private let piMonoLauncher: PiMonoLauncher
     private let supervisor: LoaderSupervisor
@@ -49,7 +56,7 @@ final class LoaderShellViewModel: LocalHTTPServerDelegate {
     init(
         backendLoader: BackendLoader = MLXBackendLoader(),
         piMonoLauncher: PiMonoLauncher = .default(),
-        supervisor: LoaderSupervisor = LoaderSupervisor(),
+        supervisor: LoaderSupervisor = makeDefaultSupervisor(),
         memoryBudgetMonitor: any MemoryBudgetMonitoring = LoaderMemoryBudgetMonitor(),
         modelCostEstimator: any ModelCostEstimating = FileSystemModelCostEstimator(),
         admissionEvaluator: LoadAdmissionEvaluator = LoadAdmissionEvaluator(),
@@ -598,6 +605,20 @@ final class LoaderShellViewModel: LocalHTTPServerDelegate {
             piMonoSummary = "pi-mono bridge will receive the canonical recovery mapping on the next request."
             refreshMemoryBudgetState()
             updateServerSummary()
+        case let .helperReadyTimeout(timeoutSeconds):
+            statusDetail = "PEM-001 helper ready timeout classified as crash-equivalent supervision signal."
+            activeModelSummary = "Error: helper_ready_timeout\nDetail: Helper did not report readiness within \(Int(timeoutSeconds)) seconds."
+            generationSummary = projectedRecoveryMessage ?? "Prompt/response path unavailable until helper recovery."
+            resetSummary = projectedRecoveryMessage ?? resetSummary
+            refreshMemoryBudgetState()
+            updateServerSummary()
+        case let .helperGenerateTimeout(timeoutSeconds):
+            statusDetail = "PEM-001 helper generate timeout classified as crash-equivalent supervision signal."
+            activeModelSummary = "Error: helper_generate_timeout\nDetail: Helper did not respond to generation within \(Int(timeoutSeconds)) seconds."
+            generationSummary = projectedRecoveryMessage ?? "Prompt/response path unavailable until helper recovery."
+            resetSummary = projectedRecoveryMessage ?? resetSummary
+            refreshMemoryBudgetState()
+            updateServerSummary()
         }
     }
 
@@ -626,7 +647,8 @@ final class LoaderShellViewModel: LocalHTTPServerDelegate {
     private func openAICompatibilityStatusCode(for code: String) -> Int {
         switch code {
         case "failed_fast_active", "memory_measurement_unavailable", "memory_ceiling_exceeded",
-             "post_load_budget_verification_failed", "reclaim_verification_failed", "model_not_loaded":
+             "post_load_budget_verification_failed", "reclaim_verification_failed", "model_not_loaded",
+             "helper_ready_timeout", "helper_generate_timeout":
             return 503
         default:
             return 500

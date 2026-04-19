@@ -49,16 +49,25 @@ final class MLXBackendLoader: BackendLoader {
 
         try process.run()
 
-        let output = try await withCheckedThrowingContinuation { continuation in
-            DispatchQueue.global(qos: .userInitiated).async {
-                do {
-                    continuation.resume(
-                        returning: try Self.readOneLine(from: stdoutPipe.fileHandleForReading, timeout: 120)
-                    )
-                } catch {
-                    continuation.resume(throwing: error)
+        let output: String
+        do {
+            output = try await withCheckedThrowingContinuation { continuation in
+                DispatchQueue.global(qos: .userInitiated).async {
+                    do {
+                        continuation.resume(
+                            returning: try Self.readOneLine(from: stdoutPipe.fileHandleForReading, timeout: 120)
+                        )
+                    } catch {
+                        continuation.resume(throwing: error)
+                    }
                 }
             }
+        } catch let failure as BackendFailureReport where failure.code == "helper_timeout" {
+            runtimeEventHandler?(.helperReadyTimeout(timeoutSeconds: 120))
+            throw BackendFailureReport(
+                code: "helper_ready_timeout",
+                detail: "MLX helper did not report readiness before timeout."
+            )
         }
 
         let payload = try Self.decodePayload(output)
@@ -95,16 +104,25 @@ final class MLXBackendLoader: BackendLoader {
         try activeInputPipe.fileHandleForWriting.write(contentsOf: payload)
         try activeInputPipe.fileHandleForWriting.write(contentsOf: Data([0x0A]))
 
-        let output = try await withCheckedThrowingContinuation { continuation in
-            DispatchQueue.global(qos: .userInitiated).async {
-                do {
-                    continuation.resume(
-                        returning: try Self.readOneLine(from: activeOutputPipe.fileHandleForReading, timeout: 300)
-                    )
-                } catch {
-                    continuation.resume(throwing: error)
+        let output: String
+        do {
+            output = try await withCheckedThrowingContinuation { continuation in
+                DispatchQueue.global(qos: .userInitiated).async {
+                    do {
+                        continuation.resume(
+                            returning: try Self.readOneLine(from: activeOutputPipe.fileHandleForReading, timeout: 300)
+                        )
+                    } catch {
+                        continuation.resume(throwing: error)
+                    }
                 }
             }
+        } catch let failure as BackendFailureReport where failure.code == "helper_timeout" {
+            runtimeEventHandler?(.helperGenerateTimeout(timeoutSeconds: 300))
+            throw BackendFailureReport(
+                code: "helper_generate_timeout",
+                detail: "MLX helper did not return generation output before timeout."
+            )
         }
 
         let response = try Self.decodePayload(output)
@@ -129,16 +147,25 @@ final class MLXBackendLoader: BackendLoader {
         try activeInputPipe.fileHandleForWriting.write(contentsOf: payload)
         try activeInputPipe.fileHandleForWriting.write(contentsOf: Data([0x0A]))
 
-        let output = try await withCheckedThrowingContinuation { continuation in
-            DispatchQueue.global(qos: .userInitiated).async {
-                do {
-                    continuation.resume(
-                        returning: try Self.readOneLine(from: activeOutputPipe.fileHandleForReading, timeout: 300)
-                    )
-                } catch {
-                    continuation.resume(throwing: error)
+        let output: String
+        do {
+            output = try await withCheckedThrowingContinuation { continuation in
+                DispatchQueue.global(qos: .userInitiated).async {
+                    do {
+                        continuation.resume(
+                            returning: try Self.readOneLine(from: activeOutputPipe.fileHandleForReading, timeout: 300)
+                        )
+                    } catch {
+                        continuation.resume(throwing: error)
+                    }
                 }
             }
+        } catch let failure as BackendFailureReport where failure.code == "helper_timeout" {
+            runtimeEventHandler?(.helperGenerateTimeout(timeoutSeconds: 300))
+            throw BackendFailureReport(
+                code: "helper_generate_timeout",
+                detail: "MLX helper did not return chat generation output before timeout."
+            )
         }
 
         let response = try Self.decodePayload(output)
@@ -200,7 +227,7 @@ final class MLXBackendLoader: BackendLoader {
         }
 
         guard !data.isEmpty else {
-            throw BackendFailureReport(code: "helper_timeout", detail: "MLX helper did not report readiness before timeout.")
+            throw BackendFailureReport(code: "helper_timeout", detail: "MLX helper did not respond before timeout.")
         }
         return String(decoding: data, as: UTF8.self)
     }

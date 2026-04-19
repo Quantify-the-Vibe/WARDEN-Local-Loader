@@ -2,6 +2,8 @@ import Foundation
 
 enum BackendRuntimeEvent: Sendable {
     case helperExitedUnexpectedly(pid: Int32, terminationStatus: Int32)
+    case helperReadyTimeout(timeoutSeconds: TimeInterval)
+    case helperGenerateTimeout(timeoutSeconds: TimeInterval)
 }
 
 struct BackendReadyReport {

@@ -8,9 +8,10 @@ struct LoaderShellViewModelTests {
     @Test
     func supervisorEntersFailedFastAfterCrashWindowExceeded() {
         var tick: TimeInterval = 0
-        let supervisor = LoaderSupervisor(
+        let supervisor = try! LoaderSupervisor(
             crashLimit: 2,
             crashWindow: 60,
+            maxCrashEquivalentTimeoutSeconds: 20,
             now: {
                 defer { tick += 1 }
                 return Date(timeIntervalSince1970: tick)
@@ -31,7 +32,12 @@ struct LoaderShellViewModelTests {
     @MainActor
     @Test
     func supervisorClearFailedFastReturnsToIdle() {
-        let supervisor = LoaderSupervisor(crashLimit: 0, crashWindow: 60, now: Date.init)
+        let supervisor = try! LoaderSupervisor(
+            crashLimit: 0,
+            crashWindow: 60,
+            maxCrashEquivalentTimeoutSeconds: 20,
+            now: Date.init
+        )
         supervisor.handleRuntimeEvent(BackendRuntimeEvent.helperExitedUnexpectedly(pid: 1, terminationStatus: 9))
         #expect(supervisor.runtimeState == LoaderRuntimeState.failedFast)
 
@@ -606,8 +612,47 @@ struct LoaderShellViewModelTests {
 
     @MainActor
     @Test
+    func timeoutRuntimeEventProjectsTimeoutClassificationInViewModel() async throws {
+        let backendLoader = MockBackendLoader()
+        let viewModel = LoaderShellViewModel(
+            backendLoader: backendLoader,
+            piMonoLauncher: .default(),
+            memoryBudgetMonitor: MockMemoryBudgetMonitor(
+                snapshot: MemoryBudgetSnapshot(
+                    measurementSource: "mock_source",
+                    appPID: 111,
+                    helperPID: nil,
+                    appFootprintBytes: 256 * 1_024 * 1_024,
+                    helperFootprintBytes: 0,
+                    combinedFootprintBytes: 256 * 1_024 * 1_024,
+                    constants: .baseline
+                )
+            ),
+            modelCostEstimator: MockModelCostEstimator(estimatedBytes: 256 * 1_024 * 1_024),
+            admissionEvaluator: LoadAdmissionEvaluator(
+                constants: .baseline,
+                physicalMemoryBytes: 16 * 1_024 * 1_024 * 1_024
+            ),
+            startHTTPServers: false
+        )
+
+        backendLoader.simulateReadyTimeout()
+        await fulfillment { viewModel.status == .failed }
+
+        #expect(viewModel.statusDetail.contains("helper ready timeout classified"))
+        #expect(viewModel.activeModelSummary.contains("helper_ready_timeout"))
+        #expect(viewModel.supervisorSummary.contains("code=helper_ready_timeout"))
+    }
+
+    @MainActor
+    @Test
     func loadAdmissionBlockedWhileFailedFastIsActive() async throws {
-        let supervisor = LoaderSupervisor(crashLimit: 0, crashWindow: 60, now: Date.init)
+        let supervisor = try! LoaderSupervisor(
+            crashLimit: 0,
+            crashWindow: 60,
+            maxCrashEquivalentTimeoutSeconds: 20,
+            now: Date.init
+        )
         supervisor.handleRuntimeEvent(BackendRuntimeEvent.helperExitedUnexpectedly(pid: 1, terminationStatus: 9))
         let viewModel = LoaderShellViewModel(
             backendLoader: MockBackendLoader(),
@@ -646,7 +691,12 @@ struct LoaderShellViewModelTests {
     @MainActor
     @Test
     func resetClearsFailedFastAndReturnsIdleWhenReclaimPasses() async throws {
-        let supervisor = LoaderSupervisor(crashLimit: 0, crashWindow: 60, now: Date.init)
+        let supervisor = try! LoaderSupervisor(
+            crashLimit: 0,
+            crashWindow: 60,
+            maxCrashEquivalentTimeoutSeconds: 20,
+            now: Date.init
+        )
         supervisor.handleRuntimeEvent(BackendRuntimeEvent.helperExitedUnexpectedly(pid: 1, terminationStatus: 9))
         let viewModel = LoaderShellViewModel(
             backendLoader: MockBackendLoader(),
@@ -700,7 +750,12 @@ struct LoaderShellViewModelTests {
     @MainActor
     @Test
     func openAICompatFailureMapsFailedFastWithRecoveryAction() async throws {
-        let supervisor = LoaderSupervisor(crashLimit: 0, crashWindow: 60, now: Date.init)
+        let supervisor = try! LoaderSupervisor(
+            crashLimit: 0,
+            crashWindow: 60,
+            maxCrashEquivalentTimeoutSeconds: 20,
+            now: Date.init
+        )
         supervisor.handleRuntimeEvent(BackendRuntimeEvent.helperExitedUnexpectedly(pid: 1, terminationStatus: 9))
         let viewModel = LoaderShellViewModel(
             backendLoader: MockBackendLoader(),
@@ -744,7 +799,12 @@ struct LoaderShellViewModelTests {
     @MainActor
     @Test
     func statusPayloadProjectsRecoveryActionWhenFailedFastActive() async throws {
-        let supervisor = LoaderSupervisor(crashLimit: 0, crashWindow: 60, now: Date.init)
+        let supervisor = try! LoaderSupervisor(
+            crashLimit: 0,
+            crashWindow: 60,
+            maxCrashEquivalentTimeoutSeconds: 20,
+            now: Date.init
+        )
         supervisor.handleRuntimeEvent(BackendRuntimeEvent.helperExitedUnexpectedly(pid: 1, terminationStatus: 9))
         let viewModel = LoaderShellViewModel(
             backendLoader: MockBackendLoader(),
@@ -800,6 +860,10 @@ private final class MockBackendLoader: BackendLoader {
 
     func simulateUnexpectedExit() {
         runtimeEventHandler?(.helperExitedUnexpectedly(pid: 222, terminationStatus: 9))
+    }
+
+    func simulateReadyTimeout() {
+        runtimeEventHandler?(.helperReadyTimeout(timeoutSeconds: 120))
     }
 }
 
