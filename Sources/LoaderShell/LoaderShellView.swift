@@ -2,6 +2,18 @@ import SwiftUI
 
 struct LoaderShellView: View {
     @Bindable var viewModel: LoaderShellViewModel
+    @State private var isDiscoveryExpanded = true
+    @State private var isLoadStateExpanded = true
+    @State private var isHTTPContractExpanded = true
+    @State private var isBudgetReportExpanded = true
+    @State private var isSupervisorExpanded = true
+    @State private var isMemoryBudgetExpanded = true
+    @State private var isAdmissionExpanded = true
+    @State private var isPostLoadExpanded = true
+    @State private var isReclaimExpanded = true
+    @State private var isPiMonoExpanded = true
+    @State private var isGenerationExpanded = true
+    @State private var isResetExpanded = true
 
     var body: some View {
         VStack(alignment: .leading, spacing: 24) {
@@ -128,173 +140,72 @@ struct LoaderShellView: View {
             Divider()
                 .overlay(Color.white.opacity(0.08))
 
-            VStack(alignment: .leading, spacing: 6) {
-                Text("Discovery")
-                    .font(.system(size: 13, weight: .bold, design: .rounded))
-                    .foregroundStyle(Color(red: 0.58, green: 0.67, blue: 0.78))
-                Text(viewModel.discoverySummary)
-                    .font(.system(size: 13, weight: .regular, design: .monospaced))
-                    .foregroundStyle(Color(red: 0.74, green: 0.80, blue: 0.87))
-                    .fixedSize(horizontal: false, vertical: true)
-                if let selectedModel = viewModel.selectedModel {
-                    Text(selectedModel.localPath)
-                        .font(.system(size: 12, weight: .regular, design: .monospaced))
-                        .foregroundStyle(Color(red: 0.52, green: 0.63, blue: 0.75))
-                        .textSelection(.enabled)
+            ScrollView(.vertical) {
+                VStack(alignment: .leading, spacing: 10) {
+                    collapsibleStatusSection(
+                        title: "Discovery",
+                        text: viewModel.discoverySummary + selectedModelPathSuffix,
+                        isExpanded: $isDiscoveryExpanded
+                    )
+                    collapsibleStatusSection(
+                        title: "Load State",
+                        text: viewModel.activeModelSummary,
+                        isExpanded: $isLoadStateExpanded
+                    )
+                    collapsibleStatusSection(
+                        title: "HTTP Contract",
+                        text: viewModel.serverSummary,
+                        isExpanded: $isHTTPContractExpanded
+                    )
+                    collapsibleStatusSection(
+                        title: "Budget Report",
+                        text: viewModel.budgetReportSummary,
+                        isExpanded: $isBudgetReportExpanded
+                    )
+                    collapsibleStatusSection(
+                        title: "Supervisor",
+                        text: viewModel.supervisorSummary,
+                        isExpanded: $isSupervisorExpanded
+                    )
+                    collapsibleStatusSection(
+                        title: "Memory Budget",
+                        text: "\(viewModel.memoryBudgetStatus)\n\(viewModel.memoryBudgetSummary)",
+                        isExpanded: $isMemoryBudgetExpanded
+                    )
+                    collapsibleStatusSection(
+                        title: "Admission",
+                        text: viewModel.admissionSummary,
+                        isExpanded: $isAdmissionExpanded
+                    )
+                    collapsibleStatusSection(
+                        title: "Post-Load Verification",
+                        text: viewModel.postLoadSummary,
+                        isExpanded: $isPostLoadExpanded
+                    )
+                    collapsibleStatusSection(
+                        title: "Reclaim Verification",
+                        text: viewModel.reclaimSummary,
+                        isExpanded: $isReclaimExpanded
+                    )
+                    collapsibleStatusSection(
+                        title: "pi-mono",
+                        text: viewModel.piMonoSummary,
+                        isExpanded: $isPiMonoExpanded
+                    )
+                    collapsibleStatusSection(
+                        title: "Generation",
+                        text: viewModel.generationSummary,
+                        isExpanded: $isGenerationExpanded
+                    )
+                    collapsibleStatusSection(
+                        title: "Reset",
+                        text: viewModel.resetSummary,
+                        isExpanded: $isResetExpanded
+                    )
                 }
+                .padding(.vertical, 2)
             }
-
-            Divider()
-                .overlay(Color.white.opacity(0.08))
-
-            VStack(alignment: .leading, spacing: 6) {
-                Text("Load State")
-                    .font(.system(size: 13, weight: .bold, design: .rounded))
-                    .foregroundStyle(Color(red: 0.58, green: 0.67, blue: 0.78))
-                Text(viewModel.activeModelSummary)
-                    .font(.system(size: 13, weight: .regular, design: .monospaced))
-                    .foregroundStyle(Color(red: 0.74, green: 0.80, blue: 0.87))
-                    .fixedSize(horizontal: false, vertical: true)
-            }
-
-            Divider()
-                .overlay(Color.white.opacity(0.08))
-
-            VStack(alignment: .leading, spacing: 6) {
-                Text("HTTP Contract")
-                    .font(.system(size: 13, weight: .bold, design: .rounded))
-                    .foregroundStyle(Color(red: 0.58, green: 0.67, blue: 0.78))
-                Text(viewModel.serverSummary)
-                    .font(.system(size: 13, weight: .regular, design: .monospaced))
-                    .foregroundStyle(Color(red: 0.74, green: 0.80, blue: 0.87))
-                    .fixedSize(horizontal: false, vertical: true)
-            }
-
-            Divider()
-                .overlay(Color.white.opacity(0.08))
-
-            VStack(alignment: .leading, spacing: 6) {
-                Text("Budget Report")
-                    .font(.system(size: 13, weight: .bold, design: .rounded))
-                    .foregroundStyle(Color(red: 0.58, green: 0.67, blue: 0.78))
-                Text(viewModel.budgetReportSummary)
-                    .font(.system(size: 13, weight: .regular, design: .monospaced))
-                    .foregroundStyle(Color(red: 0.74, green: 0.80, blue: 0.87))
-                    .fixedSize(horizontal: false, vertical: true)
-                    .textSelection(.enabled)
-            }
-
-            Divider()
-                .overlay(Color.white.opacity(0.08))
-
-            VStack(alignment: .leading, spacing: 6) {
-                Text("Supervisor")
-                    .font(.system(size: 13, weight: .bold, design: .rounded))
-                    .foregroundStyle(Color(red: 0.58, green: 0.67, blue: 0.78))
-                Text(viewModel.supervisorSummary)
-                    .font(.system(size: 13, weight: .regular, design: .monospaced))
-                    .foregroundStyle(Color(red: 0.74, green: 0.80, blue: 0.87))
-                    .fixedSize(horizontal: false, vertical: true)
-                    .textSelection(.enabled)
-            }
-
-            Divider()
-                .overlay(Color.white.opacity(0.08))
-
-            VStack(alignment: .leading, spacing: 6) {
-                Text("Memory Budget")
-                    .font(.system(size: 13, weight: .bold, design: .rounded))
-                    .foregroundStyle(Color(red: 0.58, green: 0.67, blue: 0.78))
-                Text(viewModel.memoryBudgetStatus)
-                    .font(.system(size: 13, weight: .regular, design: .rounded))
-                    .foregroundStyle(Color(red: 0.83, green: 0.88, blue: 0.94))
-                Text(viewModel.memoryBudgetSummary)
-                    .font(.system(size: 13, weight: .regular, design: .monospaced))
-                    .foregroundStyle(Color(red: 0.74, green: 0.80, blue: 0.87))
-                    .fixedSize(horizontal: false, vertical: true)
-                    .textSelection(.enabled)
-            }
-
-            Divider()
-                .overlay(Color.white.opacity(0.08))
-
-            VStack(alignment: .leading, spacing: 6) {
-                Text("Admission")
-                    .font(.system(size: 13, weight: .bold, design: .rounded))
-                    .foregroundStyle(Color(red: 0.58, green: 0.67, blue: 0.78))
-                Text(viewModel.admissionSummary)
-                    .font(.system(size: 13, weight: .regular, design: .monospaced))
-                    .foregroundStyle(Color(red: 0.74, green: 0.80, blue: 0.87))
-                    .fixedSize(horizontal: false, vertical: true)
-                    .textSelection(.enabled)
-            }
-
-            Divider()
-                .overlay(Color.white.opacity(0.08))
-
-            VStack(alignment: .leading, spacing: 6) {
-                Text("Post-Load Verification")
-                    .font(.system(size: 13, weight: .bold, design: .rounded))
-                    .foregroundStyle(Color(red: 0.58, green: 0.67, blue: 0.78))
-                Text(viewModel.postLoadSummary)
-                    .font(.system(size: 13, weight: .regular, design: .monospaced))
-                    .foregroundStyle(Color(red: 0.74, green: 0.80, blue: 0.87))
-                    .fixedSize(horizontal: false, vertical: true)
-                    .textSelection(.enabled)
-            }
-
-            Divider()
-                .overlay(Color.white.opacity(0.08))
-
-            VStack(alignment: .leading, spacing: 6) {
-                Text("Reclaim Verification")
-                    .font(.system(size: 13, weight: .bold, design: .rounded))
-                    .foregroundStyle(Color(red: 0.58, green: 0.67, blue: 0.78))
-                Text(viewModel.reclaimSummary)
-                    .font(.system(size: 13, weight: .regular, design: .monospaced))
-                    .foregroundStyle(Color(red: 0.74, green: 0.80, blue: 0.87))
-                    .fixedSize(horizontal: false, vertical: true)
-                    .textSelection(.enabled)
-            }
-
-            Divider()
-                .overlay(Color.white.opacity(0.08))
-
-            VStack(alignment: .leading, spacing: 6) {
-                Text("pi-mono")
-                    .font(.system(size: 13, weight: .bold, design: .rounded))
-                    .foregroundStyle(Color(red: 0.58, green: 0.67, blue: 0.78))
-                Text(viewModel.piMonoSummary)
-                    .font(.system(size: 13, weight: .regular, design: .monospaced))
-                    .foregroundStyle(Color(red: 0.74, green: 0.80, blue: 0.87))
-                    .fixedSize(horizontal: false, vertical: true)
-            }
-
-            Divider()
-                .overlay(Color.white.opacity(0.08))
-
-            VStack(alignment: .leading, spacing: 6) {
-                Text("Generation")
-                    .font(.system(size: 13, weight: .bold, design: .rounded))
-                    .foregroundStyle(Color(red: 0.58, green: 0.67, blue: 0.78))
-                Text(viewModel.generationSummary)
-                    .font(.system(size: 13, weight: .regular, design: .monospaced))
-                    .foregroundStyle(Color(red: 0.74, green: 0.80, blue: 0.87))
-                    .fixedSize(horizontal: false, vertical: true)
-            }
-
-            Divider()
-                .overlay(Color.white.opacity(0.08))
-
-            VStack(alignment: .leading, spacing: 6) {
-                Text("Reset")
-                    .font(.system(size: 13, weight: .bold, design: .rounded))
-                    .foregroundStyle(Color(red: 0.58, green: 0.67, blue: 0.78))
-                Text(viewModel.resetSummary)
-                    .font(.system(size: 13, weight: .regular, design: .monospaced))
-                    .foregroundStyle(Color(red: 0.74, green: 0.80, blue: 0.87))
-                    .fixedSize(horizontal: false, vertical: true)
-            }
+            .frame(minHeight: 220, maxHeight: 460)
         }
         .frame(maxWidth: .infinity, alignment: .leading)
         .padding(20)
@@ -307,5 +218,38 @@ struct LoaderShellView: View {
                 .stroke(Color.white.opacity(0.08), lineWidth: 1)
         )
         .accessibilityIdentifier("runtime-status-panel")
+    }
+
+    private var selectedModelPathSuffix: String {
+        guard let selectedModel = viewModel.selectedModel else { return "" }
+        return "\nPath: \(selectedModel.localPath)"
+    }
+
+    private func collapsibleStatusSection(
+        title: String,
+        text: String,
+        isExpanded: Binding<Bool>
+    ) -> some View {
+        VStack(alignment: .leading, spacing: 6) {
+            DisclosureGroup(isExpanded: isExpanded) {
+                Text(text)
+                    .font(.system(size: 13, weight: .regular, design: .monospaced))
+                    .foregroundStyle(Color(red: 0.74, green: 0.80, blue: 0.87))
+                    .fixedSize(horizontal: false, vertical: true)
+                    .textSelection(.enabled)
+                    .padding(.top, 2)
+            } label: {
+                Text(title)
+                    .font(.system(size: 13, weight: .bold, design: .rounded))
+                    .foregroundStyle(Color(red: 0.58, green: 0.67, blue: 0.78))
+            }
+            .tint(Color(red: 0.58, green: 0.67, blue: 0.78))
+        }
+        .padding(.vertical, 4)
+        .overlay(alignment: .bottom) {
+            Rectangle()
+                .fill(Color.white.opacity(0.08))
+                .frame(height: 1)
+        }
     }
 }
