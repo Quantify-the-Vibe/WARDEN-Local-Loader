@@ -66,6 +66,8 @@ final class LoaderShellViewModel: LocalHTTPServerDelegate {
     private var lastPostLoadVerification: PostLoadVerificationDecision?
     private var lastReclaimVerification: ReclaimVerificationDecision?
     private var reusableIdleBaselineBytes: UInt64?
+    private var reclaimLockActive = false
+    private var reclaimLockDetail = "Reclaim verification must pass before runtime reuse."
 
     init(
         backendLoader: BackendLoader = MLXBackendLoader(),
@@ -118,7 +120,7 @@ final class LoaderShellViewModel: LocalHTTPServerDelegate {
     }
 
     var budgetReportSummary: String {
-        let lifecycle = status.contractValue
+        let lifecycle = runtimeLifecycleProjection
         let selected = selectedModel?.id ?? "none"
         let footprint = lastMemoryBudgetSnapshot.map { ByteCountFormatter.loaderString(for: $0.combinedFootprintBytes) } ?? "unknown"
         let source = lastMemoryBudgetSnapshot?.measurementSource ?? "unknown"
@@ -162,13 +164,13 @@ final class LoaderShellViewModel: LocalHTTPServerDelegate {
         }
 
         if let selectedModel {
-            if !supervisor.isFailedFastActive {
+            if !supervisor.isFailedFastActive, !reclaimLockActive {
                 supervisor.transition(to: .idle)
             }
             statusDetail = "PEM-002 discovery complete. One real local MLX model can now be selected."
             discoverySummary = "\(discovered.count) models discovered under \(Self.modelRoot).\nSelected: \(selectedModel.displayName)"
         } else {
-            if !supervisor.isFailedFastActive {
+            if !supervisor.isFailedFastActive, !reclaimLockActive {
                 supervisor.transition(to: .idle)
             }
             statusDetail = "PEM-002 discovery found no selectable model directories."
@@ -291,6 +293,8 @@ final class LoaderShellViewModel: LocalHTTPServerDelegate {
             reclaimSummary = reclaimVerification.summaryText
             if reclaimVerification.result == "reclaimed" {
                 supervisor.transition(to: .idle)
+                reclaimLockActive = false
+                reclaimLockDetail = "Reclaim verification passed."
                 statusDetail = "PEM-004 reset complete. Reclaim verified and loader returned to reusable idle state."
                 activeModelSummary = "No model loaded."
                 generationSummary = "Prompt/response path is ready once one model is loaded."
@@ -298,7 +302,9 @@ final class LoaderShellViewModel: LocalHTTPServerDelegate {
                 postLoadSummary = "Post-load verification not run yet."
             } else {
                 supervisor.transition(to: .failed)
-                statusDetail = "PEM-004 reset failed reclaim verification. Loader is not treated as healthy idle."
+                reclaimLockActive = true
+                reclaimLockDetail = reclaimVerification.detail
+                statusDetail = "PEM-005 reset failed reclaim verification. Runtime projected degraded_locked and reuse is blocked."
                 activeModelSummary = "Error: \(reclaimVerification.reasonCode ?? "reclaim_verification_failed")\nDetail: \(reclaimVerification.detail)"
                 generationSummary = "Prompt/response path blocked until reclaim issue is resolved."
                 resetSummary = "Reset terminated the helper, but reclaim verification failed."
@@ -316,7 +322,7 @@ final class LoaderShellViewModel: LocalHTTPServerDelegate {
     func httpStatusPayload() -> [String: Any] {
         var payload: [String: Any] = [
             "status": "ok",
-            "runtime_state": status.contractValue,
+            "runtime_state": runtimeLifecycleProjection,
             "selected_model_id": selectedModel?.id as Any,
             "selected_model_path": selectedModel?.localPath as Any,
             "server_summary": serverSummary,
@@ -365,7 +371,7 @@ final class LoaderShellViewModel: LocalHTTPServerDelegate {
         }
         var payload: [String: Any] = [
             "status": status == .ready ? "ready" : status == .loading ? "loading" : "failed",
-            "runtime_state": status.contractValue,
+            "runtime_state": runtimeLifecycleProjection,
             "selected_model_id": selectedModel?.id as Any,
             "active_summary": activeModelSummary,
         ]
@@ -410,7 +416,7 @@ final class LoaderShellViewModel: LocalHTTPServerDelegate {
         resetButtonPressed()
         return .json([
             "status": "resetting",
-            "runtime_state": status.contractValue,
+            "runtime_state": runtimeLifecycleProjection,
             "selected_model_id": selectedModel?.id as Any,
             "reset_summary": resetSummary,
         ])
@@ -600,7 +606,7 @@ final class LoaderShellViewModel: LocalHTTPServerDelegate {
 
     private func budgetReportPayload() -> [String: Any] {
         var payload: [String: Any] = [
-            "lifecycle_state": status.contractValue,
+            "lifecycle_state": runtimeLifecycleProjection,
             "selected_model_id": selectedModel?.id as Any,
             "selected_model_path": selectedModel?.localPath as Any,
             "measurement_status": memoryBudgetStatus,
@@ -656,7 +662,7 @@ final class LoaderShellViewModel: LocalHTTPServerDelegate {
 
     private func scheduleAutomaticRestartIfEligible() {
         guard autoRestartOnCrash else { return }
-        guard !supervisor.isFailedFastActive else {
+        guard !supervisor.isFailedFastActive, !reclaimLockActive else {
             pendingRestartTask?.cancel()
             pendingRestartTask = nil
             return
@@ -678,6 +684,9 @@ final class LoaderShellViewModel: LocalHTTPServerDelegate {
     }
 
     private var projectedRecoveryAction: String? {
+        if reclaimLockActive {
+            return "operator_reclaim_recovery_required"
+        }
         switch status {
         case .failedFast:
             return "operator_reset_required"
@@ -689,6 +698,9 @@ final class LoaderShellViewModel: LocalHTTPServerDelegate {
     }
 
     private var projectedRecoveryMessage: String? {
+        if reclaimLockActive {
+            return "Service is degraded_locked after reclaim verification failure. Run operator reset until reclaim verification passes."
+        }
         switch status {
         case .failedFast:
             return "Service is fail-closed in failed_fast. Operator reset is required before new load admission."
@@ -703,7 +715,8 @@ final class LoaderShellViewModel: LocalHTTPServerDelegate {
         switch code {
         case "failed_fast_active", "memory_measurement_unavailable", "memory_ceiling_exceeded",
              "post_load_budget_verification_failed", "reclaim_verification_failed", "model_not_loaded",
-             "helper_ready_timeout", "helper_generate_timeout", "generate_memory_ceiling_exceeded":
+             "helper_ready_timeout", "helper_generate_timeout", "generate_memory_ceiling_exceeded",
+             "reclaim_lock_active":
             return 503
         default:
             return 500
@@ -715,7 +728,7 @@ final class LoaderShellViewModel: LocalHTTPServerDelegate {
             "message": detail,
             "type": code,
             "code": code,
-            "loader_state": status.contractValue,
+            "loader_state": runtimeLifecycleProjection,
         ]
         if let projectedRecoveryAction {
             errorPayload["recovery_action"] = projectedRecoveryAction
@@ -728,7 +741,7 @@ final class LoaderShellViewModel: LocalHTTPServerDelegate {
         if let lastAdmissionDecision, lastAdmissionDecision.result == "denied" {
             return .json(statusCode: defaultStatusCode, [
                 "status": "failed",
-                "runtime_state": status.contractValue,
+                "runtime_state": runtimeLifecycleProjection,
                 "selected_model_id": selectedModel?.id as Any,
                 "active_summary": activeModelSummary,
                 "error": lastAdmissionDecision.reasonCode ?? "load_denied",
@@ -739,10 +752,23 @@ final class LoaderShellViewModel: LocalHTTPServerDelegate {
             ])
         }
 
+        if reclaimLockActive {
+            return .json(statusCode: defaultStatusCode, [
+                "status": "failed",
+                "runtime_state": runtimeLifecycleProjection,
+                "selected_model_id": selectedModel?.id as Any,
+                "active_summary": activeModelSummary,
+                "error": "reclaim_lock_active",
+                "detail": reclaimLockDetail,
+                "recovery_action": projectedRecoveryAction as Any,
+                "recovery_message": projectedRecoveryMessage as Any,
+            ])
+        }
+
         if status == .failedFast {
             return .json(statusCode: defaultStatusCode, [
                 "status": "failed",
-                "runtime_state": status.contractValue,
+                "runtime_state": runtimeLifecycleProjection,
                 "selected_model_id": selectedModel?.id as Any,
                 "active_summary": activeModelSummary,
                 "error": "failed_fast_active",
@@ -772,6 +798,23 @@ final class LoaderShellViewModel: LocalHTTPServerDelegate {
             lastAdmissionDecision = denied
             admissionSummary = denied.summaryText
             throw BackendFailureReport(code: "failed_fast_active", detail: denied.detail)
+        }
+        if reclaimLockActive {
+            let denied = AdmissionDecision(
+                result: "denied",
+                reasonCode: "reclaim_lock_active",
+                detail: reclaimLockDetail,
+                measurementSource: lastMemoryBudgetSnapshot?.measurementSource ?? "resident_size",
+                currentFootprintBytes: lastMemoryBudgetSnapshot?.combinedFootprintBytes ?? 0,
+                projectedModelCostBytes: 0,
+                generationHeadroomBytes: MemoryBudgetConstants.baseline.generationHeadroomBytes,
+                hostReserveBytes: MemoryBudgetConstants.baseline.hostReserveBytes,
+                effectiveCeilingBytes: MemoryBudgetConstants.baseline.loaderMemoryCeilingBytes,
+                projectedTotalBytes: 0
+            )
+            lastAdmissionDecision = denied
+            admissionSummary = denied.summaryText
+            throw BackendFailureReport(code: "reclaim_lock_active", detail: denied.detail)
         }
         let snapshot: MemoryBudgetSnapshot
         do {
@@ -946,6 +989,23 @@ final class LoaderShellViewModel: LocalHTTPServerDelegate {
             admissionSummary = denied.summaryText
             throw BackendFailureReport(code: "failed_fast_active", detail: denied.detail)
         }
+        if reclaimLockActive {
+            let denied = AdmissionDecision(
+                result: "denied",
+                reasonCode: "reclaim_lock_active",
+                detail: reclaimLockDetail,
+                measurementSource: lastMemoryBudgetSnapshot?.measurementSource ?? "resident_size",
+                currentFootprintBytes: lastMemoryBudgetSnapshot?.combinedFootprintBytes ?? 0,
+                projectedModelCostBytes: 0,
+                generationHeadroomBytes: MemoryBudgetConstants.baseline.generationHeadroomBytes,
+                hostReserveBytes: MemoryBudgetConstants.baseline.hostReserveBytes,
+                effectiveCeilingBytes: MemoryBudgetConstants.baseline.loaderMemoryCeilingBytes,
+                projectedTotalBytes: 0
+            )
+            lastAdmissionDecision = denied
+            admissionSummary = denied.summaryText
+            throw BackendFailureReport(code: "reclaim_lock_active", detail: denied.detail)
+        }
 
         let snapshot: MemoryBudgetSnapshot
         do {
@@ -1015,6 +1075,8 @@ final class LoaderShellViewModel: LocalHTTPServerDelegate {
         )
         if decision.result == "reclaimed" {
             reusableIdleBaselineBytes = snapshot.combinedFootprintBytes
+            reclaimLockActive = false
+            reclaimLockDetail = "Reclaim verification passed."
         }
         return decision
     }
@@ -1033,6 +1095,16 @@ final class LoaderShellViewModel: LocalHTTPServerDelegate {
             memoryBudgetStatus = "Measurement failed."
             memoryBudgetSummary = "Source: resident_size\nError: \(error.localizedDescription)"
         }
+    }
+
+    private var runtimeLifecycleProjection: String {
+        if status == .failedFast {
+            return status.contractValue
+        }
+        if reclaimLockActive {
+            return "degraded_locked"
+        }
+        return status.contractValue
     }
 
 }

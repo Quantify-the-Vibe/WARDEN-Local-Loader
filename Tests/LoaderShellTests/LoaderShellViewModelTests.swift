@@ -376,6 +376,15 @@ struct LoaderShellViewModelTests {
                 MemoryBudgetSnapshot(
                     measurementSource: "mock_source",
                     appPID: 111,
+                    helperPID: nil,
+                    appFootprintBytes: 256 * 1_024 * 1_024,
+                    helperFootprintBytes: 0,
+                    combinedFootprintBytes: 256 * 1_024 * 1_024,
+                    constants: .baseline
+                ),
+                MemoryBudgetSnapshot(
+                    measurementSource: "mock_source",
+                    appPID: 111,
                     helperPID: 222,
                     appFootprintBytes: 512 * 1_024 * 1_024,
                     helperFootprintBytes: 1 * 1_024 * 1_024 * 1_024,
@@ -767,6 +776,15 @@ struct LoaderShellViewModelTests {
                     combinedFootprintBytes: 2 * 1_024 * 1_024 * 1_024,
                     constants: .baseline
                 ),
+                MemoryBudgetSnapshot(
+                    measurementSource: "mock_source",
+                    appPID: 111,
+                    helperPID: nil,
+                    appFootprintBytes: 2 * 1_024 * 1_024 * 1_024,
+                    helperFootprintBytes: 0,
+                    combinedFootprintBytes: 2 * 1_024 * 1_024 * 1_024,
+                    constants: .baseline
+                ),
             ]),
             modelCostEstimator: MockModelCostEstimator(estimatedBytes: 1 * 1_024 * 1_024),
             admissionEvaluator: LoadAdmissionEvaluator(
@@ -781,6 +799,151 @@ struct LoaderShellViewModelTests {
         #expect(viewModel.reclaimSummary.contains("insufficient_reclaim"))
         #expect(viewModel.activeModelSummary.contains("reclaim_verification_failed"))
         #expect(backendLoader.shutdownCallCount == 1)
+    }
+
+    @MainActor
+    @Test
+    func reclaimFailureProjectsDegradedLockedAndBlocksLoadReuse() async throws {
+        let backendLoader = MockBackendLoader()
+        let viewModel = LoaderShellViewModel(
+            backendLoader: backendLoader,
+            piMonoLauncher: .default(),
+            memoryBudgetMonitor: SequencedMemoryBudgetMonitor(snapshots: [
+                MemoryBudgetSnapshot(
+                    measurementSource: "mock_source",
+                    appPID: 111,
+                    helperPID: nil,
+                    appFootprintBytes: 256 * 1_024 * 1_024,
+                    helperFootprintBytes: 0,
+                    combinedFootprintBytes: 256 * 1_024 * 1_024,
+                    constants: .baseline
+                ),
+                MemoryBudgetSnapshot(
+                    measurementSource: "mock_source",
+                    appPID: 111,
+                    helperPID: nil,
+                    appFootprintBytes: 256 * 1_024 * 1_024,
+                    helperFootprintBytes: 0,
+                    combinedFootprintBytes: 256 * 1_024 * 1_024,
+                    constants: .baseline
+                ),
+                MemoryBudgetSnapshot(
+                    measurementSource: "mock_source",
+                    appPID: 111,
+                    helperPID: nil,
+                    appFootprintBytes: 2 * 1_024 * 1_024 * 1_024,
+                    helperFootprintBytes: 0,
+                    combinedFootprintBytes: 2 * 1_024 * 1_024 * 1_024,
+                    constants: .baseline
+                ),
+            ]),
+            modelCostEstimator: MockModelCostEstimator(estimatedBytes: 1 * 1_024 * 1_024),
+            admissionEvaluator: LoadAdmissionEvaluator(
+                constants: .baseline,
+                physicalMemoryBytes: 16 * 1_024 * 1_024 * 1_024
+            ),
+            startHTTPServers: false
+        )
+        viewModel.availableModels = [
+            LoaderShellViewModel.ModelRecord(id: "mock", displayName: "mock", localPath: "/tmp/mock")
+        ]
+        viewModel.selectedModelID = "mock"
+
+        viewModel.resetButtonPressed()
+        await fulfillment { viewModel.status == .failed }
+        viewModel.loadButtonPressed()
+
+        let statusPayload = viewModel.httpStatusPayload()
+        #expect(statusPayload["runtime_state"] as? String == "degraded_locked")
+        #expect(statusPayload["recovery_action"] as? String == "operator_reclaim_recovery_required")
+        #expect(viewModel.budgetReportSummary.contains("Lifecycle: degraded_locked"))
+        #expect(viewModel.admissionSummary.contains("reclaim_lock_active"))
+        #expect(viewModel.activeModelSummary.contains("reclaim_lock_active"))
+        #expect(backendLoader.loadCallCount == 0)
+    }
+
+    @MainActor
+    @Test
+    func explicitRecoveryResetClearsDegradedLockedProjection() async throws {
+        let backendLoader = MockBackendLoader()
+        let viewModel = LoaderShellViewModel(
+            backendLoader: backendLoader,
+            piMonoLauncher: .default(),
+            memoryBudgetMonitor: SequencedMemoryBudgetMonitor(snapshots: [
+                MemoryBudgetSnapshot(
+                    measurementSource: "mock_source",
+                    appPID: 111,
+                    helperPID: nil,
+                    appFootprintBytes: 256 * 1_024 * 1_024,
+                    helperFootprintBytes: 0,
+                    combinedFootprintBytes: 256 * 1_024 * 1_024,
+                    constants: .baseline
+                ),
+                MemoryBudgetSnapshot(
+                    measurementSource: "mock_source",
+                    appPID: 111,
+                    helperPID: nil,
+                    appFootprintBytes: 256 * 1_024 * 1_024,
+                    helperFootprintBytes: 0,
+                    combinedFootprintBytes: 256 * 1_024 * 1_024,
+                    constants: .baseline
+                ),
+                MemoryBudgetSnapshot(
+                    measurementSource: "mock_source",
+                    appPID: 111,
+                    helperPID: nil,
+                    appFootprintBytes: 2 * 1_024 * 1_024 * 1_024,
+                    helperFootprintBytes: 0,
+                    combinedFootprintBytes: 2 * 1_024 * 1_024 * 1_024,
+                    constants: .baseline
+                ),
+                MemoryBudgetSnapshot(
+                    measurementSource: "mock_source",
+                    appPID: 111,
+                    helperPID: nil,
+                    appFootprintBytes: 256 * 1_024 * 1_024,
+                    helperFootprintBytes: 0,
+                    combinedFootprintBytes: 256 * 1_024 * 1_024,
+                    constants: .baseline
+                ),
+                MemoryBudgetSnapshot(
+                    measurementSource: "mock_source",
+                    appPID: 111,
+                    helperPID: nil,
+                    appFootprintBytes: 256 * 1_024 * 1_024,
+                    helperFootprintBytes: 0,
+                    combinedFootprintBytes: 256 * 1_024 * 1_024,
+                    constants: .baseline
+                ),
+                MemoryBudgetSnapshot(
+                    measurementSource: "mock_source",
+                    appPID: 111,
+                    helperPID: nil,
+                    appFootprintBytes: 256 * 1_024 * 1_024,
+                    helperFootprintBytes: 0,
+                    combinedFootprintBytes: 256 * 1_024 * 1_024,
+                    constants: .baseline
+                ),
+            ]),
+            modelCostEstimator: MockModelCostEstimator(estimatedBytes: 1 * 1_024 * 1_024),
+            admissionEvaluator: LoadAdmissionEvaluator(
+                constants: .baseline,
+                physicalMemoryBytes: 16 * 1_024 * 1_024 * 1_024
+            ),
+            startHTTPServers: false
+        )
+
+        viewModel.resetButtonPressed()
+        await fulfillment { viewModel.status == .failed }
+        #expect(viewModel.httpStatusPayload()["runtime_state"] as? String == "degraded_locked")
+
+        viewModel.resetButtonPressed()
+        await fulfillment { viewModel.status == .idle }
+
+        let statusPayload = viewModel.httpStatusPayload()
+        #expect(statusPayload["runtime_state"] as? String == "idle")
+        #expect(statusPayload["recovery_action"] == nil)
+        #expect(viewModel.reclaimSummary.contains("reclaimed"))
     }
 
     @MainActor
