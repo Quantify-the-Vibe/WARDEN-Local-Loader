@@ -51,7 +51,10 @@ Implemented now:
 - accepts `POST /v1/chat/completions`
 - supports streaming-compatible SSE framing
 - normalizes model IDs like `mlx-community/Qwen2.5-0.5B-Instruct-4bit`
-- auto-loads requested model if not already resident
+- bridge default is translation-only and does not auto-load
+- requires explicit canonical load on `:8787` before bridge generation
+- returns `explicit_load_required` when load precondition is missing
+- optional legacy auto-load is feature-flag constrained (`W4L_OPENAI_BRIDGE_AUTOLOAD`)
 - applies tokenizer chat template when available
 - falls back to structured prompt formatting for models without tokenizer chat templates
 
@@ -74,7 +77,7 @@ The next implementation spec should preserve these:
 
 ## Questions The Next Spec Must Resolve
 
-- should bridge auto-load remain admitted, or become explicit-only
+- should legacy auto-load flag remain available, or be removed in v0.4
 - what structured error envelope should `pi-mono` expect for admission failure
 - how memory budget failures surface on the bridge
 - whether bridge responses should expose budget warnings or only hard failures

@@ -117,7 +117,14 @@ Entry gate:
 
 Status:
 
-- ready
+- complete
+
+Closure result:
+
+- v0.3 corpus generated and executed
+- `6/6` PEMs implemented
+- live gates passed through `PEM-006`
+- phase exit gate cleared by live confirmation
 
 ## Lowest-Risk v0.3 Direction
 
@@ -128,6 +135,14 @@ Recommended order:
 3. tighter MLX memory-cost estimation
 4. degraded-mode operator UX
 5. bounded second-adapter validation if still admitted
+
+Status:
+
+- completed in this order through `PEM-006`
+
+Next gate:
+
+- freeze one bounded v0.4 implementation spec before new PEM generation
 
 ## Explicit Planning Rejections
 

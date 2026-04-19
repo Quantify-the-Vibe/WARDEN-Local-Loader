@@ -106,10 +106,12 @@ Policy:
 
 ### 5) Bridge Policy
 
-v0.3 keeps current bridge auto-load admitted but constrained:
+v0.3 enforces translation-only bridge behavior by default:
 
-- auto-load remains compatibility behavior, not canonical authority
-- all load/admission policy remains enforced through canonical loader rules
+- bridge default does not auto-load
+- explicit model load through canonical `:8787` control path is required before bridge generation
+- bridge returns structured `explicit_load_required` when explicit load precondition is not satisfied
+- optional legacy bridge auto-load is feature-flag constrained (`W4L_OPENAI_BRIDGE_AUTOLOAD`)
 - bridge must surface canonical failure/recovery semantics unchanged
 
 Second backend decision:

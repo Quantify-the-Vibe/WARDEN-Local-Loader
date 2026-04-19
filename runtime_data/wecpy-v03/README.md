@@ -49,18 +49,31 @@ Active ordered PEMs:
 5. `PEM-005` - reclaim-failure state integrity and degraded lock
 6. `PEM-006` - bridge translation-only default and explicit-load policy
 
-Current entry point:
+Current execution state:
 
 - next slice:
-  - `slice-001`
+  - none
 - next PEM:
-  - `PEM-001`
+  - none
+- corpus execution:
+  - complete (`6/6`)
+- live gate status:
+  - complete through `PEM-006`
 
 Execution rule:
 
 - the next PEM must not begin on automated checks alone
 - each slice requires one live user test performed by the repository operator
 - advancement remains blocked until that live result is explicitly confirmed
+
+Current closure record:
+
+- `PEM-001` live test passed
+- `PEM-002` live test passed
+- `PEM-003` live test passed
+- `PEM-004` live test passed
+- `PEM-005` live test passed
+- `PEM-006` live test passed
 
 Usage note:
 
