@@ -143,6 +143,8 @@ Status:
 Next gate:
 
 - freeze one bounded v0.4 implementation spec before new PEM generation
+- current planning draft:
+  - `docs/W4L_V04_PLANNING_SPEC.md`
 
 ## Explicit Planning Rejections
 
