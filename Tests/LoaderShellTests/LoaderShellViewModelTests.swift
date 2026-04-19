@@ -404,6 +404,133 @@ struct LoaderShellViewModelTests {
 
     @MainActor
     @Test
+    func loadFailsClosedWhenPostLoadSettlementIsUnstable() async throws {
+        let backendLoader = MockBackendLoader()
+        let viewModel = LoaderShellViewModel(
+            backendLoader: backendLoader,
+            piMonoLauncher: .default(),
+            memoryBudgetMonitor: OscillatingMemoryBudgetMonitor(
+                low: MemoryBudgetSnapshot(
+                    measurementSource: "mock_source",
+                    appPID: 111,
+                    helperPID: nil,
+                    appFootprintBytes: 256 * 1_024 * 1_024,
+                    helperFootprintBytes: 0,
+                    combinedFootprintBytes: 256 * 1_024 * 1_024,
+                    constants: .baseline
+                ),
+                high: MemoryBudgetSnapshot(
+                    measurementSource: "mock_source",
+                    appPID: 111,
+                    helperPID: 222,
+                    appFootprintBytes: 2 * 1_024 * 1_024 * 1_024,
+                    helperFootprintBytes: 4 * 1_024 * 1_024 * 1_024,
+                    combinedFootprintBytes: 6 * 1_024 * 1_024 * 1_024,
+                    constants: .baseline
+                )
+            ),
+            modelCostEstimator: MockModelCostEstimator(estimatedBytes: 256 * 1_024 * 1_024),
+            admissionEvaluator: LoadAdmissionEvaluator(
+                constants: .baseline,
+                physicalMemoryBytes: 16 * 1_024 * 1_024 * 1_024
+            ),
+            postLoadSettlementSleep: { _ in },
+            startHTTPServers: false
+        )
+        viewModel.availableModels = [
+            LoaderShellViewModel.ModelRecord(id: "mock", displayName: "mock", localPath: "/tmp/mock")
+        ]
+        viewModel.selectedModelID = "mock"
+
+        viewModel.loadButtonPressed()
+        await fulfillment { viewModel.status == .failed }
+
+        #expect(backendLoader.shutdownCallCount == 1)
+        #expect(viewModel.activeModelSummary.contains("post_load_budget_verification_failed"))
+        #expect(viewModel.activeModelSummary.contains("did not stabilize"))
+    }
+
+    @MainActor
+    @Test
+    func observedBaselineProjectionCanDenyFutureAdmission() async throws {
+        let backendLoader = MockBackendLoader()
+        let viewModel = LoaderShellViewModel(
+            backendLoader: backendLoader,
+            piMonoLauncher: .default(),
+            memoryBudgetMonitor: SequencedMemoryBudgetMonitor(snapshots: [
+                MemoryBudgetSnapshot(
+                    measurementSource: "mock_source",
+                    appPID: 111,
+                    helperPID: nil,
+                    appFootprintBytes: 1 * 1_024 * 1_024 * 1_024,
+                    helperFootprintBytes: 0,
+                    combinedFootprintBytes: 1 * 1_024 * 1_024 * 1_024,
+                    constants: .baseline
+                ),
+                MemoryBudgetSnapshot(
+                    measurementSource: "mock_source",
+                    appPID: 111,
+                    helperPID: 222,
+                    appFootprintBytes: 1 * 1_024 * 1_024 * 1_024,
+                    helperFootprintBytes: 2 * 1_024 * 1_024 * 1_024,
+                    combinedFootprintBytes: 3 * 1_024 * 1_024 * 1_024,
+                    constants: .baseline
+                ),
+                MemoryBudgetSnapshot(
+                    measurementSource: "mock_source",
+                    appPID: 111,
+                    helperPID: 222,
+                    appFootprintBytes: 1 * 1_024 * 1_024 * 1_024,
+                    helperFootprintBytes: 2 * 1_024 * 1_024 * 1_024 + 2 * 1_024 * 1_024,
+                    combinedFootprintBytes: 3 * 1_024 * 1_024 * 1_024 + 2 * 1_024 * 1_024,
+                    constants: .baseline
+                ),
+                MemoryBudgetSnapshot(
+                    measurementSource: "mock_source",
+                    appPID: 111,
+                    helperPID: 222,
+                    appFootprintBytes: 1 * 1_024 * 1_024 * 1_024,
+                    helperFootprintBytes: 2 * 1_024 * 1_024 * 1_024 + 3 * 1_024 * 1_024,
+                    combinedFootprintBytes: 3 * 1_024 * 1_024 * 1_024 + 3 * 1_024 * 1_024,
+                    constants: .baseline
+                ),
+                MemoryBudgetSnapshot(
+                    measurementSource: "mock_source",
+                    appPID: 111,
+                    helperPID: nil,
+                    appFootprintBytes: 10 * 1_024 * 1_024 * 1_024,
+                    helperFootprintBytes: 0,
+                    combinedFootprintBytes: 10 * 1_024 * 1_024 * 1_024,
+                    constants: .baseline
+                ),
+            ]),
+            modelCostEstimator: MockModelCostEstimator(estimatedBytes: 128 * 1_024 * 1_024),
+            admissionEvaluator: LoadAdmissionEvaluator(
+                constants: .baseline,
+                physicalMemoryBytes: 16 * 1_024 * 1_024 * 1_024
+            ),
+            postLoadSettlementSleep: { _ in },
+            startHTTPServers: false
+        )
+        viewModel.availableModels = [
+            LoaderShellViewModel.ModelRecord(id: "mock", displayName: "mock", localPath: "/tmp/mock")
+        ]
+        viewModel.selectedModelID = "mock"
+
+        viewModel.loadButtonPressed()
+        await fulfillment { viewModel.status == .ready }
+        #expect(backendLoader.loadCallCount == 1)
+
+        viewModel.loadButtonPressed()
+
+        #expect(viewModel.status == .failed)
+        #expect(backendLoader.loadCallCount == 1)
+        #expect(viewModel.activeModelSummary.contains("memory_ceiling_exceeded"))
+        #expect(viewModel.admissionSummary.contains("Projection Confidence: max(filesystem, observed_baseline)"))
+    }
+
+    @MainActor
+    @Test
     func resetReturnsIdleWhenReclaimVerificationPasses() async throws {
         let backendLoader = MockBackendLoader()
         let viewModel = LoaderShellViewModel(
@@ -1006,6 +1133,22 @@ private final class SequencedMemoryBudgetMonitor: MemoryBudgetMonitoring, @unche
         let snapshot = snapshots[currentIndex]
         index += 1
         return snapshot
+    }
+}
+
+private final class OscillatingMemoryBudgetMonitor: MemoryBudgetMonitoring, @unchecked Sendable {
+    private let low: MemoryBudgetSnapshot
+    private let high: MemoryBudgetSnapshot
+    private var nextHigh = false
+
+    init(low: MemoryBudgetSnapshot, high: MemoryBudgetSnapshot) {
+        self.low = low
+        self.high = high
+    }
+
+    func snapshot(helperPID: Int32?) throws -> MemoryBudgetSnapshot {
+        defer { nextHigh.toggle() }
+        return nextHigh ? high : low
     }
 }
 

@@ -29,9 +29,18 @@ final class LoaderShellViewModel: LocalHTTPServerDelegate {
     private let admissionEvaluator: LoadAdmissionEvaluator
     private let restartSleep: @Sendable (TimeInterval) async -> Void
     private let autoRestartOnCrash: Bool
+    private let postLoadSettlementSleep: @Sendable (TimeInterval) async -> Void
     private var controlHTTPServer: LocalHTTPServer?
     private var openAICompatHTTPServer: LocalHTTPServer?
     private var pendingRestartTask: Task<Void, Never>?
+    private var observedModelCostBaselineBytes: [String: UInt64] = [:]
+    private var pendingLoadModelID: String?
+    private var pendingLoadBaselineFootprintBytes: UInt64?
+
+    private let postLoadSettlementPollIntervalSeconds: TimeInterval = 0.2
+    private let postLoadSettlementMaxWaitSeconds: TimeInterval = 5
+    private let postLoadSettlementStableTicksRequired: Int = 3
+    private let postLoadSettlementDeltaToleranceBytes: UInt64 = 8 * 1_024 * 1_024
 
     let shellTitle = "WARDEN4 Local Loader"
     let shellSubtitle = "MVP operator shell for the local model loader"
@@ -68,6 +77,10 @@ final class LoaderShellViewModel: LocalHTTPServerDelegate {
             try? await Task.sleep(nanoseconds: nanoseconds)
         },
         autoRestartOnCrash: Bool = true,
+        postLoadSettlementSleep: @escaping @Sendable (TimeInterval) async -> Void = { delay in
+            let nanoseconds = UInt64(max(delay, 0) * 1_000_000_000)
+            try? await Task.sleep(nanoseconds: nanoseconds)
+        },
         startHTTPServers: Bool = true
     ) {
         self.backendLoader = backendLoader
@@ -78,6 +91,7 @@ final class LoaderShellViewModel: LocalHTTPServerDelegate {
         self.admissionEvaluator = admissionEvaluator
         self.restartSleep = restartSleep
         self.autoRestartOnCrash = autoRestartOnCrash
+        self.postLoadSettlementSleep = postLoadSettlementSleep
         self.backendLoader.runtimeEventHandler = { [weak self] event in
             self?.handleBackendRuntimeEvent(event)
         }
@@ -783,13 +797,29 @@ final class LoaderShellViewModel: LocalHTTPServerDelegate {
         memoryBudgetSummary = snapshot.summaryText
 
         let projectedModelCostBytes = try modelCostEstimator.estimatedModelBytes(at: model.localPath)
-        let decision = admissionEvaluator.evaluate(snapshot: snapshot, projectedModelCostBytes: projectedModelCostBytes)
+        let observedModelCost = observedModelCostBaselineBytes[model.id] ?? 0
+        let conservativeProjectedModelCostBytes = max(projectedModelCostBytes, observedModelCost)
+        let decision = admissionEvaluator.evaluate(
+            snapshot: snapshot,
+            projectedModelCostBytes: conservativeProjectedModelCostBytes
+        )
         lastAdmissionDecision = decision
-        admissionSummary = decision.summaryText
+        if observedModelCost > 0 {
+            admissionSummary = """
+            \(decision.summaryText)
+            Projection Confidence: max(filesystem, observed_baseline)
+            Filesystem Estimate: \(ByteCountFormatter.loaderString(for: projectedModelCostBytes))
+            Observed Baseline: \(ByteCountFormatter.loaderString(for: observedModelCost))
+            """
+        } else {
+            admissionSummary = decision.summaryText
+        }
         if backendLoader.activeHelperPID() == nil {
             reusableIdleBaselineBytes = snapshot.combinedFootprintBytes
         }
         if decision.result == "allowed" {
+            pendingLoadModelID = model.id
+            pendingLoadBaselineFootprintBytes = snapshot.combinedFootprintBytes
             return decision
         }
         throw BackendFailureReport(code: decision.reasonCode ?? "memory_ceiling_exceeded", detail: decision.detail)
@@ -798,7 +828,22 @@ final class LoaderShellViewModel: LocalHTTPServerDelegate {
     private func verifyPostLoadBudget() async -> PostLoadVerificationDecision {
         let snapshot: MemoryBudgetSnapshot
         do {
-            snapshot = try memoryBudgetMonitor.snapshot(helperPID: backendLoader.activeHelperPID())
+            snapshot = try await waitForPostLoadSettlementSnapshot()
+        } catch let failure as BackendFailureReport {
+            refreshMemoryBudgetState()
+            let verification = PostLoadVerificationDecision(
+                result: "measurement_failed",
+                reasonCode: "post_load_budget_verification_failed",
+                detail: failure.detail,
+                measurementSource: "resident_size",
+                measuredFootprintBytes: 0,
+                effectiveCeilingBytes: 0
+            )
+            lastPostLoadVerification = verification
+            postLoadSummary = verification.summaryText
+            pendingLoadModelID = nil
+            pendingLoadBaselineFootprintBytes = nil
+            return verification
         } catch {
             refreshMemoryBudgetState()
             let verification = PostLoadVerificationDecision(
@@ -811,6 +856,8 @@ final class LoaderShellViewModel: LocalHTTPServerDelegate {
             )
             lastPostLoadVerification = verification
             postLoadSummary = verification.summaryText
+            pendingLoadModelID = nil
+            pendingLoadBaselineFootprintBytes = nil
             return verification
         }
 
@@ -821,7 +868,59 @@ final class LoaderShellViewModel: LocalHTTPServerDelegate {
         let verification = admissionEvaluator.evaluatePostLoad(snapshot: snapshot)
         lastPostLoadVerification = verification
         postLoadSummary = verification.summaryText
+        if verification.result == "within_budget",
+           let modelID = pendingLoadModelID,
+           let baselineFootprint = pendingLoadBaselineFootprintBytes {
+            let observedDelta = snapshot.combinedFootprintBytes > baselineFootprint
+                ? snapshot.combinedFootprintBytes - baselineFootprint
+                : 0
+            let existing = observedModelCostBaselineBytes[modelID] ?? 0
+            observedModelCostBaselineBytes[modelID] = max(existing, observedDelta)
+            postLoadSummary += "\nSettlement Evidence: stable"
+            postLoadSummary += "\nObserved Model Baseline: \(ByteCountFormatter.loaderString(for: observedModelCostBaselineBytes[modelID] ?? observedDelta))"
+        }
+        pendingLoadModelID = nil
+        pendingLoadBaselineFootprintBytes = nil
         return verification
+    }
+
+    private func waitForPostLoadSettlementSnapshot() async throws -> MemoryBudgetSnapshot {
+        let maxSamples = max(1, Int(postLoadSettlementMaxWaitSeconds / postLoadSettlementPollIntervalSeconds))
+        var previousSnapshot: MemoryBudgetSnapshot?
+        var stableTickCount = 0
+        var latestSnapshot: MemoryBudgetSnapshot?
+
+        for sampleIndex in 0..<maxSamples {
+            let snapshot = try memoryBudgetMonitor.snapshot(helperPID: backendLoader.activeHelperPID())
+            latestSnapshot = snapshot
+            if let previousSnapshot {
+                let delta = snapshot.combinedFootprintBytes > previousSnapshot.combinedFootprintBytes
+                    ? snapshot.combinedFootprintBytes - previousSnapshot.combinedFootprintBytes
+                    : previousSnapshot.combinedFootprintBytes - snapshot.combinedFootprintBytes
+                if delta <= postLoadSettlementDeltaToleranceBytes {
+                    stableTickCount += 1
+                } else {
+                    stableTickCount = 1
+                }
+            } else {
+                stableTickCount = 1
+            }
+
+            if stableTickCount >= postLoadSettlementStableTicksRequired {
+                return snapshot
+            }
+
+            previousSnapshot = snapshot
+            if sampleIndex < maxSamples - 1 {
+                await postLoadSettlementSleep(postLoadSettlementPollIntervalSeconds)
+            }
+        }
+
+        let latestFootprint = latestSnapshot.map { ByteCountFormatter.loaderString(for: $0.combinedFootprintBytes) } ?? "unknown"
+        throw BackendFailureReport(
+            code: "post_load_settlement_unstable",
+            detail: "Post-load settlement evidence did not stabilize within \(Int(postLoadSettlementMaxWaitSeconds)) seconds. Latest footprint: \(latestFootprint)."
+        )
     }
 
     private func verifyReclaimAfterReset() async -> ReclaimVerificationDecision {
