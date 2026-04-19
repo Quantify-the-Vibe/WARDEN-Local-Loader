@@ -6,3 +6,4 @@ artifacts/
 *.swo
 *.tmp
 *.log
+.env.local

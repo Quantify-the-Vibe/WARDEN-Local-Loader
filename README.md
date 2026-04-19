@@ -111,6 +111,25 @@ Implemented security controls:
   - optional explicit path via `W4L_HELPER_SCRIPT_PATH`
   - refuses helper script symlinks and world-writable script files
 
+Recommended operator setup:
+
+- generate local API token:
+  - `./tools/setup_loader_token.sh`
+- launch app from terminal so token env is applied:
+  - `./run-loader-app.sh`
+- `run-loader-app.sh` auto-loads `.env.local` when present
+
+Authenticated route usage:
+
+- protected routes:
+  - `POST /load`
+  - `POST /generate`
+  - `POST /reset`
+  - `POST /v1/chat/completions`
+- accepted auth headers:
+  - `Authorization: Bearer <W4L_API_TOKEN>`
+  - `X-Loader-Token: <W4L_API_TOKEN>`
+
 ## Launch
 
 Build and launch the packaged app:
