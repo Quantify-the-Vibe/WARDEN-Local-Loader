@@ -246,13 +246,26 @@ final class MLXBackendLoader: BackendLoader {
         let environment = ProcessInfo.processInfo.environment
         let fileManager = FileManager.default
         var candidates: [String] = []
+        let helperRelativePath = "tools/mlx_loader_helper.py"
 
         if let envPath = environment["W4L_HELPER_SCRIPT_PATH"], !envPath.isEmpty {
             candidates.append(envPath)
         }
 
         let cwd = fileManager.currentDirectoryPath
-        candidates.append(URL(fileURLWithPath: cwd, isDirectory: true).appendingPathComponent("tools/mlx_loader_helper.py").path)
+        candidates.append(URL(fileURLWithPath: cwd, isDirectory: true).appendingPathComponent(helperRelativePath).path)
+
+        if let executableURL = Bundle.main.executableURL {
+            var cursor = executableURL.deletingLastPathComponent()
+            for _ in 0..<10 {
+                candidates.append(cursor.appendingPathComponent(helperRelativePath).path)
+                let parent = cursor.deletingLastPathComponent()
+                if parent.path == cursor.path {
+                    break
+                }
+                cursor = parent
+            }
+        }
 
         if let bundlePath = Bundle.main.resourceURL?.appendingPathComponent("mlx_loader_helper.py").path {
             candidates.append(bundlePath)
