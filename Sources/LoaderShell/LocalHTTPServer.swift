@@ -29,21 +29,32 @@ protocol LocalHTTPServerDelegate: AnyObject {
 }
 
 final class LocalHTTPServer: @unchecked Sendable {
+    private static let maxRequestBytes = 8 * 1_024 * 1_024
+    private static let requestReadTimeoutSeconds: TimeInterval = 15
+
     private weak var delegate: LocalHTTPServerDelegate?
     private var listener: NWListener?
     private let queue = DispatchQueue(label: "warden4.loader.http", qos: .userInitiated)
+    private let apiToken: String?
 
     private(set) var port: UInt16?
 
-    init(delegate: LocalHTTPServerDelegate) {
+    init(delegate: LocalHTTPServerDelegate, apiToken: String? = ProcessInfo.processInfo.environment["W4L_API_TOKEN"]) {
         self.delegate = delegate
+        if let token = apiToken?.trimmingCharacters(in: .whitespacesAndNewlines), !token.isEmpty {
+            self.apiToken = token
+        } else {
+            self.apiToken = nil
+        }
     }
 
     func start(onPort desiredPort: UInt16 = 8787) throws {
         if listener != nil { return }
         let parameters = NWParameters.tcp
         parameters.allowLocalEndpointReuse = true
-        let listener = try NWListener(using: parameters, on: NWEndpoint.Port(rawValue: desiredPort)!)
+        let desired = NWEndpoint.Port(rawValue: desiredPort)!
+        parameters.requiredLocalEndpoint = .hostPort(host: "127.0.0.1", port: desired)
+        let listener = try NWListener(using: parameters, on: desired)
         listener.stateUpdateHandler = { [weak self] state in
             guard let self else { return }
             switch state {
@@ -70,10 +81,19 @@ final class LocalHTTPServer: @unchecked Sendable {
 
     private func handleConnection(_ connection: NWConnection) {
         connection.start(queue: queue)
-        receiveRequest(on: connection, buffer: Data())
+        receiveRequest(on: connection, buffer: Data(), startedAt: Date())
     }
 
-    private func receiveRequest(on connection: NWConnection, buffer: Data) {
+    private func receiveRequest(on connection: NWConnection, buffer: Data, startedAt: Date) {
+        if Date().timeIntervalSince(startedAt) > Self.requestReadTimeoutSeconds {
+            connection.send(content: Self.render(response: .json(statusCode: 408, [
+                "status": "failed",
+                "error": "request_timeout",
+            ])), completion: .contentProcessed { _ in
+                connection.cancel()
+            })
+            return
+        }
         connection.receive(minimumIncompleteLength: 1, maximumLength: 65_536) { [weak self] data, _, _, _ in
             guard let self else {
                 connection.cancel()
@@ -84,8 +104,17 @@ final class LocalHTTPServer: @unchecked Sendable {
                 return
             }
             let combined = buffer + data
+            if Self.requestExceedsLimit(combined) {
+                connection.send(content: Self.render(response: .json(statusCode: 413, [
+                    "status": "failed",
+                    "error": "request_too_large",
+                ])), completion: .contentProcessed { _ in
+                    connection.cancel()
+                })
+                return
+            }
             guard let requestData = Self.completeRequestData(from: combined) else {
-                self.receiveRequest(on: connection, buffer: combined)
+                self.receiveRequest(on: connection, buffer: combined, startedAt: startedAt)
                 return
             }
             Task { @MainActor in
@@ -114,9 +143,19 @@ final class LocalHTTPServer: @unchecked Sendable {
 
         let method = String(tokens[0])
         let path = String(tokens[1])
+        let headers = Self.headerDictionary(from: headerLines.dropFirst())
         let bodyText = parts.count > 1 ? parts[1] : ""
         let bodyJSON = bodyText.data(using: .utf8).flatMap {
             try? JSONSerialization.jsonObject(with: $0) as? [String: Any]
+        }
+        if requiresAuthorization(method: method, path: path) {
+            if !isAuthorized(headers: headers) {
+                return .json(statusCode: 401, [
+                    "status": "failed",
+                    "error": "unauthorized",
+                    "detail": "Authorization required for this route.",
+                ])
+            }
         }
 
         switch (method, path) {
@@ -154,7 +193,11 @@ final class LocalHTTPServer: @unchecked Sendable {
         let statusText: String
         switch response.statusCode {
         case 200: statusText = "OK"
+        case 401: statusText = "Unauthorized"
+        case 403: statusText = "Forbidden"
         case 400: statusText = "Bad Request"
+        case 408: statusText = "Request Timeout"
+        case 413: statusText = "Payload Too Large"
         case 404: statusText = "Not Found"
         case 500: statusText = "Internal Server Error"
         case 501: statusText = "Not Implemented"
@@ -197,5 +240,67 @@ final class LocalHTTPServer: @unchecked Sendable {
             return nil
         }
         return data.prefix(expectedTotalLength)
+    }
+
+    static func requestExceedsLimit(_ data: Data) -> Bool {
+        if data.count > maxRequestBytes {
+            return true
+        }
+        guard let headerRange = data.range(of: Data("\r\n\r\n".utf8)) else {
+            return false
+        }
+        let headersData = data[..<headerRange.lowerBound]
+        guard let headersText = String(data: headersData, encoding: .utf8) else {
+            return false
+        }
+        let contentLength = headersText
+            .components(separatedBy: "\r\n")
+            .compactMap { line -> Int? in
+                let parts = line.split(separator: ":", maxSplits: 1).map(String.init)
+                guard parts.count == 2 else { return nil }
+                guard parts[0].trimmingCharacters(in: .whitespacesAndNewlines).lowercased() == "content-length" else {
+                    return nil
+                }
+                return Int(parts[1].trimmingCharacters(in: .whitespacesAndNewlines))
+            }
+            .first ?? 0
+        let bodyStart = headerRange.upperBound
+        let expectedTotalLength = data.distance(from: data.startIndex, to: bodyStart) + max(contentLength, 0)
+        return expectedTotalLength > maxRequestBytes
+    }
+
+    private static func headerDictionary(from lines: ArraySlice<String>) -> [String: String] {
+        var headers: [String: String] = [:]
+        for line in lines {
+            let parts = line.split(separator: ":", maxSplits: 1).map(String.init)
+            guard parts.count == 2 else { continue }
+            let key = parts[0].trimmingCharacters(in: .whitespacesAndNewlines).lowercased()
+            let value = parts[1].trimmingCharacters(in: .whitespacesAndNewlines)
+            headers[key] = value
+        }
+        return headers
+    }
+
+    private func requiresAuthorization(method: String, path: String) -> Bool {
+        guard apiToken != nil else { return false }
+        switch (method, path) {
+        case ("POST", "/load"), ("POST", "/generate"), ("POST", "/reset"), ("POST", "/v1/chat/completions"):
+            return true
+        default:
+            return false
+        }
+    }
+
+    private func isAuthorized(headers: [String: String]) -> Bool {
+        guard let apiToken else { return true }
+        if let bearer = headers["authorization"]?.trimmingCharacters(in: .whitespacesAndNewlines),
+           bearer == "Bearer \(apiToken)" {
+            return true
+        }
+        if let direct = headers["x-loader-token"]?.trimmingCharacters(in: .whitespacesAndNewlines),
+           direct == apiToken {
+            return true
+        }
+        return false
     }
 }

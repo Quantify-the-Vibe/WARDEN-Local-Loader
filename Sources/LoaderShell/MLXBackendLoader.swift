@@ -11,6 +11,7 @@ final class MLXBackendLoader: BackendLoader {
 
     func load(model: LoaderShellViewModel.ModelRecord) async throws -> BackendReadyReport {
         await shutdown()
+        let helperScriptPath = try Self.resolveHelperScriptPath()
 
         let process = Process()
         let stdoutPipe = Pipe()
@@ -19,7 +20,7 @@ final class MLXBackendLoader: BackendLoader {
 
         process.executableURL = URL(fileURLWithPath: "/usr/bin/python3")
         process.arguments = [
-            "/Users/kikbot/Documents/WARDEN4/WARDEN4-Local-LLM-Loader-Rebuild/tools/mlx_loader_helper.py",
+            helperScriptPath,
             "--model-id", model.id,
             "--model-path", model.localPath,
         ]
@@ -239,5 +240,47 @@ final class MLXBackendLoader: BackendLoader {
             throw BackendFailureReport(code: "invalid_helper_payload", detail: "Helper returned invalid JSON.")
         }
         return payload
+    }
+
+    nonisolated private static func resolveHelperScriptPath() throws -> String {
+        let environment = ProcessInfo.processInfo.environment
+        let fileManager = FileManager.default
+        var candidates: [String] = []
+
+        if let envPath = environment["W4L_HELPER_SCRIPT_PATH"], !envPath.isEmpty {
+            candidates.append(envPath)
+        }
+
+        let cwd = fileManager.currentDirectoryPath
+        candidates.append(URL(fileURLWithPath: cwd, isDirectory: true).appendingPathComponent("tools/mlx_loader_helper.py").path)
+
+        if let bundlePath = Bundle.main.resourceURL?.appendingPathComponent("mlx_loader_helper.py").path {
+            candidates.append(bundlePath)
+        }
+
+        guard let selected = candidates.first(where: { fileManager.fileExists(atPath: $0) }) else {
+            throw BackendFailureReport(
+                code: "helper_script_missing",
+                detail: "MLX helper script not found. Set W4L_HELPER_SCRIPT_PATH or ensure tools/mlx_loader_helper.py exists."
+            )
+        }
+
+        if (try? fileManager.destinationOfSymbolicLink(atPath: selected)) != nil {
+            throw BackendFailureReport(
+                code: "helper_script_untrusted",
+                detail: "MLX helper script path must not be a symbolic link."
+            )
+        }
+
+        if let attributes = try? fileManager.attributesOfItem(atPath: selected),
+           let permissions = attributes[.posixPermissions] as? NSNumber,
+           permissions.intValue & 0o002 != 0 {
+            throw BackendFailureReport(
+                code: "helper_script_untrusted",
+                detail: "MLX helper script is world-writable. Refusing to execute untrusted helper."
+            )
+        }
+
+        return selected
     }
 }

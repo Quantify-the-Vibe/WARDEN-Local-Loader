@@ -30,6 +30,7 @@ final class LoaderShellViewModel: LocalHTTPServerDelegate {
     private let restartSleep: @Sendable (TimeInterval) async -> Void
     private let autoRestartOnCrash: Bool
     private let bridgeAutoLoadEnabled: Bool
+    private let exposeDiagnostics: Bool
     private let postLoadSettlementSleep: @Sendable (TimeInterval) async -> Void
     private var controlHTTPServer: LocalHTTPServer?
     private var openAICompatHTTPServer: LocalHTTPServer?
@@ -45,6 +46,7 @@ final class LoaderShellViewModel: LocalHTTPServerDelegate {
     private let generateKVBytesPerInputByte: UInt64 = 3 * 1_024
     private let generateKVBytesPerMessage: UInt64 = 128 * 1_024
     private static let bridgeAutoLoadEnvKey = "W4L_OPENAI_BRIDGE_AUTOLOAD"
+    private static let exposeDiagnosticsEnvKey = "W4L_EXPOSE_DIAGNOSTICS"
 
     let shellTitle = "WARDEN4 Local Loader"
     let shellSubtitle = "MVP operator shell for the local model loader"
@@ -84,6 +86,7 @@ final class LoaderShellViewModel: LocalHTTPServerDelegate {
         },
         autoRestartOnCrash: Bool = true,
         bridgeAutoLoadEnabled: Bool? = nil,
+        exposeDiagnostics: Bool? = nil,
         postLoadSettlementSleep: @escaping @Sendable (TimeInterval) async -> Void = { delay in
             let nanoseconds = UInt64(max(delay, 0) * 1_000_000_000)
             try? await Task.sleep(nanoseconds: nanoseconds)
@@ -99,6 +102,7 @@ final class LoaderShellViewModel: LocalHTTPServerDelegate {
         self.restartSleep = restartSleep
         self.autoRestartOnCrash = autoRestartOnCrash
         self.bridgeAutoLoadEnabled = bridgeAutoLoadEnabled ?? Self.defaultBridgeAutoLoadEnabledFromEnvironment()
+        self.exposeDiagnostics = exposeDiagnostics ?? Self.defaultExposeDiagnosticsFromEnvironment()
         self.postLoadSettlementSleep = postLoadSettlementSleep
         self.backendLoader.runtimeEventHandler = { [weak self] event in
             self?.handleBackendRuntimeEvent(event)
@@ -328,18 +332,20 @@ final class LoaderShellViewModel: LocalHTTPServerDelegate {
             "status": "ok",
             "runtime_state": runtimeLifecycleProjection,
             "selected_model_id": selectedModel?.id as Any,
-            "selected_model_path": selectedModel?.localPath as Any,
             "server_summary": serverSummary,
             "memory_budget_status": memoryBudgetStatus,
             "budget_report": budgetReportPayload(),
-            "supervisor_state": supervisor.statusPayload,
+            "supervisor_state": redactedSupervisorPayload(supervisor.statusPayload),
         ]
+        if exposeDiagnostics {
+            payload["selected_model_path"] = selectedModel?.localPath as Any
+        }
         if let projectedRecoveryAction {
             payload["recovery_action"] = projectedRecoveryAction
             payload["recovery_message"] = projectedRecoveryMessage
         }
         if let lastMemoryBudgetSnapshot {
-            payload["memory_budget"] = lastMemoryBudgetSnapshot.asStatusPayload
+            payload["memory_budget"] = redactedMemoryBudgetPayload(lastMemoryBudgetSnapshot.asStatusPayload)
         }
         if let lastAdmissionDecision {
             payload["last_admission"] = lastAdmissionDecision.asStatusPayload
@@ -355,12 +361,15 @@ final class LoaderShellViewModel: LocalHTTPServerDelegate {
 
     func httpModelsPayload() -> [[String: Any]] {
         availableModels.map { model in
-            [
+            var payload: [String: Any] = [
                 "model_id": model.id,
                 "display_name": model.displayName,
                 "backend_kind": "mlx",
-                "local_path": model.localPath,
             ]
+            if exposeDiagnostics {
+                payload["local_path"] = model.localPath
+            }
+            return payload
         }
     }
 
@@ -621,16 +630,18 @@ final class LoaderShellViewModel: LocalHTTPServerDelegate {
         var payload: [String: Any] = [
             "lifecycle_state": runtimeLifecycleProjection,
             "selected_model_id": selectedModel?.id as Any,
-            "selected_model_path": selectedModel?.localPath as Any,
             "measurement_status": memoryBudgetStatus,
-            "supervisor_state": supervisor.statusPayload,
+            "supervisor_state": redactedSupervisorPayload(supervisor.statusPayload),
         ]
+        if exposeDiagnostics {
+            payload["selected_model_path"] = selectedModel?.localPath as Any
+        }
         if let projectedRecoveryAction {
             payload["recovery_action"] = projectedRecoveryAction
             payload["recovery_message"] = projectedRecoveryMessage
         }
         if let lastMemoryBudgetSnapshot {
-            payload["memory_budget"] = lastMemoryBudgetSnapshot.asStatusPayload
+            payload["memory_budget"] = redactedMemoryBudgetPayload(lastMemoryBudgetSnapshot.asStatusPayload)
         }
         if let lastAdmissionDecision {
             payload["last_admission"] = lastAdmissionDecision.asStatusPayload
@@ -1130,6 +1141,33 @@ final class LoaderShellViewModel: LocalHTTPServerDelegate {
         default:
             return false
         }
+    }
+
+    private static func defaultExposeDiagnosticsFromEnvironment() -> Bool {
+        guard let rawValue = ProcessInfo.processInfo.environment[exposeDiagnosticsEnvKey] else {
+            return false
+        }
+        switch rawValue.lowercased() {
+        case "1", "true", "yes", "on":
+            return true
+        default:
+            return false
+        }
+    }
+
+    private func redactedMemoryBudgetPayload(_ payload: [String: Any]) -> [String: Any] {
+        guard !exposeDiagnostics else { return payload }
+        var redacted = payload
+        redacted.removeValue(forKey: "app_pid")
+        redacted.removeValue(forKey: "helper_pid")
+        return redacted
+    }
+
+    private func redactedSupervisorPayload(_ payload: [String: Any]) -> [String: Any] {
+        guard !exposeDiagnostics else { return payload }
+        var redacted = payload
+        redacted.removeValue(forKey: "active_helper_pid")
+        return redacted
     }
 
 }

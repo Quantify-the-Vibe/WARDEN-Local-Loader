@@ -31,4 +31,28 @@ struct LocalHTTPServerTests {
 
         #expect(renderedText.contains("HTTP/1.1 503 Service Unavailable"))
     }
+
+    @Test
+    func requestExceedsLimitWhenContentLengthIsTooLarge() {
+        let headers = "POST /generate HTTP/1.1\r\n" +
+            "Host: 127.0.0.1\r\n" +
+            "Content-Type: application/json\r\n" +
+            "Content-Length: 99999999\r\n" +
+            "\r\n"
+        let partial = Data(headers.utf8)
+        #expect(LocalHTTPServer.requestExceedsLimit(partial))
+    }
+
+    @Test
+    func renderUsesUnauthorizedReasonPhrase() {
+        let response = HTTPResponse.json(statusCode: 401, [
+            "status": "failed",
+            "error": "unauthorized",
+        ])
+
+        let rendered = LocalHTTPServer.render(response: response)
+        let renderedText = String(decoding: rendered, as: UTF8.self)
+
+        #expect(renderedText.contains("HTTP/1.1 401 Unauthorized"))
+    }
 }

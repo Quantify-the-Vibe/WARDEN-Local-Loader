@@ -98,6 +98,19 @@ Those files are retained for provenance only and should not be used as current d
 - if safe admission cannot be proven, the loader must fail closed
 - present-tense implementation claims must stay aligned with code
 
+## Security Controls
+
+Implemented security controls:
+
+- local HTTP listener constrained to loopback endpoint intent (`127.0.0.1`)
+- request-body hard limit and timeout guards on inbound HTTP parsing
+- optional route authorization for control/generation routes via `W4L_API_TOKEN`
+- default-redacted diagnostics in status payloads
+  - enable full diagnostics only with `W4L_EXPOSE_DIAGNOSTICS=1`
+- helper script path integrity checks
+  - optional explicit path via `W4L_HELPER_SCRIPT_PATH`
+  - refuses helper script symlinks and world-writable script files
+
 ## Launch
 
 Build and launch the packaged app:
