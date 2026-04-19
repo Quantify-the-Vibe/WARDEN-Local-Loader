@@ -646,6 +646,108 @@ struct LoaderShellViewModelTests {
 
     @MainActor
     @Test
+    func automaticRestartUsesBoundedBackoffSchedule() async throws {
+        let backendLoader = MockBackendLoader()
+        let delayRecorder = DelayRecorder()
+        let viewModel = LoaderShellViewModel(
+            backendLoader: backendLoader,
+            piMonoLauncher: .default(),
+            memoryBudgetMonitor: MockMemoryBudgetMonitor(
+                snapshot: MemoryBudgetSnapshot(
+                    measurementSource: "mock_source",
+                    appPID: 111,
+                    helperPID: nil,
+                    appFootprintBytes: 256 * 1_024 * 1_024,
+                    helperFootprintBytes: 0,
+                    combinedFootprintBytes: 256 * 1_024 * 1_024,
+                    constants: .baseline
+                )
+            ),
+            modelCostEstimator: MockModelCostEstimator(estimatedBytes: 256 * 1_024 * 1_024),
+            admissionEvaluator: LoadAdmissionEvaluator(
+                constants: .baseline,
+                physicalMemoryBytes: 16 * 1_024 * 1_024 * 1_024
+            ),
+            restartSleep: { delay in
+                await delayRecorder.record(delay)
+            },
+            autoRestartOnCrash: true,
+            startHTTPServers: false
+        )
+        viewModel.availableModels = [
+            LoaderShellViewModel.ModelRecord(id: "mock", displayName: "mock", localPath: "/tmp/mock")
+        ]
+        viewModel.selectedModelID = "mock"
+
+        viewModel.loadButtonPressed()
+        await fulfillment { viewModel.status == .ready }
+        #expect(backendLoader.loadCallCount == 1)
+
+        backendLoader.simulateUnexpectedExit()
+        await fulfillment { backendLoader.loadCallCount >= 2 && viewModel.status == .ready }
+        backendLoader.simulateUnexpectedExit()
+        await fulfillment { backendLoader.loadCallCount >= 3 && viewModel.status == .ready }
+
+        let observedDelays = await delayRecorder.snapshot()
+        #expect(observedDelays.count >= 2)
+        #expect(Int(observedDelays[0]) == 2)
+        #expect(Int(observedDelays[1]) == 4)
+    }
+
+    @MainActor
+    @Test
+    func automaticRestartStopsWhenFailedFastIsActive() async throws {
+        let backendLoader = MockBackendLoader()
+        let delayRecorder = DelayRecorder()
+        let supervisor = try! LoaderSupervisor(
+            crashLimit: 0,
+            crashWindow: 60,
+            maxCrashEquivalentTimeoutSeconds: 20,
+            now: Date.init
+        )
+        let viewModel = LoaderShellViewModel(
+            backendLoader: backendLoader,
+            piMonoLauncher: .default(),
+            supervisor: supervisor,
+            memoryBudgetMonitor: MockMemoryBudgetMonitor(
+                snapshot: MemoryBudgetSnapshot(
+                    measurementSource: "mock_source",
+                    appPID: 111,
+                    helperPID: nil,
+                    appFootprintBytes: 256 * 1_024 * 1_024,
+                    helperFootprintBytes: 0,
+                    combinedFootprintBytes: 256 * 1_024 * 1_024,
+                    constants: .baseline
+                )
+            ),
+            modelCostEstimator: MockModelCostEstimator(estimatedBytes: 256 * 1_024 * 1_024),
+            admissionEvaluator: LoadAdmissionEvaluator(
+                constants: .baseline,
+                physicalMemoryBytes: 16 * 1_024 * 1_024 * 1_024
+            ),
+            restartSleep: { delay in
+                await delayRecorder.record(delay)
+            },
+            autoRestartOnCrash: true,
+            startHTTPServers: false
+        )
+        viewModel.availableModels = [
+            LoaderShellViewModel.ModelRecord(id: "mock", displayName: "mock", localPath: "/tmp/mock")
+        ]
+        viewModel.selectedModelID = "mock"
+
+        viewModel.loadButtonPressed()
+        await fulfillment { viewModel.status == .ready }
+        backendLoader.simulateUnexpectedExit()
+        await fulfillment { viewModel.status == .failedFast }
+
+        #expect(backendLoader.loadCallCount == 1)
+        let observedDelays = await delayRecorder.snapshot()
+        #expect(observedDelays.isEmpty)
+    }
+
+    @MainActor
+    @Test
     func loadAdmissionBlockedWhileFailedFastIsActive() async throws {
         let supervisor = try! LoaderSupervisor(
             crashLimit: 0,
@@ -842,9 +944,11 @@ struct LoaderShellViewModelTests {
 private final class MockBackendLoader: BackendLoader {
     var runtimeEventHandler: ((BackendRuntimeEvent) -> Void)?
     private(set) var shutdownCallCount = 0
+    private(set) var loadCallCount = 0
 
     func load(model: LoaderShellViewModel.ModelRecord) async throws -> BackendReadyReport {
-        BackendReadyReport(
+        loadCallCount += 1
+        return BackendReadyReport(
             modelID: model.id,
             modelPath: model.localPath,
             pidText: "222",
@@ -910,6 +1014,18 @@ private struct MockModelCostEstimator: ModelCostEstimating {
 
     func estimatedModelBytes(at modelPath: String) throws -> UInt64 {
         estimatedBytes
+    }
+}
+
+private actor DelayRecorder {
+    private var delays: [TimeInterval] = []
+
+    func record(_ delay: TimeInterval) {
+        delays.append(delay)
+    }
+
+    func snapshot() -> [TimeInterval] {
+        delays
     }
 }
 

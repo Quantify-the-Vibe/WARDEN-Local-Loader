@@ -75,5 +75,34 @@ struct LoaderSupervisorTests {
         supervisor.handleRuntimeEvent(.helperGenerateTimeout(timeoutSeconds: 300))
         #expect(supervisor.runtimeState == .failedFast)
         #expect(supervisor.isFailedFastActive == true)
+        #expect(supervisor.nextRestartBackoffSeconds == nil)
+    }
+
+    @MainActor
+    @Test
+    func restartBackoffFollowsBoundedSequence() async throws {
+        var tick: TimeInterval = 0
+        let supervisor = try LoaderSupervisor(
+            crashLimit: 5,
+            crashWindow: 900,
+            maxCrashEquivalentTimeoutSeconds: 300,
+            restartBackoffScheduleSeconds: [2, 4, 8],
+            now: {
+                defer { tick += 1 }
+                return Date(timeIntervalSince1970: tick)
+            }
+        )
+
+        supervisor.handleRuntimeEvent(.helperReadyTimeout(timeoutSeconds: 120))
+        #expect(supervisor.nextRestartBackoffSeconds == 2)
+
+        supervisor.handleRuntimeEvent(.helperGenerateTimeout(timeoutSeconds: 300))
+        #expect(supervisor.nextRestartBackoffSeconds == 4)
+
+        supervisor.handleRuntimeEvent(.helperExitedUnexpectedly(pid: 44, terminationStatus: 9))
+        #expect(supervisor.nextRestartBackoffSeconds == 8)
+
+        supervisor.handleRuntimeEvent(.helperGenerateTimeout(timeoutSeconds: 300))
+        #expect(supervisor.nextRestartBackoffSeconds == 8)
     }
 }

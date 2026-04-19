@@ -40,6 +40,7 @@ final class LoaderSupervisor {
     private let crashLimit: Int
     private let crashWindow: TimeInterval
     private let maxCrashEquivalentTimeoutSeconds: TimeInterval
+    private let restartBackoffScheduleSeconds: [TimeInterval]
     private let now: () -> Date
 
     private(set) var runtimeState: LoaderRuntimeState = .bootstrapping
@@ -53,6 +54,7 @@ final class LoaderSupervisor {
         crashLimit: Int = 3,
         crashWindow: TimeInterval = 900,
         maxCrashEquivalentTimeoutSeconds: TimeInterval = 300,
+        restartBackoffScheduleSeconds: [TimeInterval] = [2, 4, 8],
         now: @escaping () -> Date = Date.init
     ) throws {
         let requiredMinimumWindow = maxCrashEquivalentTimeoutSeconds * 3
@@ -66,6 +68,7 @@ final class LoaderSupervisor {
         self.crashLimit = crashLimit
         self.crashWindow = crashWindow
         self.maxCrashEquivalentTimeoutSeconds = maxCrashEquivalentTimeoutSeconds
+        self.restartBackoffScheduleSeconds = restartBackoffScheduleSeconds
         self.now = now
     }
 
@@ -143,6 +146,18 @@ final class LoaderSupervisor {
         runtimeState == .failedFast
     }
 
+    var nextRestartBackoffSeconds: TimeInterval? {
+        guard runtimeState == .failed, !crashTimestamps.isEmpty else {
+            return nil
+        }
+        let attemptIndex = crashTimestamps.count - 1
+        guard !restartBackoffScheduleSeconds.isEmpty else {
+            return nil
+        }
+        let scheduleIndex = min(attemptIndex, restartBackoffScheduleSeconds.count - 1)
+        return restartBackoffScheduleSeconds[scheduleIndex]
+    }
+
     var summaryText: String {
         """
         Lifecycle: \(runtimeState.contractValue)
@@ -162,6 +177,8 @@ final class LoaderSupervisor {
             "crash_limit": crashLimit,
             "crash_window_seconds": Int(crashWindow),
             "max_crash_equivalent_timeout_seconds": Int(maxCrashEquivalentTimeoutSeconds),
+            "restart_backoff_schedule_seconds": restartBackoffScheduleSeconds.map(Int.init),
+            "next_restart_backoff_seconds": nextRestartBackoffSeconds.map(Int.init) as Any,
             "failed_fast_active": isFailedFastActive,
             "last_crash_summary": lastCrashSummary,
         ]

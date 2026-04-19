@@ -27,8 +27,11 @@ final class LoaderShellViewModel: LocalHTTPServerDelegate {
     private let memoryBudgetMonitor: any MemoryBudgetMonitoring
     private let modelCostEstimator: any ModelCostEstimating
     private let admissionEvaluator: LoadAdmissionEvaluator
+    private let restartSleep: @Sendable (TimeInterval) async -> Void
+    private let autoRestartOnCrash: Bool
     private var controlHTTPServer: LocalHTTPServer?
     private var openAICompatHTTPServer: LocalHTTPServer?
+    private var pendingRestartTask: Task<Void, Never>?
 
     let shellTitle = "WARDEN4 Local Loader"
     let shellSubtitle = "MVP operator shell for the local model loader"
@@ -60,6 +63,11 @@ final class LoaderShellViewModel: LocalHTTPServerDelegate {
         memoryBudgetMonitor: any MemoryBudgetMonitoring = LoaderMemoryBudgetMonitor(),
         modelCostEstimator: any ModelCostEstimating = FileSystemModelCostEstimator(),
         admissionEvaluator: LoadAdmissionEvaluator = LoadAdmissionEvaluator(),
+        restartSleep: @escaping @Sendable (TimeInterval) async -> Void = { delay in
+            let nanoseconds = UInt64(max(delay, 0) * 1_000_000_000)
+            try? await Task.sleep(nanoseconds: nanoseconds)
+        },
+        autoRestartOnCrash: Bool = true,
         startHTTPServers: Bool = true
     ) {
         self.backendLoader = backendLoader
@@ -68,6 +76,8 @@ final class LoaderShellViewModel: LocalHTTPServerDelegate {
         self.memoryBudgetMonitor = memoryBudgetMonitor
         self.modelCostEstimator = modelCostEstimator
         self.admissionEvaluator = admissionEvaluator
+        self.restartSleep = restartSleep
+        self.autoRestartOnCrash = autoRestartOnCrash
         self.backendLoader.runtimeEventHandler = { [weak self] event in
             self?.handleBackendRuntimeEvent(event)
         }
@@ -246,6 +256,8 @@ final class LoaderShellViewModel: LocalHTTPServerDelegate {
     }
 
     func resetButtonPressed() {
+        pendingRestartTask?.cancel()
+        pendingRestartTask = nil
         if supervisor.isFailedFastActive {
             supervisor.clearFailedFastForOperatorRecovery()
             statusDetail = "PEM-007 operator reset cleared failed_fast before reclaim verification."
@@ -596,6 +608,7 @@ final class LoaderShellViewModel: LocalHTTPServerDelegate {
 
     private func handleBackendRuntimeEvent(_ event: BackendRuntimeEvent) {
         supervisor.handleRuntimeEvent(event)
+        scheduleAutomaticRestartIfEligible()
         switch event {
         case let .helperExitedUnexpectedly(pid, terminationStatus):
             statusDetail = "PEM-006 helper crash detected. Supervisor moved runtime into failed state."
@@ -619,6 +632,29 @@ final class LoaderShellViewModel: LocalHTTPServerDelegate {
             resetSummary = projectedRecoveryMessage ?? resetSummary
             refreshMemoryBudgetState()
             updateServerSummary()
+        }
+    }
+
+    private func scheduleAutomaticRestartIfEligible() {
+        guard autoRestartOnCrash else { return }
+        guard !supervisor.isFailedFastActive else {
+            pendingRestartTask?.cancel()
+            pendingRestartTask = nil
+            return
+        }
+        guard let selectedModel else { return }
+        guard let delay = supervisor.nextRestartBackoffSeconds else { return }
+
+        pendingRestartTask?.cancel()
+        pendingRestartTask = Task { [weak self] in
+            guard let self else { return }
+            await restartSleep(delay)
+            guard !Task.isCancelled else { return }
+            guard !self.supervisor.isFailedFastActive else { return }
+            guard self.status == .failed else { return }
+            guard self.selectedModel?.id == selectedModel.id else { return }
+            self.statusDetail = "PEM-002 scheduling automatic restart in \(Int(delay))s using bounded supervisor backoff."
+            self.loadButtonPressed()
         }
     }
 
