@@ -1,0 +1,53 @@
+name: release
+
+on:
+  workflow_dispatch:
+    inputs:
+      tag:
+        description: "Existing tag to release (example: v0.3.1)"
+        required: true
+        type: string
+  push:
+    tags:
+      - "v*"
+
+permissions:
+  contents: write
+
+concurrency:
+  group: release-${{ github.workflow }}-${{ github.ref }}
+  cancel-in-progress: true
+
+jobs:
+  build-and-release:
+    runs-on: macos-14
+    timeout-minutes: 30
+
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+        with:
+          ref: ${{ github.event_name == 'workflow_dispatch' && inputs.tag || github.ref }}
+
+      - name: Show toolchain
+        run: swift --version
+
+      - name: Run tests
+        run: swift test --parallel
+
+      - name: Build release artifacts
+        id: package
+        run: |
+          VERSION="${{ github.event_name == 'workflow_dispatch' && inputs.tag || github.ref_name }}"
+          OUT_DIR="$(./tools/package_macos_artifacts.sh ${VERSION})"
+          echo "out_dir=$OUT_DIR" >> "$GITHUB_OUTPUT"
+
+      - name: Publish GitHub Release
+        uses: softprops/action-gh-release@v2
+        with:
+          tag_name: ${{ github.event_name == 'workflow_dispatch' && inputs.tag || github.ref_name }}
+          files: |
+            ${{ steps.package.outputs.out_dir }}/LoaderShell-${{ github.event_name == 'workflow_dispatch' && inputs.tag || github.ref_name }}-macos.app.zip
+            ${{ steps.package.outputs.out_dir }}/LoaderShell-${{ github.event_name == 'workflow_dispatch' && inputs.tag || github.ref_name }}-macos
+            ${{ steps.package.outputs.out_dir }}/SHA256SUMS.txt
+          generate_release_notes: true

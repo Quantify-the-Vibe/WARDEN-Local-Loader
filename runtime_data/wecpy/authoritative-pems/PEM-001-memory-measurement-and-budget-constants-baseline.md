@@ -1,0 +1,54 @@
+# PEM-001
+
+- `pem_id`: `PEM-001`
+- `project_id`: `warden4-local-llm-loader-rebuild`
+- `title`: `Memory Measurement And Budget Constants Baseline`
+- `phase_id`: `phase-002`
+- `task_id`: `task-001`
+- `slice_id`: `slice-001`
+- `task_class`: `coding`
+- `objective`: `Execute P2.T1.S1 inside Phase 02 W4L v0.2 Host Protective Runtime without expanding beyond one bounded implementation claim.`
+- `depends_on`:
+  - `none`
+- `loop_profile_binding`: `coding_slice@0.2.0`
+- `skill_profile_binding`: `coding_skills@0.2.0`
+- `inputs`:
+  - `/Users/kikbot/Documents/WARDEN4/WARDEN4-Local-LLM-Loader-Rebuild/design/planning-v02/WARDEN4_IMPLEMENTATION_SLICE_P2_T1_S1_MEMORY_MEASUREMENT_AND_BUDGET_CONSTANTS_BASELINE_v1.md`
+- `target_files`:
+  - `none`
+- `tasks`:
+  - `Implement the change required for Memory Measurement And Budget Constants Baseline.`
+  - `Run or update checks needed to prove Memory Measurement And Budget Constants Baseline meets its acceptance criteria.`
+  - `Review and persist the result for Memory Measurement And Budget Constants Baseline.`
+- `acceptance_criteria`:
+  - `the code has one admitted memory source of truth for loader-owned processes`
+  - `explicit budget constants are visible in code and runtime state`
+  - `one direct automated measurement check passes`
+  - `one direct automated budget-surface check passes`
+  - `the repository user performs and confirms the live budget-visibility test`
+  - `the next slice remains blocked until that live confirmation is recorded`
+  - `Inherited: Complete the bounded slice set for Memory Budget Authority.`
+  - `Inherited: Do not advance without explicit user live-test confirmation.`
+- `done_definition`:
+  - `Implementation work for Memory Measurement And Budget Constants Baseline is ready for checks and review.`
+  - `Encoded dependencies remain satisfied.`
+  - `Acceptance criteria are addressed and ready for execution review.`
+  - `Derived PEM remains traceable to the authoritative project encoding.`
+- `notes`:
+  - `Generated from validated project.encoding.json.`
+  - `Derived artifact; project encoding remains authoritative.`
+  - `Inherits task binding `coding_slice@0.2.0`.`
+  - `Inherits skill binding `coding_skills@0.2.0`.`
+  - `Corpus binding: `w4l-v02-host-protective-runtime@0.2.0`.`
+  - `Target files remain unresolved in v0.2 and were not inferred.`
+  - `Inputs preserve design-corpus provenance from the validated encoding.`
+- `output_report`:
+  - `Authority: Derived PEM. project.encoding.json remains authoritative.`
+  - `PEM progress: 1/8.`
+  - `Execution status: pending.`
+  - `Verification status: pending.`
+  - `Review status: pending.`
+  - `Bound loop profile: coding_slice@0.2.0.`
+  - `Bound skill profile: coding_skills@0.2.0.`
+  - `Corpus binding: w4l-v02-host-protective-runtime@0.2.0.`
+  - `Slice target: slice-001.`

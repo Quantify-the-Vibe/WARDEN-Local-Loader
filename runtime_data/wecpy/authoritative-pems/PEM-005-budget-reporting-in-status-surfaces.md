@@ -1,0 +1,54 @@
+# PEM-005
+
+- `pem_id`: `PEM-005`
+- `project_id`: `warden4-local-llm-loader-rebuild`
+- `title`: `Budget Reporting In Status Surfaces`
+- `phase_id`: `phase-002`
+- `task_id`: `task-002`
+- `slice_id`: `slice-005`
+- `task_class`: `coding`
+- `objective`: `Execute P2.T2.S3 inside Phase 02 W4L v0.2 Host Protective Runtime without expanding beyond one bounded implementation claim.`
+- `depends_on`:
+  - `slice-004`
+- `loop_profile_binding`: `coding_slice@0.2.0`
+- `skill_profile_binding`: `coding_skills@0.2.0`
+- `inputs`:
+  - `/Users/kikbot/Documents/WARDEN4/WARDEN4-Local-LLM-Loader-Rebuild/design/planning-v02/WARDEN4_IMPLEMENTATION_SLICE_P2_T2_S3_BUDGET_REPORTING_IN_STATUS_SURFACES_v1.md`
+- `target_files`:
+  - `none`
+- `tasks`:
+  - `Implement the change required for Budget Reporting In Status Surfaces.`
+  - `Run or update checks needed to prove Budget Reporting In Status Surfaces meets its acceptance criteria.`
+  - `Review and persist the result for Budget Reporting In Status Surfaces.`
+- `acceptance_criteria`:
+  - ``GET /status` exposes the bounded budget report shape`
+  - `the operator shell shows the same bounded budget state coherently`
+  - `one direct automated status-contract check passes`
+  - `one direct automated budget-projection check passes`
+  - `the repository user performs and confirms the live budget-report test`
+  - `the next slice remains blocked until that live confirmation is recorded`
+  - `Inherited: Complete the bounded slice set for Budget Verification And Reclaim.`
+  - `Inherited: Do not advance without explicit user live-test confirmation.`
+- `done_definition`:
+  - `Implementation work for Budget Reporting In Status Surfaces is ready for checks and review.`
+  - `Encoded dependencies remain satisfied.`
+  - `Acceptance criteria are addressed and ready for execution review.`
+  - `Derived PEM remains traceable to the authoritative project encoding.`
+- `notes`:
+  - `Generated from validated project.encoding.json.`
+  - `Derived artifact; project encoding remains authoritative.`
+  - `Inherits task binding `coding_slice@0.2.0`.`
+  - `Inherits skill binding `coding_skills@0.2.0`.`
+  - `Corpus binding: `w4l-v02-host-protective-runtime@0.2.0`.`
+  - `Target files remain unresolved in v0.2 and were not inferred.`
+  - `Inputs preserve design-corpus provenance from the validated encoding.`
+- `output_report`:
+  - `Authority: Derived PEM. project.encoding.json remains authoritative.`
+  - `PEM progress: 5/8.`
+  - `Execution status: pending.`
+  - `Verification status: pending.`
+  - `Review status: pending.`
+  - `Bound loop profile: coding_slice@0.2.0.`
+  - `Bound skill profile: coding_skills@0.2.0.`
+  - `Corpus binding: w4l-v02-host-protective-runtime@0.2.0.`
+  - `Slice target: slice-005.`

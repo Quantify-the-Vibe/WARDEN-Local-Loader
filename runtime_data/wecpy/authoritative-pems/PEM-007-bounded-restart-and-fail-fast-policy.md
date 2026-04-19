@@ -1,0 +1,55 @@
+# PEM-007
+
+- `pem_id`: `PEM-007`
+- `project_id`: `warden4-local-llm-loader-rebuild`
+- `title`: `Bounded Restart And Fail-Fast Policy`
+- `phase_id`: `phase-002`
+- `task_id`: `task-003`
+- `slice_id`: `slice-007`
+- `task_class`: `coding`
+- `objective`: `Execute P2.T3.S2 inside Phase 02 W4L v0.2 Host Protective Runtime without expanding beyond one bounded implementation claim.`
+- `depends_on`:
+  - `slice-006`
+- `loop_profile_binding`: `coding_slice@0.2.0`
+- `skill_profile_binding`: `coding_skills@0.2.0`
+- `inputs`:
+  - `/Users/kikbot/Documents/WARDEN4/WARDEN4-Local-LLM-Loader-Rebuild/design/planning-v02/WARDEN4_IMPLEMENTATION_SLICE_P2_T3_S2_BOUNDED_RESTART_AND_FAIL_FAST_POLICY_v1.md`
+- `target_files`:
+  - `none`
+- `tasks`:
+  - `Implement the change required for Bounded Restart And Fail-Fast Policy.`
+  - `Run or update checks needed to prove Bounded Restart And Fail-Fast Policy meets its acceptance criteria.`
+  - `Review and persist the result for Bounded Restart And Fail-Fast Policy.`
+- `acceptance_criteria`:
+  - `repeated helper instability enters `failed_fast` after the admitted restart window`
+  - `load admission is blocked while `failed_fast` is active`
+  - `one direct automated restart-window check passes`
+  - `one direct automated fail-fast gate check passes`
+  - `one direct automated recovery-clearance check passes`
+  - `the repository user performs and confirms the live fail-fast and recovery test`
+  - `the next slice remains blocked until that live confirmation is recorded`
+  - `Inherited: Complete the bounded slice set for Supervision And Fail-Fast.`
+  - `Inherited: Do not advance without explicit user live-test confirmation.`
+- `done_definition`:
+  - `Implementation work for Bounded Restart And Fail-Fast Policy is ready for checks and review.`
+  - `Encoded dependencies remain satisfied.`
+  - `Acceptance criteria are addressed and ready for execution review.`
+  - `Derived PEM remains traceable to the authoritative project encoding.`
+- `notes`:
+  - `Generated from validated project.encoding.json.`
+  - `Derived artifact; project encoding remains authoritative.`
+  - `Inherits task binding `coding_slice@0.2.0`.`
+  - `Inherits skill binding `coding_skills@0.2.0`.`
+  - `Corpus binding: `w4l-v02-host-protective-runtime@0.2.0`.`
+  - `Target files remain unresolved in v0.2 and were not inferred.`
+  - `Inputs preserve design-corpus provenance from the validated encoding.`
+- `output_report`:
+  - `Authority: Derived PEM. project.encoding.json remains authoritative.`
+  - `PEM progress: 7/8.`
+  - `Execution status: pending.`
+  - `Verification status: pending.`
+  - `Review status: pending.`
+  - `Bound loop profile: coding_slice@0.2.0.`
+  - `Bound skill profile: coding_skills@0.2.0.`
+  - `Corpus binding: w4l-v02-host-protective-runtime@0.2.0.`
+  - `Slice target: slice-007.`

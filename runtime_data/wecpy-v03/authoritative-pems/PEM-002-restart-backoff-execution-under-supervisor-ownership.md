@@ -1,0 +1,55 @@
+# PEM-002
+
+- `pem_id`: `PEM-002`
+- `project_id`: `warden4-local-llm-loader-rebuild`
+- `title`: `Restart Backoff Execution Under Supervisor Ownership`
+- `phase_id`: `phase-003`
+- `task_id`: `task-001`
+- `slice_id`: `slice-002`
+- `task_class`: `coding`
+- `objective`: `Execute P3.T1.S2 inside Phase 03 W4L v0.3 Resilience And Admission without expanding beyond one bounded implementation claim.`
+- `depends_on`:
+  - `slice-001`
+- `loop_profile_binding`: `coding_slice@0.2.0`
+- `skill_profile_binding`: `coding_skills@0.2.0`
+- `inputs`:
+  - `/Users/kikbot/Documents/WARDEN4/WARDEN4-Local-LLM-Loader-Rebuild/design/planning-v03/WARDEN4_IMPLEMENTATION_SLICE_P3_T1_S2_RESTART_BACKOFF_EXECUTION_UNDER_SUPERVISOR_OWNERSHIP_v1.md`
+- `target_files`:
+  - `none`
+- `tasks`:
+  - `Implement the change required for Restart Backoff Execution Under Supervisor Ownership.`
+  - `Run or update checks needed to prove Restart Backoff Execution Under Supervisor Ownership meets its acceptance criteria.`
+  - `Review and persist the result for Restart Backoff Execution Under Supervisor Ownership.`
+- `acceptance_criteria`:
+  - `restart attempts follow the frozen bounded schedule`
+  - ``failed_fast` is entered after policy threshold breaches`
+  - `automatic restart remains blocked while `failed_fast` is active`
+  - `one direct automated backoff check passes`
+  - `one direct automated fail-fast transition check passes`
+  - `the repository user performs and confirms the live bounded-restart test`
+  - `the next slice remains blocked until that live confirmation is recorded`
+  - `Inherited: Complete the bounded slice set for Supervision Math And Restart Behavior.`
+  - `Inherited: Do not advance without explicit user live-test confirmation.`
+- `done_definition`:
+  - `Implementation work for Restart Backoff Execution Under Supervisor Ownership is ready for checks and review.`
+  - `Encoded dependencies remain satisfied.`
+  - `Acceptance criteria are addressed and ready for execution review.`
+  - `Derived PEM remains traceable to the authoritative project encoding.`
+- `notes`:
+  - `Generated from validated project.encoding.json.`
+  - `Derived artifact; project encoding remains authoritative.`
+  - `Inherits task binding `coding_slice@0.2.0`.`
+  - `Inherits skill binding `coding_skills@0.2.0`.`
+  - `Corpus binding: `warden4-local-llm-loader-slices-v03@0.3.0`.`
+  - `Target files remain unresolved in v0.2 and were not inferred.`
+  - `Inputs preserve design-corpus provenance from the validated encoding.`
+- `output_report`:
+  - `Authority: Derived PEM. project.encoding.json remains authoritative.`
+  - `PEM progress: 2/6.`
+  - `Execution status: pending.`
+  - `Verification status: pending.`
+  - `Review status: pending.`
+  - `Bound loop profile: coding_slice@0.2.0.`
+  - `Bound skill profile: coding_skills@0.2.0.`
+  - `Corpus binding: warden4-local-llm-loader-slices-v03@0.3.0.`
+  - `Slice target: slice-002.`

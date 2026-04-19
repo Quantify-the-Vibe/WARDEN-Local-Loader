@@ -1,0 +1,432 @@
+{
+  "corpus_binding": {
+    "adapter_id": "local_markdown_corpus",
+    "binding_version": "0.2.0",
+    "conflict_policy_ref": "default_conflict",
+    "corpus_id": "w4l-v02-host-protective-runtime",
+    "corpus_location": "/Users/kikbot/Documents/WARDEN4/WARDEN4-Local-LLM-Loader-Rebuild/design/planning-v02",
+    "corpus_version": "0.2.0",
+    "ruleset_scope": "project",
+    "severity_policy_ref": "default_severity"
+  },
+  "policy_bindings": {
+    "acceptance_policy_ref": "strict_acceptance_policy",
+    "closeout_policy_ref": "task_closeout_policy",
+    "permission_policy_ref": "local_safe_permission_policy",
+    "retry_policy_ref": "bounded_retry_policy",
+    "review_policy_ref": "standard_review_policy"
+  },
+  "project_id": "warden4-local-llm-loader-rebuild",
+  "project_name": "WARDEN4 Local LLM Loader Rebuild",
+  "project_root": "/Users/kikbot/Documents/WARDEN4/WARDEN4-Local-LLM-Loader-Rebuild/runtime_data/wecpy",
+  "project_type": "subsystem",
+  "registry_requirements": {
+    "corpus_adapter_registry_version_range": ">=0.2.0,<0.3.0",
+    "loop_profile_registry_version_range": ">=0.2.0,<0.3.0",
+    "skill_profile_registry_version_range": ">=0.2.0,<0.3.0"
+  },
+  "schema_version": "0.2.0",
+  "work_graph": {
+    "phases": [
+      {
+        "dependencies": [],
+        "objective": "Upgrade the working W4L v0.1 runtime into a host-protective loader that admits loads conservatively, verifies reclaim, and contains backend instability without taking down the operator process.",
+        "phase_id": "phase-002",
+        "tasks": [
+          {
+            "acceptance_criteria": [
+              "Complete the bounded slice set for Memory Budget Authority.",
+              "Do not advance without explicit user live-test confirmation."
+            ],
+            "dependencies": [],
+            "inputs": [
+              "/Users/kikbot/Documents/WARDEN4/WARDEN4-Local-LLM-Loader-Rebuild/design/planning-v02/WARDEN4_IMPLEMENTATION_SLICE_P2_T1_S1_MEMORY_MEASUREMENT_AND_BUDGET_CONSTANTS_BASELINE_v1.md",
+              "/Users/kikbot/Documents/WARDEN4/WARDEN4-Local-LLM-Loader-Rebuild/design/planning-v02/WARDEN4_IMPLEMENTATION_SLICE_P2_T1_S2_ADMISSION_GATE_BEFORE_HELPER_SPAWN_v1.md"
+            ],
+            "loop_profile_binding": {
+              "profile_id": "coding_slice",
+              "version": "0.2.0"
+            },
+            "objective": "Execute the bounded slice set for Memory Budget Authority. Start with Execute P2.T1.S1 inside Phase 02 W4L v0.2 Host Protective Runtime without expanding beyond one bounded implementation claim.",
+            "policy_overrides": {},
+            "skill_profile_binding": {
+              "profile_id": "coding_skills",
+              "version": "0.2.0"
+            },
+            "slices": [
+              {
+                "acceptance_criteria": [
+                  "the code has one admitted memory source of truth for loader-owned processes",
+                  "explicit budget constants are visible in code and runtime state",
+                  "one direct automated measurement check passes",
+                  "one direct automated budget-surface check passes",
+                  "the repository user performs and confirms the live budget-visibility test",
+                  "the next slice remains blocked until that live confirmation is recorded"
+                ],
+                "dependencies": [],
+                "inputs": [
+                  "/Users/kikbot/Documents/WARDEN4/WARDEN4-Local-LLM-Loader-Rebuild/design/planning-v02/WARDEN4_IMPLEMENTATION_SLICE_P2_T1_S1_MEMORY_MEASUREMENT_AND_BUDGET_CONSTANTS_BASELINE_v1.md"
+                ],
+                "metadata": {
+                  "advance_requires_user_confirmation": true,
+                  "claim": "Define one measurable memory source of truth for loader-owned processes and expose explicit budget constants that the rest of v0.2 can consume.",
+                  "live_test_required": true,
+                  "original_locator": "P2.T1.S1",
+                  "parent_phase": [
+                    "`WARDEN4_Phase_02_W4L_V02_Host_Protective_Runtime_v1.md`"
+                  ],
+                  "parent_track": [
+                    "Memory Budget Authority"
+                  ],
+                  "phase_id": "phase-002",
+                  "phase_num": 2,
+                  "source_heading": "WARDEN4 Implementation Slice P2.T1.S1 Memory Measurement And Budget Constants Baseline v1",
+                  "task_id": "task-001",
+                  "task_num": 1
+                },
+                "objective": "Execute P2.T1.S1 inside Phase 02 W4L v0.2 Host Protective Runtime without expanding beyond one bounded implementation claim.",
+                "policy_overrides": {
+                  "closeout_policy_ref": "task_closeout_policy"
+                },
+                "slice_id": "slice-001",
+                "title": "Memory Measurement And Budget Constants Baseline"
+              },
+              {
+                "acceptance_criteria": [
+                  "unsafe loads are refused before helper spawn",
+                  "structured failure codes are returned for admission denial",
+                  "one direct automated allow-path admission check passes",
+                  "two direct automated deny-path admission checks pass",
+                  "the repository user performs and confirms the live admission test",
+                  "the next slice remains blocked until that live confirmation is recorded"
+                ],
+                "dependencies": [
+                  "slice-001"
+                ],
+                "inputs": [
+                  "/Users/kikbot/Documents/WARDEN4/WARDEN4-Local-LLM-Loader-Rebuild/design/planning-v02/WARDEN4_IMPLEMENTATION_SLICE_P2_T1_S2_ADMISSION_GATE_BEFORE_HELPER_SPAWN_v1.md"
+                ],
+                "metadata": {
+                  "advance_requires_user_confirmation": true,
+                  "claim": "Refuse unsafe loads before helper spawn by using the selected measurement source, explicit budget constants, and fail-closed structured error paths.",
+                  "live_test_required": true,
+                  "original_locator": "P2.T1.S2",
+                  "parent_phase": [
+                    "`WARDEN4_Phase_02_W4L_V02_Host_Protective_Runtime_v1.md`"
+                  ],
+                  "parent_track": [
+                    "Memory Budget Authority"
+                  ],
+                  "phase_id": "phase-002",
+                  "phase_num": 2,
+                  "source_heading": "WARDEN4 Implementation Slice P2.T1.S2 Admission Gate Before Helper Spawn v1",
+                  "task_id": "task-001",
+                  "task_num": 1
+                },
+                "objective": "Execute P2.T1.S2 inside Phase 02 W4L v0.2 Host Protective Runtime without expanding beyond one bounded implementation claim.",
+                "policy_overrides": {
+                  "closeout_policy_ref": "task_closeout_policy"
+                },
+                "slice_id": "slice-002",
+                "title": "Admission Gate Before Helper Spawn"
+              }
+            ],
+            "task_class": "coding",
+            "task_id": "task-001",
+            "title": "Memory Budget Authority"
+          },
+          {
+            "acceptance_criteria": [
+              "Complete the bounded slice set for Budget Verification And Reclaim.",
+              "Do not advance without explicit user live-test confirmation."
+            ],
+            "dependencies": [
+              "task-001"
+            ],
+            "inputs": [
+              "/Users/kikbot/Documents/WARDEN4/WARDEN4-Local-LLM-Loader-Rebuild/design/planning-v02/WARDEN4_IMPLEMENTATION_SLICE_P2_T2_S1_POST_LOAD_BUDGET_VERIFICATION_v1.md",
+              "/Users/kikbot/Documents/WARDEN4/WARDEN4-Local-LLM-Loader-Rebuild/design/planning-v02/WARDEN4_IMPLEMENTATION_SLICE_P2_T2_S2_RECLAIM_VERIFICATION_AFTER_RESET_v1.md",
+              "/Users/kikbot/Documents/WARDEN4/WARDEN4-Local-LLM-Loader-Rebuild/design/planning-v02/WARDEN4_IMPLEMENTATION_SLICE_P2_T2_S3_BUDGET_REPORTING_IN_STATUS_SURFACES_v1.md"
+            ],
+            "loop_profile_binding": {
+              "profile_id": "coding_slice",
+              "version": "0.2.0"
+            },
+            "objective": "Execute the bounded slice set for Budget Verification And Reclaim. Start with Execute P2.T2.S1 inside Phase 02 W4L v0.2 Host Protective Runtime without expanding beyond one bounded implementation claim.",
+            "policy_overrides": {},
+            "skill_profile_binding": {
+              "profile_id": "coding_skills",
+              "version": "0.2.0"
+            },
+            "slices": [
+              {
+                "acceptance_criteria": [
+                  "post-load footprint is checked after helper-ready",
+                  "over-budget post-load state is terminated and surfaced structurally",
+                  "one direct automated healthy ready-path check passes",
+                  "one direct automated over-budget failure-path check passes",
+                  "the repository user performs and confirms the live post-load verification test",
+                  "the next slice remains blocked until that live confirmation is recorded"
+                ],
+                "dependencies": [],
+                "inputs": [
+                  "/Users/kikbot/Documents/WARDEN4/WARDEN4-Local-LLM-Loader-Rebuild/design/planning-v02/WARDEN4_IMPLEMENTATION_SLICE_P2_T2_S1_POST_LOAD_BUDGET_VERIFICATION_v1.md"
+                ],
+                "metadata": {
+                  "advance_requires_user_confirmation": true,
+                  "claim": "After helper readiness, verify the actual combined footprint and tear down the lane if the real post-load footprint exceeds the allowed ceiling.",
+                  "live_test_required": true,
+                  "original_locator": "P2.T2.S1",
+                  "parent_phase": [
+                    "`WARDEN4_Phase_02_W4L_V02_Host_Protective_Runtime_v1.md`"
+                  ],
+                  "parent_track": [
+                    "Budget Verification And Reclaim"
+                  ],
+                  "phase_id": "phase-002",
+                  "phase_num": 2,
+                  "source_heading": "WARDEN4 Implementation Slice P2.T2.S1 Post-Load Budget Verification v1",
+                  "task_id": "task-002",
+                  "task_num": 2
+                },
+                "objective": "Execute P2.T2.S1 inside Phase 02 W4L v0.2 Host Protective Runtime without expanding beyond one bounded implementation claim.",
+                "policy_overrides": {
+                  "closeout_policy_ref": "task_closeout_policy"
+                },
+                "slice_id": "slice-003",
+                "title": "Post-Load Budget Verification"
+              },
+              {
+                "acceptance_criteria": [
+                  "reset verifies reclaim before claiming healthy idle",
+                  "insufficient reclaim prevents healthy reuse and returns structured failure",
+                  "one direct automated reclaim success check passes",
+                  "one direct automated reclaim failure-path check passes",
+                  "the repository user performs and confirms the live reset and reuse test",
+                  "the next slice remains blocked until that live confirmation is recorded"
+                ],
+                "dependencies": [
+                  "slice-003"
+                ],
+                "inputs": [
+                  "/Users/kikbot/Documents/WARDEN4/WARDEN4-Local-LLM-Loader-Rebuild/design/planning-v02/WARDEN4_IMPLEMENTATION_SLICE_P2_T2_S2_RECLAIM_VERIFICATION_AFTER_RESET_v1.md"
+                ],
+                "metadata": {
+                  "advance_requires_user_confirmation": true,
+                  "claim": "Reset does not return healthy reusable idle until helper termination and reclaim verification both pass within the configured reclaim slack.",
+                  "live_test_required": true,
+                  "original_locator": "P2.T2.S2",
+                  "parent_phase": [
+                    "`WARDEN4_Phase_02_W4L_V02_Host_Protective_Runtime_v1.md`"
+                  ],
+                  "parent_track": [
+                    "Budget Verification And Reclaim"
+                  ],
+                  "phase_id": "phase-002",
+                  "phase_num": 2,
+                  "source_heading": "WARDEN4 Implementation Slice P2.T2.S2 Reclaim Verification After Reset v1",
+                  "task_id": "task-002",
+                  "task_num": 2
+                },
+                "objective": "Execute P2.T2.S2 inside Phase 02 W4L v0.2 Host Protective Runtime without expanding beyond one bounded implementation claim.",
+                "policy_overrides": {
+                  "closeout_policy_ref": "task_closeout_policy"
+                },
+                "slice_id": "slice-004",
+                "title": "Reclaim Verification After Reset"
+              },
+              {
+                "acceptance_criteria": [
+                  "`GET /status` exposes the bounded budget report shape",
+                  "the operator shell shows the same bounded budget state coherently",
+                  "one direct automated status-contract check passes",
+                  "one direct automated budget-projection check passes",
+                  "the repository user performs and confirms the live budget-report test",
+                  "the next slice remains blocked until that live confirmation is recorded"
+                ],
+                "dependencies": [
+                  "slice-004"
+                ],
+                "inputs": [
+                  "/Users/kikbot/Documents/WARDEN4/WARDEN4-Local-LLM-Loader-Rebuild/design/planning-v02/WARDEN4_IMPLEMENTATION_SLICE_P2_T2_S3_BUDGET_REPORTING_IN_STATUS_SURFACES_v1.md"
+                ],
+                "metadata": {
+                  "advance_requires_user_confirmation": true,
+                  "claim": "Expose budget summary, admission result, and reclaim result coherently through `GET /status` and the operator shell so the runtime state is inspectable.",
+                  "live_test_required": true,
+                  "original_locator": "P2.T2.S3",
+                  "parent_phase": [
+                    "`WARDEN4_Phase_02_W4L_V02_Host_Protective_Runtime_v1.md`"
+                  ],
+                  "parent_track": [
+                    "Budget Verification And Reclaim"
+                  ],
+                  "phase_id": "phase-002",
+                  "phase_num": 2,
+                  "source_heading": "WARDEN4 Implementation Slice P2.T2.S3 Budget Reporting In Status Surfaces v1",
+                  "task_id": "task-002",
+                  "task_num": 2
+                },
+                "objective": "Execute P2.T2.S3 inside Phase 02 W4L v0.2 Host Protective Runtime without expanding beyond one bounded implementation claim.",
+                "policy_overrides": {
+                  "closeout_policy_ref": "task_closeout_policy"
+                },
+                "slice_id": "slice-005",
+                "title": "Budget Reporting In Status Surfaces"
+              }
+            ],
+            "task_class": "coding",
+            "task_id": "task-002",
+            "title": "Budget Verification And Reclaim"
+          },
+          {
+            "acceptance_criteria": [
+              "Complete the bounded slice set for Supervision And Fail-Fast.",
+              "Do not advance without explicit user live-test confirmation."
+            ],
+            "dependencies": [
+              "task-002"
+            ],
+            "inputs": [
+              "/Users/kikbot/Documents/WARDEN4/WARDEN4-Local-LLM-Loader-Rebuild/design/planning-v02/WARDEN4_IMPLEMENTATION_SLICE_P2_T3_S1_SUPERVISOR_EXTRACTION_AND_CRASH_ACCOUNTING_v1.md",
+              "/Users/kikbot/Documents/WARDEN4/WARDEN4-Local-LLM-Loader-Rebuild/design/planning-v02/WARDEN4_IMPLEMENTATION_SLICE_P2_T3_S2_BOUNDED_RESTART_AND_FAIL_FAST_POLICY_v1.md",
+              "/Users/kikbot/Documents/WARDEN4/WARDEN4-Local-LLM-Loader-Rebuild/design/planning-v02/WARDEN4_IMPLEMENTATION_SLICE_P2_T3_S3_COMPATIBILITY_BRIDGE_AND_OPERATOR_RECOVERY_ALIGNMENT_v1.md"
+            ],
+            "loop_profile_binding": {
+              "profile_id": "coding_slice",
+              "version": "0.2.0"
+            },
+            "objective": "Execute the bounded slice set for Supervision And Fail-Fast. Start with Execute P2.T3.S1 inside Phase 02 W4L v0.2 Host Protective Runtime without expanding beyond one bounded implementation claim.",
+            "policy_overrides": {},
+            "skill_profile_binding": {
+              "profile_id": "coding_skills",
+              "version": "0.2.0"
+            },
+            "slices": [
+              {
+                "acceptance_criteria": [
+                  "supervisor owns runtime lifecycle state and crash accounting",
+                  "helper crash transitions runtime state structurally without crashing the UI process",
+                  "one direct automated helper-crash detection check passes",
+                  "one direct automated UI-survival check passes",
+                  "the repository user performs and confirms the live crash-containment test",
+                  "the next slice remains blocked until that live confirmation is recorded"
+                ],
+                "dependencies": [],
+                "inputs": [
+                  "/Users/kikbot/Documents/WARDEN4/WARDEN4-Local-LLM-Loader-Rebuild/design/planning-v02/WARDEN4_IMPLEMENTATION_SLICE_P2_T3_S1_SUPERVISOR_EXTRACTION_AND_CRASH_ACCOUNTING_v1.md"
+                ],
+                "metadata": {
+                  "advance_requires_user_confirmation": true,
+                  "claim": "Extract one supervisor-owned runtime authority that owns lifecycle state, crash accounting, and structured helper failure handling while keeping the UI process alive.",
+                  "live_test_required": true,
+                  "original_locator": "P2.T3.S1",
+                  "parent_phase": [
+                    "`WARDEN4_Phase_02_W4L_V02_Host_Protective_Runtime_v1.md`"
+                  ],
+                  "parent_track": [
+                    "Supervision And Fail-Fast"
+                  ],
+                  "phase_id": "phase-002",
+                  "phase_num": 2,
+                  "source_heading": "WARDEN4 Implementation Slice P2.T3.S1 Supervisor Extraction And Crash Accounting v1",
+                  "task_id": "task-003",
+                  "task_num": 3
+                },
+                "objective": "Execute P2.T3.S1 inside Phase 02 W4L v0.2 Host Protective Runtime without expanding beyond one bounded implementation claim.",
+                "policy_overrides": {
+                  "closeout_policy_ref": "task_closeout_policy"
+                },
+                "slice_id": "slice-006",
+                "title": "Supervisor Extraction And Crash Accounting"
+              },
+              {
+                "acceptance_criteria": [
+                  "repeated helper instability enters `failed_fast` after the admitted restart window",
+                  "load admission is blocked while `failed_fast` is active",
+                  "one direct automated restart-window check passes",
+                  "one direct automated fail-fast gate check passes",
+                  "one direct automated recovery-clearance check passes",
+                  "the repository user performs and confirms the live fail-fast and recovery test",
+                  "the next slice remains blocked until that live confirmation is recorded"
+                ],
+                "dependencies": [
+                  "slice-006"
+                ],
+                "inputs": [
+                  "/Users/kikbot/Documents/WARDEN4/WARDEN4-Local-LLM-Loader-Rebuild/design/planning-v02/WARDEN4_IMPLEMENTATION_SLICE_P2_T3_S2_BOUNDED_RESTART_AND_FAIL_FAST_POLICY_v1.md"
+                ],
+                "metadata": {
+                  "advance_requires_user_confirmation": true,
+                  "claim": "Repeated helper instability inside the admitted crash window triggers bounded restart attempts and then a `failed_fast` state that blocks further load admission until explicit operator recovery.",
+                  "live_test_required": true,
+                  "original_locator": "P2.T3.S2",
+                  "parent_phase": [
+                    "`WARDEN4_Phase_02_W4L_V02_Host_Protective_Runtime_v1.md`"
+                  ],
+                  "parent_track": [
+                    "Supervision And Fail-Fast"
+                  ],
+                  "phase_id": "phase-002",
+                  "phase_num": 2,
+                  "source_heading": "WARDEN4 Implementation Slice P2.T3.S2 Bounded Restart And Fail-Fast Policy v1",
+                  "task_id": "task-003",
+                  "task_num": 3
+                },
+                "objective": "Execute P2.T3.S2 inside Phase 02 W4L v0.2 Host Protective Runtime without expanding beyond one bounded implementation claim.",
+                "policy_overrides": {
+                  "closeout_policy_ref": "task_closeout_policy"
+                },
+                "slice_id": "slice-007",
+                "title": "Bounded Restart And Fail-Fast Policy"
+              },
+              {
+                "acceptance_criteria": [
+                  "compatibility-bridge failures map coherently from canonical runtime state",
+                  "operator shell and bridge expose aligned recovery semantics",
+                  "one direct automated bridge-failure-mapping check passes",
+                  "one direct automated operator-recovery projection check passes",
+                  "the repository user performs and confirms the live bridge and recovery test",
+                  "the phase exit gate remains blocked until that live confirmation is recorded"
+                ],
+                "dependencies": [
+                  "slice-007"
+                ],
+                "inputs": [
+                  "/Users/kikbot/Documents/WARDEN4/WARDEN4-Local-LLM-Loader-Rebuild/design/planning-v02/WARDEN4_IMPLEMENTATION_SLICE_P2_T3_S3_COMPATIBILITY_BRIDGE_AND_OPERATOR_RECOVERY_ALIGNMENT_v1.md"
+                ],
+                "metadata": {
+                  "advance_requires_user_confirmation": true,
+                  "claim": "Make admission, reclaim, and fail-fast outcomes visible coherently through the compatibility bridge and operator shell so `pi-mono` and the operator see aligned recovery semantics.",
+                  "live_test_required": true,
+                  "original_locator": "P2.T3.S3",
+                  "parent_phase": [
+                    "`WARDEN4_Phase_02_W4L_V02_Host_Protective_Runtime_v1.md`"
+                  ],
+                  "parent_track": [
+                    "Supervision And Fail-Fast"
+                  ],
+                  "phase_id": "phase-002",
+                  "phase_num": 2,
+                  "source_heading": "WARDEN4 Implementation Slice P2.T3.S3 Compatibility Bridge And Operator Recovery Alignment v1",
+                  "task_id": "task-003",
+                  "task_num": 3
+                },
+                "objective": "Execute P2.T3.S3 inside Phase 02 W4L v0.2 Host Protective Runtime without expanding beyond one bounded implementation claim.",
+                "policy_overrides": {
+                  "closeout_policy_ref": "task_closeout_policy"
+                },
+                "slice_id": "slice-008",
+                "title": "Compatibility Bridge And Operator Recovery Alignment"
+              }
+            ],
+            "task_class": "coding",
+            "task_id": "task-003",
+            "title": "Supervision And Fail-Fast"
+          }
+        ],
+        "title": "W4L v0.2 Host Protective Runtime v1"
+      }
+    ]
+  }
+}

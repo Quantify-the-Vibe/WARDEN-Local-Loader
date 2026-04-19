@@ -1,0 +1,176 @@
+{
+  "artifact_refs": {
+    "audit_ledger_ref": "wecpy_memory.db",
+    "evidence_manifest_ref": null,
+    "latest_repo_review_ref": null,
+    "latest_verification_report_ref": null,
+    "learnings_ref": "learnings.md",
+    "progress_ref": "progress.txt"
+  },
+  "attempt_log": [],
+  "encoding_ref": "wec_loop_planning_slice.project.encoding.json@0.2.0",
+  "phase_states": [
+    {
+      "blocking_reason": null,
+      "ended_at": null,
+      "phase_id": "phase-002",
+      "started_at": null,
+      "status": "ready",
+      "summary_ref": null
+    }
+  ],
+  "project_id": "warden4-local-llm-loader-rebuild",
+  "project_status": "pending",
+  "run_id": "run-001",
+  "schema_version": "0.2.0",
+  "slice_states": [
+    {
+      "attempt_count": 0,
+      "blocking_reason": null,
+      "current_attempt_id": null,
+      "distilled_summary_ref": null,
+      "final_outcome": null,
+      "last_attempt_id": null,
+      "last_updated_at": "2026-04-18T16:54:14.989019Z",
+      "review_status": null,
+      "slice_id": "slice-001",
+      "status": "ready",
+      "test_status": null,
+      "verification_status": null
+    },
+    {
+      "attempt_count": 0,
+      "blocking_reason": "Waiting on slice dependencies: slice-001.",
+      "current_attempt_id": null,
+      "distilled_summary_ref": null,
+      "final_outcome": null,
+      "last_attempt_id": null,
+      "last_updated_at": "2026-04-18T16:54:14.989019Z",
+      "review_status": null,
+      "slice_id": "slice-002",
+      "status": "blocked",
+      "test_status": null,
+      "verification_status": null
+    },
+    {
+      "attempt_count": 0,
+      "blocking_reason": null,
+      "current_attempt_id": null,
+      "distilled_summary_ref": null,
+      "final_outcome": null,
+      "last_attempt_id": null,
+      "last_updated_at": "2026-04-18T16:54:14.989019Z",
+      "review_status": null,
+      "slice_id": "slice-003",
+      "status": "ready",
+      "test_status": null,
+      "verification_status": null
+    },
+    {
+      "attempt_count": 0,
+      "blocking_reason": "Waiting on slice dependencies: slice-003.",
+      "current_attempt_id": null,
+      "distilled_summary_ref": null,
+      "final_outcome": null,
+      "last_attempt_id": null,
+      "last_updated_at": "2026-04-18T16:54:14.989019Z",
+      "review_status": null,
+      "slice_id": "slice-004",
+      "status": "blocked",
+      "test_status": null,
+      "verification_status": null
+    },
+    {
+      "attempt_count": 0,
+      "blocking_reason": "Waiting on slice dependencies: slice-004.",
+      "current_attempt_id": null,
+      "distilled_summary_ref": null,
+      "final_outcome": null,
+      "last_attempt_id": null,
+      "last_updated_at": "2026-04-18T16:54:14.989019Z",
+      "review_status": null,
+      "slice_id": "slice-005",
+      "status": "blocked",
+      "test_status": null,
+      "verification_status": null
+    },
+    {
+      "attempt_count": 0,
+      "blocking_reason": null,
+      "current_attempt_id": null,
+      "distilled_summary_ref": null,
+      "final_outcome": null,
+      "last_attempt_id": null,
+      "last_updated_at": "2026-04-18T16:54:14.989019Z",
+      "review_status": null,
+      "slice_id": "slice-006",
+      "status": "ready",
+      "test_status": null,
+      "verification_status": null
+    },
+    {
+      "attempt_count": 0,
+      "blocking_reason": "Waiting on slice dependencies: slice-006.",
+      "current_attempt_id": null,
+      "distilled_summary_ref": null,
+      "final_outcome": null,
+      "last_attempt_id": null,
+      "last_updated_at": "2026-04-18T16:54:14.989019Z",
+      "review_status": null,
+      "slice_id": "slice-007",
+      "status": "blocked",
+      "test_status": null,
+      "verification_status": null
+    },
+    {
+      "attempt_count": 0,
+      "blocking_reason": "Waiting on slice dependencies: slice-007.",
+      "current_attempt_id": null,
+      "distilled_summary_ref": null,
+      "final_outcome": null,
+      "last_attempt_id": null,
+      "last_updated_at": "2026-04-18T16:54:14.989019Z",
+      "review_status": null,
+      "slice_id": "slice-008",
+      "status": "blocked",
+      "test_status": null,
+      "verification_status": null
+    }
+  ],
+  "task_states": [
+    {
+      "blocking_reason": null,
+      "current_slice_id": null,
+      "ended_at": null,
+      "final_outcome": null,
+      "retry_count": 0,
+      "started_at": null,
+      "status": "ready",
+      "summary_ref": null,
+      "task_id": "task-001"
+    },
+    {
+      "blocking_reason": "Waiting on task dependencies: task-001.",
+      "current_slice_id": null,
+      "ended_at": null,
+      "final_outcome": null,
+      "retry_count": 0,
+      "started_at": null,
+      "status": "blocked",
+      "summary_ref": null,
+      "task_id": "task-002"
+    },
+    {
+      "blocking_reason": "Waiting on task dependencies: task-002.",
+      "current_slice_id": null,
+      "ended_at": null,
+      "final_outcome": null,
+      "retry_count": 0,
+      "started_at": null,
+      "status": "blocked",
+      "summary_ref": null,
+      "task_id": "task-003"
+    }
+  ],
+  "updated_at": "2026-04-18T16:54:14.989019Z"
+}

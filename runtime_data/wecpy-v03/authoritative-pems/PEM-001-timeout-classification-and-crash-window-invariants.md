@@ -1,0 +1,54 @@
+# PEM-001
+
+- `pem_id`: `PEM-001`
+- `project_id`: `warden4-local-llm-loader-rebuild`
+- `title`: `Timeout Classification And Crash Window Invariants`
+- `phase_id`: `phase-003`
+- `task_id`: `task-001`
+- `slice_id`: `slice-001`
+- `task_class`: `coding`
+- `objective`: `Execute P3.T1.S1 inside Phase 03 W4L v0.3 Resilience And Admission without expanding beyond one bounded implementation claim.`
+- `depends_on`:
+  - `none`
+- `loop_profile_binding`: `coding_slice@0.2.0`
+- `skill_profile_binding`: `coding_skills@0.2.0`
+- `inputs`:
+  - `/Users/kikbot/Documents/WARDEN4/WARDEN4-Local-LLM-Loader-Rebuild/design/planning-v03/WARDEN4_IMPLEMENTATION_SLICE_P3_T1_S1_TIMEOUT_CLASSIFICATION_AND_CRASH_WINDOW_INVARIANTS_v1.md`
+- `target_files`:
+  - `none`
+- `tasks`:
+  - `Implement the change required for Timeout Classification And Crash Window Invariants.`
+  - `Run or update checks needed to prove Timeout Classification And Crash Window Invariants meets its acceptance criteria.`
+  - `Review and persist the result for Timeout Classification And Crash Window Invariants.`
+- `acceptance_criteria`:
+  - `timeout classes are represented as crash-equivalent events`
+  - `invalid crash-window to timeout configurations are rejected`
+  - `one direct automated timeout mapping check passes`
+  - `one direct automated invariant check passes`
+  - `the repository user performs and confirms the live timeout-visibility test`
+  - `the next slice remains blocked until that live confirmation is recorded`
+  - `Inherited: Complete the bounded slice set for Supervision Math And Restart Behavior.`
+  - `Inherited: Do not advance without explicit user live-test confirmation.`
+- `done_definition`:
+  - `Implementation work for Timeout Classification And Crash Window Invariants is ready for checks and review.`
+  - `Encoded dependencies remain satisfied.`
+  - `Acceptance criteria are addressed and ready for execution review.`
+  - `Derived PEM remains traceable to the authoritative project encoding.`
+- `notes`:
+  - `Generated from validated project.encoding.json.`
+  - `Derived artifact; project encoding remains authoritative.`
+  - `Inherits task binding `coding_slice@0.2.0`.`
+  - `Inherits skill binding `coding_skills@0.2.0`.`
+  - `Corpus binding: `warden4-local-llm-loader-slices-v03@0.3.0`.`
+  - `Target files remain unresolved in v0.2 and were not inferred.`
+  - `Inputs preserve design-corpus provenance from the validated encoding.`
+- `output_report`:
+  - `Authority: Derived PEM. project.encoding.json remains authoritative.`
+  - `PEM progress: 1/6.`
+  - `Execution status: pending.`
+  - `Verification status: pending.`
+  - `Review status: pending.`
+  - `Bound loop profile: coding_slice@0.2.0.`
+  - `Bound skill profile: coding_skills@0.2.0.`
+  - `Corpus binding: warden4-local-llm-loader-slices-v03@0.3.0.`
+  - `Slice target: slice-001.`

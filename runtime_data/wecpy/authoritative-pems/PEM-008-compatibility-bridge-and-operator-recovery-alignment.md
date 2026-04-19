@@ -1,0 +1,54 @@
+# PEM-008
+
+- `pem_id`: `PEM-008`
+- `project_id`: `warden4-local-llm-loader-rebuild`
+- `title`: `Compatibility Bridge And Operator Recovery Alignment`
+- `phase_id`: `phase-002`
+- `task_id`: `task-003`
+- `slice_id`: `slice-008`
+- `task_class`: `coding`
+- `objective`: `Execute P2.T3.S3 inside Phase 02 W4L v0.2 Host Protective Runtime without expanding beyond one bounded implementation claim.`
+- `depends_on`:
+  - `slice-007`
+- `loop_profile_binding`: `coding_slice@0.2.0`
+- `skill_profile_binding`: `coding_skills@0.2.0`
+- `inputs`:
+  - `/Users/kikbot/Documents/WARDEN4/WARDEN4-Local-LLM-Loader-Rebuild/design/planning-v02/WARDEN4_IMPLEMENTATION_SLICE_P2_T3_S3_COMPATIBILITY_BRIDGE_AND_OPERATOR_RECOVERY_ALIGNMENT_v1.md`
+- `target_files`:
+  - `none`
+- `tasks`:
+  - `Implement the change required for Compatibility Bridge And Operator Recovery Alignment.`
+  - `Run or update checks needed to prove Compatibility Bridge And Operator Recovery Alignment meets its acceptance criteria.`
+  - `Review and persist the result for Compatibility Bridge And Operator Recovery Alignment.`
+- `acceptance_criteria`:
+  - `compatibility-bridge failures map coherently from canonical runtime state`
+  - `operator shell and bridge expose aligned recovery semantics`
+  - `one direct automated bridge-failure-mapping check passes`
+  - `one direct automated operator-recovery projection check passes`
+  - `the repository user performs and confirms the live bridge and recovery test`
+  - `the phase exit gate remains blocked until that live confirmation is recorded`
+  - `Inherited: Complete the bounded slice set for Supervision And Fail-Fast.`
+  - `Inherited: Do not advance without explicit user live-test confirmation.`
+- `done_definition`:
+  - `Implementation work for Compatibility Bridge And Operator Recovery Alignment is ready for checks and review.`
+  - `Encoded dependencies remain satisfied.`
+  - `Acceptance criteria are addressed and ready for execution review.`
+  - `Derived PEM remains traceable to the authoritative project encoding.`
+- `notes`:
+  - `Generated from validated project.encoding.json.`
+  - `Derived artifact; project encoding remains authoritative.`
+  - `Inherits task binding `coding_slice@0.2.0`.`
+  - `Inherits skill binding `coding_skills@0.2.0`.`
+  - `Corpus binding: `w4l-v02-host-protective-runtime@0.2.0`.`
+  - `Target files remain unresolved in v0.2 and were not inferred.`
+  - `Inputs preserve design-corpus provenance from the validated encoding.`
+- `output_report`:
+  - `Authority: Derived PEM. project.encoding.json remains authoritative.`
+  - `PEM progress: 8/8.`
+  - `Execution status: pending.`
+  - `Verification status: pending.`
+  - `Review status: pending.`
+  - `Bound loop profile: coding_slice@0.2.0.`
+  - `Bound skill profile: coding_skills@0.2.0.`
+  - `Corpus binding: w4l-v02-host-protective-runtime@0.2.0.`
+  - `Slice target: slice-008.`

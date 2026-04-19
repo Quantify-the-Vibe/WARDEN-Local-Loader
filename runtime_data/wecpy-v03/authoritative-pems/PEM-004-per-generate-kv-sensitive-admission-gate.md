@@ -1,0 +1,54 @@
+# PEM-004
+
+- `pem_id`: `PEM-004`
+- `project_id`: `warden4-local-llm-loader-rebuild`
+- `title`: `Per Generate KV Sensitive Admission Gate`
+- `phase_id`: `phase-003`
+- `task_id`: `task-002`
+- `slice_id`: `slice-004`
+- `task_class`: `coding`
+- `objective`: `Execute P3.T2.S2 inside Phase 03 W4L v0.3 Resilience And Admission without expanding beyond one bounded implementation claim.`
+- `depends_on`:
+  - `slice-003`
+- `loop_profile_binding`: `coding_slice@0.2.0`
+- `skill_profile_binding`: `coding_skills@0.2.0`
+- `inputs`:
+  - `/Users/kikbot/Documents/WARDEN4/WARDEN4-Local-LLM-Loader-Rebuild/design/planning-v03/WARDEN4_IMPLEMENTATION_SLICE_P3_T2_S2_PER_GENERATE_KV_SENSITIVE_ADMISSION_GATE_v1.md`
+- `target_files`:
+  - `none`
+- `tasks`:
+  - `Implement the change required for Per Generate KV Sensitive Admission Gate.`
+  - `Run or update checks needed to prove Per Generate KV Sensitive Admission Gate meets its acceptance criteria.`
+  - `Review and persist the result for Per Generate KV Sensitive Admission Gate.`
+- `acceptance_criteria`:
+  - `generate requests cannot bypass pre-generate admission`
+  - `unsafe projected generate is denied with structured failure`
+  - `one direct automated safe-admission check passes`
+  - `one direct automated over-budget refusal check passes`
+  - `the repository user performs and confirms the live KV-sensitive admission test`
+  - `the next slice remains blocked until that live confirmation is recorded`
+  - `Inherited: Complete the bounded slice set for Dynamic Memory Admission.`
+  - `Inherited: Do not advance without explicit user live-test confirmation.`
+- `done_definition`:
+  - `Implementation work for Per Generate KV Sensitive Admission Gate is ready for checks and review.`
+  - `Encoded dependencies remain satisfied.`
+  - `Acceptance criteria are addressed and ready for execution review.`
+  - `Derived PEM remains traceable to the authoritative project encoding.`
+- `notes`:
+  - `Generated from validated project.encoding.json.`
+  - `Derived artifact; project encoding remains authoritative.`
+  - `Inherits task binding `coding_slice@0.2.0`.`
+  - `Inherits skill binding `coding_skills@0.2.0`.`
+  - `Corpus binding: `warden4-local-llm-loader-slices-v03@0.3.0`.`
+  - `Target files remain unresolved in v0.2 and were not inferred.`
+  - `Inputs preserve design-corpus provenance from the validated encoding.`
+- `output_report`:
+  - `Authority: Derived PEM. project.encoding.json remains authoritative.`
+  - `PEM progress: 4/6.`
+  - `Execution status: pending.`
+  - `Verification status: pending.`
+  - `Review status: pending.`
+  - `Bound loop profile: coding_slice@0.2.0.`
+  - `Bound skill profile: coding_skills@0.2.0.`
+  - `Corpus binding: warden4-local-llm-loader-slices-v03@0.3.0.`
+  - `Slice target: slice-004.`
