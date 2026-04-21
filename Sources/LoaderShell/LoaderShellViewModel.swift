@@ -46,6 +46,13 @@ final class LoaderShellViewModel: LocalHTTPServerDelegate {
     private let generateKVBytesPerInputByte: UInt64 = 3 * 1_024
     private let generateKVBytesPerMessage: UInt64 = 128 * 1_024
     private let defaultOpenAICompletionTokens: Int = 2048
+    private static let bridgeCapabilityGuardrail = """
+    Runtime capability boundary:
+    - You cannot execute tools, shell commands, or filesystem writes from this chat runtime.
+    - You cannot create, modify, or verify local files directly.
+    - Do not claim an action was performed unless you only produced text.
+    - If asked to write a file, respond with explicit content and clear manual save instructions.
+    """
     private static let bridgeAutoLoadEnvKey = "W4L_OPENAI_BRIDGE_AUTOLOAD"
     private static let exposeDiagnosticsEnvKey = "W4L_EXPOSE_DIAGNOSTICS"
 
@@ -549,7 +556,8 @@ final class LoaderShellViewModel: LocalHTTPServerDelegate {
             let totalInputBytes = chatMessages.reduce(0) { $0 + ($1["content"]?.utf8.count ?? 0) }
             _ = try evaluateGenerateAdmission(promptByteCount: totalInputBytes, messageCount: chatMessages.count)
             let requestedMaxTokens = requestedOpenAIMaxTokens(from: bodyJSON)
-            let chatResult = try await backendLoader.generateChat(messages: chatMessages, maxTokens: requestedMaxTokens)
+            let bridgedMessages = applyBridgeCapabilityGuardrail(to: chatMessages)
+            let chatResult = try await backendLoader.generateChat(messages: bridgedMessages, maxTokens: requestedMaxTokens)
             let responseText = chatResult.text
             let finishReason = chatResult.finishReason
             generationSummary = "Last prompt completed through the OpenAI-compatible pi-mono bridge."
@@ -656,6 +664,19 @@ final class LoaderShellViewModel: LocalHTTPServerDelegate {
             return maxTokens
         }
         return defaultOpenAICompletionTokens
+    }
+
+    private func applyBridgeCapabilityGuardrail(to messages: [[String: String]]) -> [[String: String]] {
+        var guarded = messages
+        if let first = guarded.first, first["role"] == "system", let content = first["content"] {
+            guarded[0]["content"] = Self.bridgeCapabilityGuardrail + "\n\n" + content
+            return guarded
+        }
+        guarded.insert([
+            "role": "system",
+            "content": Self.bridgeCapabilityGuardrail,
+        ], at: 0)
+        return guarded
     }
 
     private func updateServerSummary() {

@@ -1415,6 +1415,9 @@ struct LoaderShellViewModelTests {
         #expect(backendLoader.loadCallCount == 1)
         #expect(backendLoader.generateChatCallCount == 1)
         #expect(backendLoader.lastGenerateChatMaxTokens == 2048)
+        let firstMessage = try #require(backendLoader.lastGenerateChatMessages.first)
+        #expect(firstMessage["role"] == "system")
+        #expect((firstMessage["content"] ?? "").contains("Runtime capability boundary"))
     }
 
     @MainActor
@@ -1685,6 +1688,7 @@ private final class MockBackendLoader: BackendLoader {
     private(set) var generateCallCount = 0
     private(set) var generateChatCallCount = 0
     private(set) var lastGenerateChatMaxTokens: Int?
+    private(set) var lastGenerateChatMessages: [[String: String]] = []
     var chatResult = BackendChatGenerateResult(
         text: "",
         finishReason: "stop",
@@ -1711,6 +1715,7 @@ private final class MockBackendLoader: BackendLoader {
     func generateChat(messages: [[String : String]], maxTokens: Int?) async throws -> BackendChatGenerateResult {
         generateChatCallCount += 1
         lastGenerateChatMaxTokens = maxTokens
+        lastGenerateChatMessages = messages
         return chatResult
     }
     func shutdown() async { shutdownCallCount += 1 }
