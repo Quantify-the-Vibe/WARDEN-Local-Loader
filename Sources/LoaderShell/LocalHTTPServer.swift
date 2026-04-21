@@ -142,8 +142,17 @@ final class LocalHTTPServer: @unchecked Sendable {
         guard let request = String(data: data, encoding: .utf8) else {
             return .json(statusCode: 400, ["status": "failed", "error": "invalid_request_encoding"])
         }
-        let parts = request.components(separatedBy: "\r\n\r\n")
-        let headerLines = parts.first?.components(separatedBy: "\r\n") ?? []
+        let headerSeparator = "\r\n\r\n"
+        let headerSection: String
+        let bodyText: String
+        if let range = request.range(of: headerSeparator) {
+            headerSection = String(request[..<range.lowerBound])
+            bodyText = String(request[range.upperBound...])
+        } else {
+            headerSection = request
+            bodyText = ""
+        }
+        let headerLines = headerSection.components(separatedBy: "\r\n")
         guard let requestLine = headerLines.first else {
             return .json(statusCode: 400, ["status": "failed", "error": "missing_request_line"])
         }
@@ -153,9 +162,8 @@ final class LocalHTTPServer: @unchecked Sendable {
         }
 
         let method = String(tokens[0])
-        let path = String(tokens[1])
+        let path = Self.normalizeRoutePath(String(tokens[1]))
         let headers = Self.headerDictionary(from: headerLines.dropFirst())
-        let bodyText = parts.count > 1 ? parts[1] : ""
         let bodyJSON = bodyText.data(using: .utf8).flatMap {
             try? JSONSerialization.jsonObject(with: $0) as? [String: Any]
         }
@@ -234,6 +242,13 @@ final class LocalHTTPServer: @unchecked Sendable {
         payload.append("Connection: close\r\n\r\n".data(using: .utf8)!)
         payload.append(response.body)
         return payload
+    }
+
+    static func normalizeRoutePath(_ rawPath: String) -> String {
+        guard let queryStart = rawPath.firstIndex(of: "?") else {
+            return rawPath
+        }
+        return String(rawPath[..<queryStart])
     }
 
     static func completeRequestData(from data: Data) -> Data? {

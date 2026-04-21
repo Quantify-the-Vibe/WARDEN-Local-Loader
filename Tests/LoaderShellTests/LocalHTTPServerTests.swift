@@ -71,4 +71,10 @@ struct LocalHTTPServerTests {
 
         #expect(renderedText.contains("WWW-Authenticate: Bearer realm=\"W4L Loader\", charset=\"UTF-8\""))
     }
+
+    @Test
+    func normalizeRoutePathStripsQueryString() {
+        #expect(LocalHTTPServer.normalizeRoutePath("/v1/models?limit=20") == "/v1/models")
+        #expect(LocalHTTPServer.normalizeRoutePath("/status") == "/status")
+    }
 }
