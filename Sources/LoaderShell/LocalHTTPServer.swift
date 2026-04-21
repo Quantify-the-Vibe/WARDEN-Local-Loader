@@ -169,18 +169,7 @@ final class LocalHTTPServer: @unchecked Sendable {
         }
         if requiresAuthorization(method: method, path: path) {
             if !isAuthorized(headers: headers) {
-                return HTTPResponse(
-                    statusCode: 401,
-                    body: ((try? JSONSerialization.data(withJSONObject: [
-                        "status": "failed",
-                        "error": "unauthorized",
-                        "detail": "Authorization required for this route.",
-                        "hint": "Send Authorization: Bearer <W4L_API_TOKEN> or X-Loader-Token: <W4L_API_TOKEN>.",
-                    ], options: [.prettyPrinted])) ?? Data("{}".utf8)),
-                    headers: [
-                        "WWW-Authenticate": #"Bearer realm="W4L Loader", charset="UTF-8""#,
-                    ]
-                )
+                return Self.unauthorizedResponse(forPath: path)
             }
         }
 
@@ -249,6 +238,34 @@ final class LocalHTTPServer: @unchecked Sendable {
             return rawPath
         }
         return String(rawPath[..<queryStart])
+    }
+
+    static func unauthorizedResponse(forPath path: String) -> HTTPResponse {
+        let payload: [String: Any]
+        if path == "/v1/chat/completions" {
+            payload = [
+                "error": [
+                    "message": "Unauthorized. Send Authorization: Bearer <W4L_API_TOKEN> or X-Loader-Token.",
+                    "type": "authentication_error",
+                    "code": "invalid_api_key",
+                ],
+            ]
+        } else {
+            payload = [
+                "status": "failed",
+                "error": "unauthorized",
+                "detail": "Authorization required for this route.",
+                "hint": "Send Authorization: Bearer <W4L_API_TOKEN> or X-Loader-Token: <W4L_API_TOKEN>.",
+            ]
+        }
+        let body = (try? JSONSerialization.data(withJSONObject: payload, options: [.prettyPrinted])) ?? Data("{}".utf8)
+        return HTTPResponse(
+            statusCode: 401,
+            body: body,
+            headers: [
+                "WWW-Authenticate": #"Bearer realm="W4L Loader", charset="UTF-8""#,
+            ]
+        )
     }
 
     static func completeRequestData(from data: Data) -> Data? {

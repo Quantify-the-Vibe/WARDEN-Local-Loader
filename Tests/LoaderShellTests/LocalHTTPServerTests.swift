@@ -77,4 +77,30 @@ struct LocalHTTPServerTests {
         #expect(LocalHTTPServer.normalizeRoutePath("/v1/models?limit=20") == "/v1/models")
         #expect(LocalHTTPServer.normalizeRoutePath("/status") == "/status")
     }
+
+    @Test
+    func unauthorizedResponseForOpenAIPathUsesOpenAIErrorShape() throws {
+        let response = LocalHTTPServer.unauthorizedResponse(forPath: "/v1/chat/completions")
+        #expect(response.statusCode == 401)
+        #expect(response.headers["WWW-Authenticate"] != nil)
+
+        let json = try #require(
+            JSONSerialization.jsonObject(with: response.body) as? [String: Any]
+        )
+        let error = try #require(json["error"] as? [String: Any])
+        #expect(error["type"] as? String == "authentication_error")
+        #expect(error["code"] as? String == "invalid_api_key")
+    }
+
+    @Test
+    func unauthorizedResponseForControlPathUsesLoaderErrorShape() throws {
+        let response = LocalHTTPServer.unauthorizedResponse(forPath: "/generate")
+        #expect(response.statusCode == 401)
+
+        let json = try #require(
+            JSONSerialization.jsonObject(with: response.body) as? [String: Any]
+        )
+        #expect(json["status"] as? String == "failed")
+        #expect(json["error"] as? String == "unauthorized")
+    }
 }
