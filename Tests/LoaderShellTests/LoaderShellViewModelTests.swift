@@ -1414,6 +1414,175 @@ struct LoaderShellViewModelTests {
         #expect(response.statusCode == 200)
         #expect(backendLoader.loadCallCount == 1)
         #expect(backendLoader.generateChatCallCount == 1)
+        #expect(backendLoader.lastGenerateChatMaxTokens == 2048)
+    }
+
+    @MainActor
+    @Test
+    func openAIBridgeForwardsRequestedMaxCompletionTokens() async throws {
+        let backendLoader = MockBackendLoader()
+        let viewModel = LoaderShellViewModel(
+            backendLoader: backendLoader,
+            piMonoLauncher: .default(),
+            memoryBudgetMonitor: SequencedMemoryBudgetMonitor(snapshots: [
+                MemoryBudgetSnapshot(
+                    measurementSource: "mock_source",
+                    appPID: 111,
+                    helperPID: nil,
+                    appFootprintBytes: 1 * 1_024 * 1_024 * 1_024,
+                    helperFootprintBytes: 0,
+                    combinedFootprintBytes: 1 * 1_024 * 1_024 * 1_024,
+                    constants: .baseline
+                ),
+                MemoryBudgetSnapshot(
+                    measurementSource: "mock_source",
+                    appPID: 111,
+                    helperPID: 222,
+                    appFootprintBytes: 1 * 1_024 * 1_024 * 1_024,
+                    helperFootprintBytes: 1 * 1_024 * 1_024 * 1_024,
+                    combinedFootprintBytes: 2 * 1_024 * 1_024 * 1_024,
+                    constants: .baseline
+                ),
+                MemoryBudgetSnapshot(
+                    measurementSource: "mock_source",
+                    appPID: 111,
+                    helperPID: 222,
+                    appFootprintBytes: 1 * 1_024 * 1_024 * 1_024,
+                    helperFootprintBytes: 1 * 1_024 * 1_024 * 1_024 + 1 * 1_024 * 1_024,
+                    combinedFootprintBytes: 2 * 1_024 * 1_024 * 1_024 + 1 * 1_024 * 1_024,
+                    constants: .baseline
+                ),
+                MemoryBudgetSnapshot(
+                    measurementSource: "mock_source",
+                    appPID: 111,
+                    helperPID: 222,
+                    appFootprintBytes: 1 * 1_024 * 1_024 * 1_024,
+                    helperFootprintBytes: 1 * 1_024 * 1_024 * 1_024 + 2 * 1_024 * 1_024,
+                    combinedFootprintBytes: 2 * 1_024 * 1_024 * 1_024 + 2 * 1_024 * 1_024,
+                    constants: .baseline
+                ),
+                MemoryBudgetSnapshot(
+                    measurementSource: "mock_source",
+                    appPID: 111,
+                    helperPID: 222,
+                    appFootprintBytes: 1 * 1_024 * 1_024 * 1_024,
+                    helperFootprintBytes: 1 * 1_024 * 1_024 * 1_024,
+                    combinedFootprintBytes: 2 * 1_024 * 1_024 * 1_024,
+                    constants: .baseline
+                ),
+            ]),
+            modelCostEstimator: MockModelCostEstimator(estimatedBytes: 1),
+            admissionEvaluator: LoadAdmissionEvaluator(
+                constants: .baseline,
+                physicalMemoryBytes: 16 * 1_024 * 1_024 * 1_024
+            ),
+            bridgeAutoLoadEnabled: true,
+            postLoadSettlementSleep: { _ in },
+            startHTTPServers: false
+        )
+        viewModel.availableModels = [
+            LoaderShellViewModel.ModelRecord(id: "mock", displayName: "mock", localPath: "/tmp/mock")
+        ]
+
+        let response = await viewModel.httpOpenAIChatCompletions(bodyJSON: [
+            "model": "mock",
+            "messages": [["role": "user", "content": "hello"]],
+            "max_completion_tokens": 4096,
+        ])
+
+        #expect(response.statusCode == 200)
+        #expect(backendLoader.generateChatCallCount == 1)
+        #expect(backendLoader.lastGenerateChatMaxTokens == 4096)
+    }
+
+    @MainActor
+    @Test
+    func openAIBridgeLengthFinishReasonIncludesContinuationHint() async throws {
+        let backendLoader = MockBackendLoader()
+        backendLoader.chatResult = BackendChatGenerateResult(
+            text: "partial output",
+            finishReason: "length",
+            promptTokens: 120,
+            completionTokens: 4096
+        )
+        let viewModel = LoaderShellViewModel(
+            backendLoader: backendLoader,
+            piMonoLauncher: .default(),
+            memoryBudgetMonitor: SequencedMemoryBudgetMonitor(snapshots: [
+                MemoryBudgetSnapshot(
+                    measurementSource: "mock_source",
+                    appPID: 111,
+                    helperPID: nil,
+                    appFootprintBytes: 1 * 1_024 * 1_024 * 1_024,
+                    helperFootprintBytes: 0,
+                    combinedFootprintBytes: 1 * 1_024 * 1_024 * 1_024,
+                    constants: .baseline
+                ),
+                MemoryBudgetSnapshot(
+                    measurementSource: "mock_source",
+                    appPID: 111,
+                    helperPID: 222,
+                    appFootprintBytes: 1 * 1_024 * 1_024 * 1_024,
+                    helperFootprintBytes: 1 * 1_024 * 1_024 * 1_024,
+                    combinedFootprintBytes: 2 * 1_024 * 1_024 * 1_024,
+                    constants: .baseline
+                ),
+                MemoryBudgetSnapshot(
+                    measurementSource: "mock_source",
+                    appPID: 111,
+                    helperPID: 222,
+                    appFootprintBytes: 1 * 1_024 * 1_024 * 1_024,
+                    helperFootprintBytes: 1 * 1_024 * 1_024 * 1_024 + 1 * 1_024 * 1_024,
+                    combinedFootprintBytes: 2 * 1_024 * 1_024 * 1_024 + 1 * 1_024 * 1_024,
+                    constants: .baseline
+                ),
+                MemoryBudgetSnapshot(
+                    measurementSource: "mock_source",
+                    appPID: 111,
+                    helperPID: 222,
+                    appFootprintBytes: 1 * 1_024 * 1_024 * 1_024,
+                    helperFootprintBytes: 1 * 1_024 * 1_024 * 1_024 + 2 * 1_024 * 1_024,
+                    combinedFootprintBytes: 2 * 1_024 * 1_024 * 1_024 + 2 * 1_024 * 1_024,
+                    constants: .baseline
+                ),
+                MemoryBudgetSnapshot(
+                    measurementSource: "mock_source",
+                    appPID: 111,
+                    helperPID: 222,
+                    appFootprintBytes: 1 * 1_024 * 1_024 * 1_024,
+                    helperFootprintBytes: 1 * 1_024 * 1_024 * 1_024,
+                    combinedFootprintBytes: 2 * 1_024 * 1_024 * 1_024,
+                    constants: .baseline
+                ),
+            ]),
+            modelCostEstimator: MockModelCostEstimator(estimatedBytes: 1),
+            admissionEvaluator: LoadAdmissionEvaluator(
+                constants: .baseline,
+                physicalMemoryBytes: 16 * 1_024 * 1_024 * 1_024
+            ),
+            bridgeAutoLoadEnabled: true,
+            postLoadSettlementSleep: { _ in },
+            startHTTPServers: false
+        )
+        viewModel.availableModels = [
+            LoaderShellViewModel.ModelRecord(id: "mock", displayName: "mock", localPath: "/tmp/mock")
+        ]
+
+        let response = await viewModel.httpOpenAIChatCompletions(bodyJSON: [
+            "model": "mock",
+            "messages": [["role": "user", "content": "Tell me a long story."]],
+            "max_tokens": 4096,
+        ])
+
+        #expect(response.statusCode == 200)
+        let payload = try #require(JSONSerialization.jsonObject(with: response.body) as? [String: Any])
+        let choices = try #require(payload["choices"] as? [[String: Any]])
+        let firstChoice = try #require(choices.first)
+        #expect(firstChoice["finish_reason"] as? String == "length")
+        let usage = try #require(payload["usage"] as? [String: Any])
+        #expect(usage["completion_tokens"] as? Int == 4096)
+        let w4l = try #require(payload["w4l"] as? [String: Any])
+        #expect(w4l["continuation_available"] as? Bool == true)
     }
 
     @MainActor
@@ -1515,6 +1684,13 @@ private final class MockBackendLoader: BackendLoader {
     private(set) var loadCallCount = 0
     private(set) var generateCallCount = 0
     private(set) var generateChatCallCount = 0
+    private(set) var lastGenerateChatMaxTokens: Int?
+    var chatResult = BackendChatGenerateResult(
+        text: "",
+        finishReason: "stop",
+        promptTokens: 0,
+        completionTokens: 0
+    )
 
     func load(model: LoaderShellViewModel.ModelRecord) async throws -> BackendReadyReport {
         loadCallCount += 1
@@ -1532,9 +1708,10 @@ private final class MockBackendLoader: BackendLoader {
         return ""
     }
 
-    func generateChat(messages: [[String : String]]) async throws -> String {
+    func generateChat(messages: [[String : String]], maxTokens: Int?) async throws -> BackendChatGenerateResult {
         generateChatCallCount += 1
-        return ""
+        lastGenerateChatMaxTokens = maxTokens
+        return chatResult
     }
     func shutdown() async { shutdownCallCount += 1 }
     func activeHelperPID() -> Int32? { 222 }

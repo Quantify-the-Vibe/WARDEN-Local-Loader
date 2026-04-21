@@ -10,7 +10,33 @@ import signal
 import sys
 from pathlib import Path
 
-from mlx_lm import generate, load
+from mlx_lm import generate, load, stream_generate
+
+DEFAULT_GENERATE_MAX_TOKENS = 2048
+
+
+def _safe_max_tokens(command: dict[str, object], default_value: int = DEFAULT_GENERATE_MAX_TOKENS) -> int:
+    value = command.get("max_tokens")
+    if isinstance(value, int) and value > 0:
+        return value
+    return default_value
+
+
+def run_generation(model, tokenizer, prompt: str, max_tokens: int) -> tuple[str, str, int, int]:
+    text = ""
+    finish_reason = "stop"
+    prompt_tokens = 0
+    completion_tokens = 0
+
+    for response in stream_generate(model, tokenizer, prompt, max_tokens=max_tokens):
+        text += str(getattr(response, "text", "") or "")
+        prompt_tokens = int(getattr(response, "prompt_tokens", prompt_tokens) or prompt_tokens)
+        completion_tokens = int(getattr(response, "generation_tokens", completion_tokens) or completion_tokens)
+        response_finish_reason = getattr(response, "finish_reason", None)
+        if response_finish_reason:
+            finish_reason = str(response_finish_reason)
+
+    return text, finish_reason, prompt_tokens, completion_tokens
 
 
 def emit(payload: dict[str, object]) -> None:
@@ -160,7 +186,8 @@ def main() -> int:
                 emit({"status": "failed", "error": "missing_prompt"})
                 continue
             try:
-                output = generate(model, tokenizer, prompt, verbose=False)
+                max_tokens = _safe_max_tokens(command)
+                output = generate(model, tokenizer, prompt, verbose=False, max_tokens=max_tokens)
             except Exception as exc:  # noqa: BLE001
                 emit(
                     {
@@ -185,11 +212,14 @@ def main() -> int:
                 emit({"status": "failed", "error": "missing_messages"})
                 continue
             try:
+                max_tokens = _safe_max_tokens(command)
                 if getattr(tokenizer, "chat_template", None):
                     prompt = tokenizer.apply_chat_template(messages, tokenize=False, add_generation_prompt=True)
                 else:
                     prompt = build_fallback_chat_prompt(messages, detect_prompt_format(model_path))
-                output = generate(model, tokenizer, prompt, verbose=False)
+                output, finish_reason, prompt_tokens, completion_tokens = run_generation(
+                    model, tokenizer, prompt, max_tokens=max_tokens
+                )
             except Exception as exc:  # noqa: BLE001
                 emit(
                     {
@@ -204,6 +234,9 @@ def main() -> int:
                     "status": "ok",
                     "model_id": args.model_id,
                     "response": output,
+                    "finish_reason": finish_reason,
+                    "prompt_tokens": prompt_tokens,
+                    "completion_tokens": completion_tokens,
                 }
             )
             continue

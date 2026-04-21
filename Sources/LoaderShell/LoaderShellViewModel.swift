@@ -45,6 +45,7 @@ final class LoaderShellViewModel: LocalHTTPServerDelegate {
     private let postLoadSettlementDeltaToleranceBytes: UInt64 = 8 * 1_024 * 1_024
     private let generateKVBytesPerInputByte: UInt64 = 3 * 1_024
     private let generateKVBytesPerMessage: UInt64 = 128 * 1_024
+    private let defaultOpenAICompletionTokens: Int = 2048
     private static let bridgeAutoLoadEnvKey = "W4L_OPENAI_BRIDGE_AUTOLOAD"
     private static let exposeDiagnosticsEnvKey = "W4L_EXPOSE_DIAGNOSTICS"
 
@@ -547,7 +548,10 @@ final class LoaderShellViewModel: LocalHTTPServerDelegate {
         do {
             let totalInputBytes = chatMessages.reduce(0) { $0 + ($1["content"]?.utf8.count ?? 0) }
             _ = try evaluateGenerateAdmission(promptByteCount: totalInputBytes, messageCount: chatMessages.count)
-            let responseText = try await backendLoader.generateChat(messages: chatMessages)
+            let requestedMaxTokens = requestedOpenAIMaxTokens(from: bodyJSON)
+            let chatResult = try await backendLoader.generateChat(messages: chatMessages, maxTokens: requestedMaxTokens)
+            let responseText = chatResult.text
+            let finishReason = chatResult.finishReason
             generationSummary = "Last prompt completed through the OpenAI-compatible pi-mono bridge."
             let completionID = "chatcmpl-" + UUID().uuidString.replacingOccurrences(of: "-", with: "").lowercased()
             let created = Int(Date().timeIntervalSince1970)
@@ -557,7 +561,7 @@ final class LoaderShellViewModel: LocalHTTPServerDelegate {
                     .replacingOccurrences(of: "\"", with: "\\\"")
                     .replacingOccurrences(of: "\n", with: "\\n")
                 let chunk1 = "data: {\"id\":\"\(completionID)\",\"object\":\"chat.completion.chunk\",\"created\":\(created),\"model\":\"\(rawModelID)\",\"choices\":[{\"index\":0,\"delta\":{\"role\":\"assistant\",\"content\":\"\(escaped)\"},\"finish_reason\":null}]}\n\n"
-                let chunk2 = "data: {\"id\":\"\(completionID)\",\"object\":\"chat.completion.chunk\",\"created\":\(created),\"model\":\"\(rawModelID)\",\"choices\":[{\"index\":0,\"delta\":{},\"finish_reason\":\"stop\"}]}\n\n"
+                let chunk2 = "data: {\"id\":\"\(completionID)\",\"object\":\"chat.completion.chunk\",\"created\":\(created),\"model\":\"\(rawModelID)\",\"choices\":[{\"index\":0,\"delta\":{},\"finish_reason\":\"\(finishReason)\"}]}\n\n"
                 let done = "data: [DONE]\n\n"
                 return HTTPResponse(
                     statusCode: 200,
@@ -566,7 +570,7 @@ final class LoaderShellViewModel: LocalHTTPServerDelegate {
                 )
             }
 
-            return .json([
+            var payload: [String: Any] = [
                 "id": completionID,
                 "object": "chat.completion",
                 "created": created,
@@ -578,15 +582,23 @@ final class LoaderShellViewModel: LocalHTTPServerDelegate {
                             "role": "assistant",
                             "content": responseText,
                         ],
-                        "finish_reason": "stop",
+                        "finish_reason": finishReason,
                     ],
                 ],
                 "usage": [
-                    "prompt_tokens": 0,
-                    "completion_tokens": 0,
-                    "total_tokens": 0,
+                    "prompt_tokens": chatResult.promptTokens ?? 0,
+                    "completion_tokens": chatResult.completionTokens ?? 0,
+                    "total_tokens": (chatResult.promptTokens ?? 0) + (chatResult.completionTokens ?? 0),
                 ],
-            ])
+            ]
+            if finishReason == "length" {
+                payload["w4l"] = [
+                    "continuation_available": true,
+                    "continuation_hint": "Output reached token limit. Send a follow-up turn (for example: 'continue') with prior conversation context.",
+                ]
+                generationSummary = "Bridge response reached token limit and can continue on the next turn."
+            }
+            return .json(payload)
         } catch let failure as BackendFailureReport {
             generationSummary = "pi-mono bridge generation failed: \(failure.code)"
             return openAICompatibilityFailureResponse(
@@ -634,6 +646,16 @@ final class LoaderShellViewModel: LocalHTTPServerDelegate {
 
             return nil
         }
+    }
+
+    private func requestedOpenAIMaxTokens(from bodyJSON: [String: Any]) -> Int {
+        if let maxCompletionTokens = bodyJSON["max_completion_tokens"] as? Int, maxCompletionTokens > 0 {
+            return maxCompletionTokens
+        }
+        if let maxTokens = bodyJSON["max_tokens"] as? Int, maxTokens > 0 {
+            return maxTokens
+        }
+        return defaultOpenAICompletionTokens
     }
 
     private func updateServerSummary() {

@@ -136,7 +136,7 @@ final class MLXBackendLoader: BackendLoader {
         return response["response"] as? String ?? ""
     }
 
-    func generateChat(messages: [[String: String]]) async throws -> String {
+    func generateChat(messages: [[String: String]], maxTokens: Int?) async throws -> BackendChatGenerateResult {
         guard let activeProcess, activeProcess.isRunning,
               let activeInputPipe,
               let activeOutputPipe
@@ -144,7 +144,11 @@ final class MLXBackendLoader: BackendLoader {
             throw BackendFailureReport(code: "model_not_loaded", detail: "Generate requires one active loaded model.")
         }
 
-        let payload = try JSONSerialization.data(withJSONObject: ["command": "generate_chat", "messages": messages])
+        var command: [String: Any] = ["command": "generate_chat", "messages": messages]
+        if let maxTokens, maxTokens > 0 {
+            command["max_tokens"] = maxTokens
+        }
+        let payload = try JSONSerialization.data(withJSONObject: command)
         try activeInputPipe.fileHandleForWriting.write(contentsOf: payload)
         try activeInputPipe.fileHandleForWriting.write(contentsOf: Data([0x0A]))
 
@@ -176,7 +180,12 @@ final class MLXBackendLoader: BackendLoader {
                 detail: response["detail"] as? String ?? "MLX helper returned a structured chat generation failure."
             )
         }
-        return response["response"] as? String ?? ""
+        return BackendChatGenerateResult(
+            text: response["response"] as? String ?? "",
+            finishReason: response["finish_reason"] as? String ?? "stop",
+            promptTokens: response["prompt_tokens"] as? Int,
+            completionTokens: response["completion_tokens"] as? Int
+        )
     }
 
     func shutdown() async {

@@ -19,12 +19,19 @@ struct BackendFailureReport: Error {
     let detail: String
 }
 
+struct BackendChatGenerateResult {
+    let text: String
+    let finishReason: String
+    let promptTokens: Int?
+    let completionTokens: Int?
+}
+
 @MainActor
 protocol BackendLoader: AnyObject {
     var runtimeEventHandler: ((BackendRuntimeEvent) -> Void)? { get set }
     func load(model: LoaderShellViewModel.ModelRecord) async throws -> BackendReadyReport
     func generate(prompt: String) async throws -> String
-    func generateChat(messages: [[String: String]]) async throws -> String
+    func generateChat(messages: [[String: String]], maxTokens: Int?) async throws -> BackendChatGenerateResult
     func shutdown() async
     func activeHelperPID() -> Int32?
 }

@@ -135,6 +135,17 @@ Authenticated route usage:
   - `401 Unauthorized`
   - `WWW-Authenticate: Bearer realm="W4L Loader", charset="UTF-8"`
 
+OpenAI bridge token-length behavior:
+
+- `POST /v1/chat/completions` forwards:
+  - `max_completion_tokens` (preferred)
+  - `max_tokens` (legacy alias)
+- if omitted, loader defaults completion budget to `2048` tokens for bridge requests
+- bridge now returns model finish reason faithfully:
+  - `finish_reason: "stop"` when generation reaches EOS
+  - `finish_reason: "length"` when generation hits token ceiling
+- when `finish_reason` is `length`, response includes a `w4l.continuation_hint` to continue on the next turn with conversation context
+
 ## Launch
 
 Build and launch the packaged app:
