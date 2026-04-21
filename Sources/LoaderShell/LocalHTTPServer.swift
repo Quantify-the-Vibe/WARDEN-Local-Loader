@@ -105,7 +105,7 @@ final class LocalHTTPServer: @unchecked Sendable {
             })
             return
         }
-        connection.receive(minimumIncompleteLength: 1, maximumLength: 65_536) { [weak self] data, _, _, _ in
+        connection.receive(minimumIncompleteLength: 1, maximumLength: 65_536) { [weak self] data, _, isComplete, _ in
             guard let self else {
                 connection.cancel()
                 return
@@ -124,7 +124,7 @@ final class LocalHTTPServer: @unchecked Sendable {
                 })
                 return
             }
-            guard let requestData = Self.completeRequestData(from: combined) else {
+            guard let requestData = Self.completeRequestData(from: combined, isComplete: isComplete) else {
                 self.receiveRequest(on: connection, buffer: combined, startedAt: startedAt)
                 return
             }
@@ -268,7 +268,7 @@ final class LocalHTTPServer: @unchecked Sendable {
         )
     }
 
-    static func completeRequestData(from data: Data) -> Data? {
+    static func completeRequestData(from data: Data, isComplete: Bool = true) -> Data? {
         guard let headerRange = data.range(of: Data("\r\n\r\n".utf8)) else {
             return nil
         }
@@ -277,17 +277,9 @@ final class LocalHTTPServer: @unchecked Sendable {
             return data
         }
 
-        let contentLength = headersText
-            .components(separatedBy: "\r\n")
-            .compactMap { line -> Int? in
-                let parts = line.split(separator: ":", maxSplits: 1).map(String.init)
-                guard parts.count == 2 else { return nil }
-                guard parts[0].trimmingCharacters(in: .whitespacesAndNewlines).lowercased() == "content-length" else {
-                    return nil
-                }
-                return Int(parts[1].trimmingCharacters(in: .whitespacesAndNewlines))
-            }
-            .first ?? 0
+        guard let contentLength = parseContentLength(from: headersText) else {
+            return isComplete ? data : nil
+        }
 
         let bodyStart = headerRange.upperBound
         let expectedTotalLength = data.distance(from: data.startIndex, to: bodyStart) + max(contentLength, 0)
@@ -308,7 +300,14 @@ final class LocalHTTPServer: @unchecked Sendable {
         guard let headersText = String(data: headersData, encoding: .utf8) else {
             return false
         }
-        let contentLength = headersText
+        let contentLength = parseContentLength(from: headersText) ?? 0
+        let bodyStart = headerRange.upperBound
+        let expectedTotalLength = data.distance(from: data.startIndex, to: bodyStart) + max(contentLength, 0)
+        return expectedTotalLength > maxRequestBytes
+    }
+
+    private static func parseContentLength(from headersText: String) -> Int? {
+        headersText
             .components(separatedBy: "\r\n")
             .compactMap { line -> Int? in
                 let parts = line.split(separator: ":", maxSplits: 1).map(String.init)
@@ -318,10 +317,7 @@ final class LocalHTTPServer: @unchecked Sendable {
                 }
                 return Int(parts[1].trimmingCharacters(in: .whitespacesAndNewlines))
             }
-            .first ?? 0
-        let bodyStart = headerRange.upperBound
-        let expectedTotalLength = data.distance(from: data.startIndex, to: bodyStart) + max(contentLength, 0)
-        return expectedTotalLength > maxRequestBytes
+            .first
     }
 
     private static func headerDictionary(from lines: ArraySlice<String>) -> [String: String] {

@@ -20,6 +20,19 @@ struct LocalHTTPServerTests {
     }
 
     @Test
+    func completeRequestDataWithoutContentLengthWaitsUntilStreamComplete() {
+        let body = #"{"prompt":"hello"}"#
+        let headers = "POST /generate HTTP/1.1\r\n" +
+            "Host: 127.0.0.1\r\n" +
+            "Content-Type: application/json\r\n" +
+            "\r\n"
+        let payload = Data((headers + body).utf8)
+
+        #expect(LocalHTTPServer.completeRequestData(from: payload, isComplete: false) == nil)
+        #expect(LocalHTTPServer.completeRequestData(from: payload, isComplete: true) == payload)
+    }
+
+    @Test
     func renderUsesServiceUnavailableReasonPhrase() {
         let response = HTTPResponse.json(statusCode: 503, [
             "status": "failed",
