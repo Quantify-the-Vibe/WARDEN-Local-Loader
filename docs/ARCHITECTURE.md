@@ -45,7 +45,7 @@ Deferred:
 - first client:
   - `pi-mono`
 - operator surface:
-  - `LoaderShell.app`
+  - `WMLShell.app`
 - local model root:
   - `/Users/kikbot/.models/mlx/`
 - target host:
@@ -55,8 +55,8 @@ Deferred:
 
 Implemented now:
 
-1. operator launches `LoaderShell.app`
-2. `LoaderShellViewModel` initializes on the main actor
+1. operator launches `WMLShell.app`
+2. `WMLShellViewModel` initializes on the main actor
 3. model discovery scans `/Users/kikbot/.models/mlx/`
 4. control HTTP server starts on `:8787`
 5. OpenAI-compatible bridge starts on `:8080`
@@ -71,7 +71,7 @@ Implemented now:
 
 Admitted for the next spec:
 
-1. extract a `LoaderSupervisor` authority from `LoaderShellViewModel`
+1. extract a `LoaderSupervisor` authority from `WMLShellViewModel`
 2. move memory admission and restart decisions into that authority
 3. keep backend helper as a separate OS process
 4. keep client bridge outside backend-specific code
@@ -79,9 +79,9 @@ Admitted for the next spec:
 
 The lowest-risk target topology is:
 
-- `LoaderShellView`
+- `WMLShellView`
   - operator controls only
-- `LoaderShellViewModel`
+- `WMLShellViewModel`
   - UI-facing state projection only
 - `LoaderSupervisor`
   - runtime authority
@@ -114,7 +114,7 @@ Owns:
 - cross-subsystem UX
 - decisions above the loader boundary
 
-### LoaderShellView
+### WMLShellView
 
 Owns:
 
@@ -128,7 +128,7 @@ Does not own:
 - memory policy
 - backend semantics
 
-### LoaderShellViewModel
+### WMLShellViewModel
 
 Implemented now:
 

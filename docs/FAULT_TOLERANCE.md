@@ -7,8 +7,8 @@
   - not active canon
   - not approved review corpus input
 - superseded by:
-  - `docs/W4L_V02_IMPLEMENTATION_SPEC.md`
-  - `docs/W4L_V03_PLANNING_SPEC.md`
+  - `docs/WML_V02_IMPLEMENTATION_SPEC.md`
+  - `docs/WML_V03_PLANNING_SPEC.md`
 - reason:
   - contains superseded supervision and restart planning that does not describe current code
 
@@ -31,10 +31,10 @@ Do not use this file in the active design review corpus.
 
 - the MLX helper is a separate OS process and can crash or be OOM-killed at any time
 - the current implementation has no crash detection, no restart policy, and no supervised recovery path
-- `LoaderShellViewModel` manages backend state inline, conflating UI state with lifecycle management
+- `WMLShellViewModel` manages backend state inline, conflating UI state with lifecycle management
 - if the helper exits unexpectedly, the next generate call will hit a `model_not_loaded` error
 - there is no operator-visible signal that the backend has gone away between requests
-- the goal: `LoaderShell.app` must never exit due to a backend failure, and the operator must always see accurate state
+- the goal: `WMLShell.app` must never exit due to a backend failure, and the operator must always see accurate state
 
 ## Design Principles
 
@@ -134,7 +134,7 @@ Erlang's fault model provides the best available frame for this problem. The key
   - memory pre-flight call before every spawn attempt
   - reclaim verification after every shutdown
 
-- `LoaderShellViewModel` retains:
+- `WMLShellViewModel` retains:
   - selected model state
   - HTTP delegate responsibilities
   - UI-visible status string and detail
@@ -254,13 +254,13 @@ Erlang's fault model provides the best available frame for this problem. The key
 
 ### Source File
 
-- `Sources/LoaderShell/LoaderSupervisor.swift` — new file for slice 2
+- `Sources/WMLShell/LoaderSupervisor.swift` — new file for slice 2
 
 ### Actor Isolation
 
 - `LoaderSupervisor` is a Swift `actor`
 - all state is actor-isolated: crash count, crash timestamps, back-off state, active backend reference
-- `LoaderShellViewModel` calls supervisor methods via `await`
+- `WMLShellViewModel` calls supervisor methods via `await`
 - no `LoaderSupervisor` state is accessed directly from the main actor
 
 ### Back-off Implementation
@@ -272,7 +272,7 @@ Erlang's fault model provides the best available frame for this problem. The key
 ### Status Propagation
 
 - supervisor exposes a `@Published`-equivalent via `AsyncStream` or a callback closure
-- `LoaderShellViewModel` subscribes and forwards supervisor state changes to `status` and `statusDetail`
+- `WMLShellViewModel` subscribes and forwards supervisor state changes to `status` and `statusDetail`
 - the operator always sees the current supervisor state, even during back-off delay
 
 ## Fitness Functions

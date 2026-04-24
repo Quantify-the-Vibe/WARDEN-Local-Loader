@@ -1,11 +1,11 @@
 WARDEN4 Implementation Slice P2.T2.S3 Budget Reporting In Status Surfaces v1
 Status: Planned Slice Class: Phase-local execution Write Scope: Status contract, operator budget surfaces, and directly supporting docs/tests for P2.T2.S3
 Objective
-Execute P2.T2.S3 inside Phase 02 W4L v0.2 Host Protective Runtime without expanding beyond one bounded implementation claim.
+Execute P2.T2.S3 inside Phase 02 WML v0.2 Host Protective Runtime without expanding beyond one bounded implementation claim.
 Claim
 Expose budget summary, admission result, and reclaim result coherently through `GET /status` and the operator shell so the runtime state is inspectable.
 Parent Phase
-- `WARDEN4_Phase_02_W4L_V02_Host_Protective_Runtime_v1.md`
+- `WARDEN4_Phase_02_WML_V02_Host_Protective_Runtime_v1.md`
 Parent Track
 - Budget Verification And Reclaim
 Changes In Scope

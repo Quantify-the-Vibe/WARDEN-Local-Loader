@@ -9,7 +9,7 @@ final class MLXBackendLoader: BackendLoader {
     private var activeOutputPipe: Pipe?
     private var expectedTerminationPID: Int32?
 
-    func load(model: LoaderShellViewModel.ModelRecord) async throws -> BackendReadyReport {
+    func load(model: WMLShellViewModel.ModelRecord) async throws -> BackendReadyReport {
         await shutdown()
         let helperScriptPath = try Self.resolveHelperScriptPath()
 
@@ -257,7 +257,7 @@ final class MLXBackendLoader: BackendLoader {
         var candidates: [String] = []
         let helperRelativePath = "tools/mlx_loader_helper.py"
 
-        if let envPath = environment["W4L_HELPER_SCRIPT_PATH"], !envPath.isEmpty {
+        if let envPath = environment["WML_HELPER_SCRIPT_PATH"], !envPath.isEmpty {
             candidates.append(envPath)
         }
 
@@ -283,7 +283,7 @@ final class MLXBackendLoader: BackendLoader {
         guard let selected = candidates.first(where: { fileManager.fileExists(atPath: $0) }) else {
             throw BackendFailureReport(
                 code: "helper_script_missing",
-                detail: "MLX helper script not found. Set W4L_HELPER_SCRIPT_PATH or ensure tools/mlx_loader_helper.py exists."
+                detail: "MLX helper script not found. Set WML_HELPER_SCRIPT_PATH or ensure tools/mlx_loader_helper.py exists."
             )
         }
 

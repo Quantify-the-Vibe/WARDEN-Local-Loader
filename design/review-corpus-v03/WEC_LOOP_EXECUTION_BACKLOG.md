@@ -87,7 +87,7 @@ Purpose:
 
 Current planning source:
 
-- `design/review-corpus-v03/W4L_V03_IMPLEMENTATION_SPEC.md`
+- `design/review-corpus-v03/WML_V03_IMPLEMENTATION_SPEC.md`
 - `design/planning-v03/`
 
 Required freeze points:

@@ -7,15 +7,15 @@ Loaded execution artifact set for this project:
 - skill profile:
   - `coding_skills@0.2.0`
 - source planning corpus:
-  - `/Users/kikbot/Documents/WARDEN4/WARDEN4-Local-LLM-Loader-Rebuild/design/planning-v02/WARDEN4_Phase_02_W4L_V02_Host_Protective_Runtime_v1.md`
-  - `/Users/kikbot/Documents/WARDEN4/WARDEN4-Local-LLM-Loader-Rebuild/design/planning-v02/WARDEN4_IMPLEMENTATION_SLICE_P2_T1_S1_MEMORY_MEASUREMENT_AND_BUDGET_CONSTANTS_BASELINE_v1.md`
-  - `/Users/kikbot/Documents/WARDEN4/WARDEN4-Local-LLM-Loader-Rebuild/design/planning-v02/WARDEN4_IMPLEMENTATION_SLICE_P2_T1_S2_ADMISSION_GATE_BEFORE_HELPER_SPAWN_v1.md`
-  - `/Users/kikbot/Documents/WARDEN4/WARDEN4-Local-LLM-Loader-Rebuild/design/planning-v02/WARDEN4_IMPLEMENTATION_SLICE_P2_T2_S1_POST_LOAD_BUDGET_VERIFICATION_v1.md`
-  - `/Users/kikbot/Documents/WARDEN4/WARDEN4-Local-LLM-Loader-Rebuild/design/planning-v02/WARDEN4_IMPLEMENTATION_SLICE_P2_T2_S2_RECLAIM_VERIFICATION_AFTER_RESET_v1.md`
-  - `/Users/kikbot/Documents/WARDEN4/WARDEN4-Local-LLM-Loader-Rebuild/design/planning-v02/WARDEN4_IMPLEMENTATION_SLICE_P2_T2_S3_BUDGET_REPORTING_IN_STATUS_SURFACES_v1.md`
-  - `/Users/kikbot/Documents/WARDEN4/WARDEN4-Local-LLM-Loader-Rebuild/design/planning-v02/WARDEN4_IMPLEMENTATION_SLICE_P2_T3_S1_SUPERVISOR_EXTRACTION_AND_CRASH_ACCOUNTING_v1.md`
-  - `/Users/kikbot/Documents/WARDEN4/WARDEN4-Local-LLM-Loader-Rebuild/design/planning-v02/WARDEN4_IMPLEMENTATION_SLICE_P2_T3_S2_BOUNDED_RESTART_AND_FAIL_FAST_POLICY_v1.md`
-  - `/Users/kikbot/Documents/WARDEN4/WARDEN4-Local-LLM-Loader-Rebuild/design/planning-v02/WARDEN4_IMPLEMENTATION_SLICE_P2_T3_S3_COMPATIBILITY_BRIDGE_AND_OPERATOR_RECOVERY_ALIGNMENT_v1.md`
+  - `/Users/kikbot/Documents/WARDEN4/WARDEN-Model-Loader/design/planning-v02/WARDEN4_Phase_02_WML_V02_Host_Protective_Runtime_v1.md`
+  - `/Users/kikbot/Documents/WARDEN4/WARDEN-Model-Loader/design/planning-v02/WARDEN4_IMPLEMENTATION_SLICE_P2_T1_S1_MEMORY_MEASUREMENT_AND_BUDGET_CONSTANTS_BASELINE_v1.md`
+  - `/Users/kikbot/Documents/WARDEN4/WARDEN-Model-Loader/design/planning-v02/WARDEN4_IMPLEMENTATION_SLICE_P2_T1_S2_ADMISSION_GATE_BEFORE_HELPER_SPAWN_v1.md`
+  - `/Users/kikbot/Documents/WARDEN4/WARDEN-Model-Loader/design/planning-v02/WARDEN4_IMPLEMENTATION_SLICE_P2_T2_S1_POST_LOAD_BUDGET_VERIFICATION_v1.md`
+  - `/Users/kikbot/Documents/WARDEN4/WARDEN-Model-Loader/design/planning-v02/WARDEN4_IMPLEMENTATION_SLICE_P2_T2_S2_RECLAIM_VERIFICATION_AFTER_RESET_v1.md`
+  - `/Users/kikbot/Documents/WARDEN4/WARDEN-Model-Loader/design/planning-v02/WARDEN4_IMPLEMENTATION_SLICE_P2_T2_S3_BUDGET_REPORTING_IN_STATUS_SURFACES_v1.md`
+  - `/Users/kikbot/Documents/WARDEN4/WARDEN-Model-Loader/design/planning-v02/WARDEN4_IMPLEMENTATION_SLICE_P2_T3_S1_SUPERVISOR_EXTRACTION_AND_CRASH_ACCOUNTING_v1.md`
+  - `/Users/kikbot/Documents/WARDEN4/WARDEN-Model-Loader/design/planning-v02/WARDEN4_IMPLEMENTATION_SLICE_P2_T3_S2_BOUNDED_RESTART_AND_FAIL_FAST_POLICY_v1.md`
+  - `/Users/kikbot/Documents/WARDEN4/WARDEN-Model-Loader/design/planning-v02/WARDEN4_IMPLEMENTATION_SLICE_P2_T3_S3_COMPATIBILITY_BRIDGE_AND_OPERATOR_RECOVERY_ALIGNMENT_v1.md`
 
 Generated artifacts:
 
@@ -29,7 +29,7 @@ Generation basis:
 - WEC-Py source root:
   - `/Users/kikbot/Documents/Playground/WEC-Py/src`
 - local bootstrap:
-  - `/Users/kikbot/Documents/WARDEN4/WARDEN4-Local-LLM-Loader-Rebuild/tools/bootstrap_loader_wecpy_project.py`
+  - `/Users/kikbot/Documents/WARDEN4/WARDEN-Model-Loader/tools/bootstrap_loader_wecpy_project.py`
 
 Current generated shape:
 
@@ -75,14 +75,14 @@ Usage note:
 Next corpus candidate (not generated yet):
 
 - target phase:
-  - `W4L v0.3`
+  - `WML v0.3`
 - candidate planning source:
-  - `/Users/kikbot/Documents/WARDEN4/WARDEN4-Local-LLM-Loader-Rebuild/design/planning-v03/WARDEN4_Phase_03_W4L_V03_Resilience_And_Admission_v1.md`
-  - `/Users/kikbot/Documents/WARDEN4/WARDEN4-Local-LLM-Loader-Rebuild/design/planning-v03/WARDEN4_IMPLEMENTATION_SLICE_P3_T1_S1_TIMEOUT_CLASSIFICATION_AND_CRASH_WINDOW_INVARIANTS_v1.md`
-  - `/Users/kikbot/Documents/WARDEN4/WARDEN4-Local-LLM-Loader-Rebuild/design/planning-v03/WARDEN4_IMPLEMENTATION_SLICE_P3_T1_S2_RESTART_BACKOFF_EXECUTION_UNDER_SUPERVISOR_OWNERSHIP_v1.md`
-  - `/Users/kikbot/Documents/WARDEN4/WARDEN4-Local-LLM-Loader-Rebuild/design/planning-v03/WARDEN4_IMPLEMENTATION_SLICE_P3_T2_S1_EVIDENCE_BASED_LOAD_SETTLEMENT_AND_CONFIDENCE_UPGRADE_v1.md`
-  - `/Users/kikbot/Documents/WARDEN4/WARDEN4-Local-LLM-Loader-Rebuild/design/planning-v03/WARDEN4_IMPLEMENTATION_SLICE_P3_T2_S2_PER_GENERATE_KV_SENSITIVE_ADMISSION_GATE_v1.md`
-  - `/Users/kikbot/Documents/WARDEN4/WARDEN4-Local-LLM-Loader-Rebuild/design/planning-v03/WARDEN4_IMPLEMENTATION_SLICE_P3_T3_S1_RECLAIM_FAILURE_STATE_INTEGRITY_AND_DEGRADED_LOCK_v1.md`
-  - `/Users/kikbot/Documents/WARDEN4/WARDEN4-Local-LLM-Loader-Rebuild/design/planning-v03/WARDEN4_IMPLEMENTATION_SLICE_P3_T3_S2_BRIDGE_TRANSLATION_ONLY_DEFAULT_AND_EXPLICIT_LOAD_POLICY_v1.md`
+  - `/Users/kikbot/Documents/WARDEN4/WARDEN-Model-Loader/design/planning-v03/WARDEN4_Phase_03_WML_V03_Resilience_And_Admission_v1.md`
+  - `/Users/kikbot/Documents/WARDEN4/WARDEN-Model-Loader/design/planning-v03/WARDEN4_IMPLEMENTATION_SLICE_P3_T1_S1_TIMEOUT_CLASSIFICATION_AND_CRASH_WINDOW_INVARIANTS_v1.md`
+  - `/Users/kikbot/Documents/WARDEN4/WARDEN-Model-Loader/design/planning-v03/WARDEN4_IMPLEMENTATION_SLICE_P3_T1_S2_RESTART_BACKOFF_EXECUTION_UNDER_SUPERVISOR_OWNERSHIP_v1.md`
+  - `/Users/kikbot/Documents/WARDEN4/WARDEN-Model-Loader/design/planning-v03/WARDEN4_IMPLEMENTATION_SLICE_P3_T2_S1_EVIDENCE_BASED_LOAD_SETTLEMENT_AND_CONFIDENCE_UPGRADE_v1.md`
+  - `/Users/kikbot/Documents/WARDEN4/WARDEN-Model-Loader/design/planning-v03/WARDEN4_IMPLEMENTATION_SLICE_P3_T2_S2_PER_GENERATE_KV_SENSITIVE_ADMISSION_GATE_v1.md`
+  - `/Users/kikbot/Documents/WARDEN4/WARDEN-Model-Loader/design/planning-v03/WARDEN4_IMPLEMENTATION_SLICE_P3_T3_S1_RECLAIM_FAILURE_STATE_INTEGRITY_AND_DEGRADED_LOCK_v1.md`
+  - `/Users/kikbot/Documents/WARDEN4/WARDEN-Model-Loader/design/planning-v03/WARDEN4_IMPLEMENTATION_SLICE_P3_T3_S2_BRIDGE_TRANSLATION_ONLY_DEFAULT_AND_EXPLICIT_LOAD_POLICY_v1.md`
 - generation gate:
   - each generated PEM remains blocked on explicit live user confirmation before next PEM starts

@@ -1,21 +1,21 @@
-WARDEN4 Phase 03 W4L v0.3 Resilience And Admission v1
+WARDEN4 Phase 03 WML v0.3 Resilience And Admission v1
 Status: Active Planning Artifact Scope: Loader v0.3 resilience and admission hardening path
 Objective
-Upgrade the closed W4L v0.2 runtime with mathematically sound supervision and generation-time memory admission while preserving the loader authority boundary.
+Upgrade the closed WML v0.2 runtime with mathematically sound supervision and generation-time memory admission while preserving the loader authority boundary.
 
 Entry Gate
-- W4L v0.2 baseline is working and closed
-- `design/review-corpus-v03/W4L_V03_IMPLEMENTATION_SPEC.md` is the active execution source
+- WML v0.2 baseline is working and closed
+- `design/review-corpus-v03/WML_V03_IMPLEMENTATION_SPEC.md` is the active execution source
 - control contract remains on `:8787`
 - compatibility bridge remains on `:8080`
 - target host remains 16GB Apple Silicon macOS
 
 Controlling Canon
-- `/Users/kikbot/Documents/WARDEN4/WARDEN4-Local-LLM-Loader-Rebuild/README.md`
-- `/Users/kikbot/Documents/WARDEN4/WARDEN4-Local-LLM-Loader-Rebuild/design/review-corpus-v03/W4L_V03_IMPLEMENTATION_SPEC.md`
-- `/Users/kikbot/Documents/WARDEN4/WARDEN4-Local-LLM-Loader-Rebuild/design/review-corpus-v03/ARCHITECTURE.md`
-- `/Users/kikbot/Documents/WARDEN4/WARDEN4-Local-LLM-Loader-Rebuild/design/review-corpus-v03/INTEGRATION_NOTES_FOR_PI_MONO.md`
-- `/Users/kikbot/Documents/WARDEN4/WARDEN4-Local-LLM-Loader-Rebuild/design/review-corpus-v03/WEC_LOOP_EXECUTION_BACKLOG.md`
+- `/Users/kikbot/Documents/WARDEN4/WARDEN-Model-Loader/README.md`
+- `/Users/kikbot/Documents/WARDEN4/WARDEN-Model-Loader/design/review-corpus-v03/WML_V03_IMPLEMENTATION_SPEC.md`
+- `/Users/kikbot/Documents/WARDEN4/WARDEN-Model-Loader/design/review-corpus-v03/ARCHITECTURE.md`
+- `/Users/kikbot/Documents/WARDEN4/WARDEN-Model-Loader/design/review-corpus-v03/INTEGRATION_NOTES_FOR_PI_MONO.md`
+- `/Users/kikbot/Documents/WARDEN4/WARDEN-Model-Loader/design/review-corpus-v03/WEC_LOOP_EXECUTION_BACKLOG.md`
 
 Tracks And Slice Register
 Track 3.1 - Supervision Math And Restart Behavior
@@ -64,6 +64,6 @@ Live Test Gate
 - the next slice stays blocked until that live result is explicitly confirmed
 
 Relationship To Other Planning Docs
-- this phase is the execution control surface for W4L v0.3
+- this phase is the execution control surface for WML v0.3
 - v0.2 planning artifacts remain closed baseline history
 - the broader backlog remains in `design/review-corpus-v03/WEC_LOOP_EXECUTION_BACKLOG.md`

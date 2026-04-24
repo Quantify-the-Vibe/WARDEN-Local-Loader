@@ -1,4 +1,4 @@
-# WARDEN4 Local LLM Loader Rebuild
+# WARDEN Model Loader (WML)
 
 Local inference loader subsystem inside:
 
@@ -65,7 +65,7 @@ Not implemented now:
 
 Closed baseline chain:
 
-- `docs/W4L_V02_IMPLEMENTATION_SPEC.md`
+- `docs/WML_V02_IMPLEMENTATION_SPEC.md`
 - `docs/LOADER_IMPLEMENTATION_SPEC.md`
 - `docs/ARCHITECTURE.md`
 - `docs/INTEGRATION_NOTES_FOR_PI_MONO.md`
@@ -73,7 +73,7 @@ Closed baseline chain:
 
 Next planning source:
 
-- `docs/W4L_V03_PLANNING_SPEC.md`
+- `docs/WML_V03_PLANNING_SPEC.md`
 
 The v0.2 docs define the closed implemented baseline.
 The v0.3 planning doc is the next authority candidate.
@@ -98,11 +98,11 @@ Those files are retained for provenance only and should not be used as current d
 
 Build and launch the packaged app:
 
-- `cd /Users/kikbot/Documents/WARDEN4/WARDEN4-Local-LLM-Loader-Rebuild && ./run-loader-app.sh`
+- `cd /Users/kikbot/Documents/WARDEN4/WARDEN-Model-Loader && ./run-loader-app.sh`
 
 Direct app path:
 
-- `/Users/kikbot/Documents/WARDEN4/WARDEN4-Local-LLM-Loader-Rebuild/dist/LoaderShell.app`
+- `/Users/kikbot/Documents/WARDEN4/WARDEN-Model-Loader/dist/WMLShell.app`
 
 ## v0.2 Closure
 

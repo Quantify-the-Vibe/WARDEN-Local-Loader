@@ -4,7 +4,7 @@
     "binding_version": "0.2.0",
     "conflict_policy_ref": "default_conflict",
     "corpus_id": "warden4-local-llm-loader-slices-v03",
-    "corpus_location": "/Users/kikbot/Documents/WARDEN4/WARDEN4-Local-LLM-Loader-Rebuild/design/planning-v03",
+    "corpus_location": "/Users/kikbot/Documents/WARDEN4/WARDEN-Model-Loader/design/planning-v03",
     "corpus_version": "0.3.0",
     "ruleset_scope": "project",
     "severity_policy_ref": "default_severity"
@@ -17,8 +17,8 @@
     "review_policy_ref": "standard_review_policy"
   },
   "project_id": "warden4-local-llm-loader-rebuild",
-  "project_name": "WARDEN4 Local LLM Loader Rebuild",
-  "project_root": "/Users/kikbot/Documents/WARDEN4/WARDEN4-Local-LLM-Loader-Rebuild/runtime_data/wecpy-v03",
+  "project_name": "WARDEN Model Loader (WML)",
+  "project_root": "/Users/kikbot/Documents/WARDEN4/WARDEN-Model-Loader/runtime_data/wecpy-v03",
   "project_type": "subsystem",
   "registry_requirements": {
     "corpus_adapter_registry_version_range": ">=0.2.0,<0.3.0",
@@ -30,7 +30,7 @@
     "phases": [
       {
         "dependencies": [],
-        "objective": "Upgrade the closed W4L v0.2 runtime with mathematically sound supervision and generation-time memory admission while preserving the loader authority boundary.",
+        "objective": "Upgrade the closed WML v0.2 runtime with mathematically sound supervision and generation-time memory admission while preserving the loader authority boundary.",
         "phase_id": "phase-003",
         "tasks": [
           {
@@ -40,14 +40,14 @@
             ],
             "dependencies": [],
             "inputs": [
-              "/Users/kikbot/Documents/WARDEN4/WARDEN4-Local-LLM-Loader-Rebuild/design/planning-v03/WARDEN4_IMPLEMENTATION_SLICE_P3_T1_S1_TIMEOUT_CLASSIFICATION_AND_CRASH_WINDOW_INVARIANTS_v1.md",
-              "/Users/kikbot/Documents/WARDEN4/WARDEN4-Local-LLM-Loader-Rebuild/design/planning-v03/WARDEN4_IMPLEMENTATION_SLICE_P3_T1_S2_RESTART_BACKOFF_EXECUTION_UNDER_SUPERVISOR_OWNERSHIP_v1.md"
+              "/Users/kikbot/Documents/WARDEN4/WARDEN-Model-Loader/design/planning-v03/WARDEN4_IMPLEMENTATION_SLICE_P3_T1_S1_TIMEOUT_CLASSIFICATION_AND_CRASH_WINDOW_INVARIANTS_v1.md",
+              "/Users/kikbot/Documents/WARDEN4/WARDEN-Model-Loader/design/planning-v03/WARDEN4_IMPLEMENTATION_SLICE_P3_T1_S2_RESTART_BACKOFF_EXECUTION_UNDER_SUPERVISOR_OWNERSHIP_v1.md"
             ],
             "loop_profile_binding": {
               "profile_id": "coding_slice",
               "version": "0.2.0"
             },
-            "objective": "Execute the bounded slice set for Supervision Math And Restart Behavior. Start with Execute P3.T1.S1 inside Phase 03 W4L v0.3 Resilience And Admission without expanding beyond one bounded implementation claim.",
+            "objective": "Execute the bounded slice set for Supervision Math And Restart Behavior. Start with Execute P3.T1.S1 inside Phase 03 WML v0.3 Resilience And Admission without expanding beyond one bounded implementation claim.",
             "policy_overrides": {},
             "skill_profile_binding": {
               "profile_id": "coding_skills",
@@ -65,7 +65,7 @@
                 ],
                 "dependencies": [],
                 "inputs": [
-                  "/Users/kikbot/Documents/WARDEN4/WARDEN4-Local-LLM-Loader-Rebuild/design/planning-v03/WARDEN4_IMPLEMENTATION_SLICE_P3_T1_S1_TIMEOUT_CLASSIFICATION_AND_CRASH_WINDOW_INVARIANTS_v1.md"
+                  "/Users/kikbot/Documents/WARDEN4/WARDEN-Model-Loader/design/planning-v03/WARDEN4_IMPLEMENTATION_SLICE_P3_T1_S1_TIMEOUT_CLASSIFICATION_AND_CRASH_WINDOW_INVARIANTS_v1.md"
                 ],
                 "metadata": {
                   "advance_requires_user_confirmation": true,
@@ -73,7 +73,7 @@
                   "live_test_required": true,
                   "original_locator": "P3.T1.S1",
                   "parent_phase": [
-                    "`WARDEN4_Phase_03_W4L_V03_Resilience_And_Admission_v1.md`"
+                    "`WARDEN4_Phase_03_WML_V03_Resilience_And_Admission_v1.md`"
                   ],
                   "parent_track": [
                     "Supervision Math And Restart Behavior"
@@ -84,7 +84,7 @@
                   "task_id": "task-001",
                   "task_num": 1
                 },
-                "objective": "Execute P3.T1.S1 inside Phase 03 W4L v0.3 Resilience And Admission without expanding beyond one bounded implementation claim.",
+                "objective": "Execute P3.T1.S1 inside Phase 03 WML v0.3 Resilience And Admission without expanding beyond one bounded implementation claim.",
                 "policy_overrides": {
                   "closeout_policy_ref": "task_closeout_policy"
                 },
@@ -105,7 +105,7 @@
                   "slice-001"
                 ],
                 "inputs": [
-                  "/Users/kikbot/Documents/WARDEN4/WARDEN4-Local-LLM-Loader-Rebuild/design/planning-v03/WARDEN4_IMPLEMENTATION_SLICE_P3_T1_S2_RESTART_BACKOFF_EXECUTION_UNDER_SUPERVISOR_OWNERSHIP_v1.md"
+                  "/Users/kikbot/Documents/WARDEN4/WARDEN-Model-Loader/design/planning-v03/WARDEN4_IMPLEMENTATION_SLICE_P3_T1_S2_RESTART_BACKOFF_EXECUTION_UNDER_SUPERVISOR_OWNERSHIP_v1.md"
                 ],
                 "metadata": {
                   "advance_requires_user_confirmation": true,
@@ -113,7 +113,7 @@
                   "live_test_required": true,
                   "original_locator": "P3.T1.S2",
                   "parent_phase": [
-                    "`WARDEN4_Phase_03_W4L_V03_Resilience_And_Admission_v1.md`"
+                    "`WARDEN4_Phase_03_WML_V03_Resilience_And_Admission_v1.md`"
                   ],
                   "parent_track": [
                     "Supervision Math And Restart Behavior"
@@ -124,7 +124,7 @@
                   "task_id": "task-001",
                   "task_num": 1
                 },
-                "objective": "Execute P3.T1.S2 inside Phase 03 W4L v0.3 Resilience And Admission without expanding beyond one bounded implementation claim.",
+                "objective": "Execute P3.T1.S2 inside Phase 03 WML v0.3 Resilience And Admission without expanding beyond one bounded implementation claim.",
                 "policy_overrides": {
                   "closeout_policy_ref": "task_closeout_policy"
                 },
@@ -145,14 +145,14 @@
               "task-001"
             ],
             "inputs": [
-              "/Users/kikbot/Documents/WARDEN4/WARDEN4-Local-LLM-Loader-Rebuild/design/planning-v03/WARDEN4_IMPLEMENTATION_SLICE_P3_T2_S1_EVIDENCE_BASED_LOAD_SETTLEMENT_AND_CONFIDENCE_UPGRADE_v1.md",
-              "/Users/kikbot/Documents/WARDEN4/WARDEN4-Local-LLM-Loader-Rebuild/design/planning-v03/WARDEN4_IMPLEMENTATION_SLICE_P3_T2_S2_PER_GENERATE_KV_SENSITIVE_ADMISSION_GATE_v1.md"
+              "/Users/kikbot/Documents/WARDEN4/WARDEN-Model-Loader/design/planning-v03/WARDEN4_IMPLEMENTATION_SLICE_P3_T2_S1_EVIDENCE_BASED_LOAD_SETTLEMENT_AND_CONFIDENCE_UPGRADE_v1.md",
+              "/Users/kikbot/Documents/WARDEN4/WARDEN-Model-Loader/design/planning-v03/WARDEN4_IMPLEMENTATION_SLICE_P3_T2_S2_PER_GENERATE_KV_SENSITIVE_ADMISSION_GATE_v1.md"
             ],
             "loop_profile_binding": {
               "profile_id": "coding_slice",
               "version": "0.2.0"
             },
-            "objective": "Execute the bounded slice set for Dynamic Memory Admission. Start with Execute P3.T2.S1 inside Phase 03 W4L v0.3 Resilience And Admission without expanding beyond one bounded implementation claim.",
+            "objective": "Execute the bounded slice set for Dynamic Memory Admission. Start with Execute P3.T2.S1 inside Phase 03 WML v0.3 Resilience And Admission without expanding beyond one bounded implementation claim.",
             "policy_overrides": {},
             "skill_profile_binding": {
               "profile_id": "coding_skills",
@@ -170,7 +170,7 @@
                 ],
                 "dependencies": [],
                 "inputs": [
-                  "/Users/kikbot/Documents/WARDEN4/WARDEN4-Local-LLM-Loader-Rebuild/design/planning-v03/WARDEN4_IMPLEMENTATION_SLICE_P3_T2_S1_EVIDENCE_BASED_LOAD_SETTLEMENT_AND_CONFIDENCE_UPGRADE_v1.md"
+                  "/Users/kikbot/Documents/WARDEN4/WARDEN-Model-Loader/design/planning-v03/WARDEN4_IMPLEMENTATION_SLICE_P3_T2_S1_EVIDENCE_BASED_LOAD_SETTLEMENT_AND_CONFIDENCE_UPGRADE_v1.md"
                 ],
                 "metadata": {
                   "advance_requires_user_confirmation": true,
@@ -178,7 +178,7 @@
                   "live_test_required": true,
                   "original_locator": "P3.T2.S1",
                   "parent_phase": [
-                    "`WARDEN4_Phase_03_W4L_V03_Resilience_And_Admission_v1.md`"
+                    "`WARDEN4_Phase_03_WML_V03_Resilience_And_Admission_v1.md`"
                   ],
                   "parent_track": [
                     "Dynamic Memory Admission"
@@ -189,7 +189,7 @@
                   "task_id": "task-002",
                   "task_num": 2
                 },
-                "objective": "Execute P3.T2.S1 inside Phase 03 W4L v0.3 Resilience And Admission without expanding beyond one bounded implementation claim.",
+                "objective": "Execute P3.T2.S1 inside Phase 03 WML v0.3 Resilience And Admission without expanding beyond one bounded implementation claim.",
                 "policy_overrides": {
                   "closeout_policy_ref": "task_closeout_policy"
                 },
@@ -209,7 +209,7 @@
                   "slice-003"
                 ],
                 "inputs": [
-                  "/Users/kikbot/Documents/WARDEN4/WARDEN4-Local-LLM-Loader-Rebuild/design/planning-v03/WARDEN4_IMPLEMENTATION_SLICE_P3_T2_S2_PER_GENERATE_KV_SENSITIVE_ADMISSION_GATE_v1.md"
+                  "/Users/kikbot/Documents/WARDEN4/WARDEN-Model-Loader/design/planning-v03/WARDEN4_IMPLEMENTATION_SLICE_P3_T2_S2_PER_GENERATE_KV_SENSITIVE_ADMISSION_GATE_v1.md"
                 ],
                 "metadata": {
                   "advance_requires_user_confirmation": true,
@@ -217,7 +217,7 @@
                   "live_test_required": true,
                   "original_locator": "P3.T2.S2",
                   "parent_phase": [
-                    "`WARDEN4_Phase_03_W4L_V03_Resilience_And_Admission_v1.md`"
+                    "`WARDEN4_Phase_03_WML_V03_Resilience_And_Admission_v1.md`"
                   ],
                   "parent_track": [
                     "Dynamic Memory Admission"
@@ -228,7 +228,7 @@
                   "task_id": "task-002",
                   "task_num": 2
                 },
-                "objective": "Execute P3.T2.S2 inside Phase 03 W4L v0.3 Resilience And Admission without expanding beyond one bounded implementation claim.",
+                "objective": "Execute P3.T2.S2 inside Phase 03 WML v0.3 Resilience And Admission without expanding beyond one bounded implementation claim.",
                 "policy_overrides": {
                   "closeout_policy_ref": "task_closeout_policy"
                 },
@@ -249,14 +249,14 @@
               "task-002"
             ],
             "inputs": [
-              "/Users/kikbot/Documents/WARDEN4/WARDEN4-Local-LLM-Loader-Rebuild/design/planning-v03/WARDEN4_IMPLEMENTATION_SLICE_P3_T3_S1_RECLAIM_FAILURE_STATE_INTEGRITY_AND_DEGRADED_LOCK_v1.md",
-              "/Users/kikbot/Documents/WARDEN4/WARDEN4-Local-LLM-Loader-Rebuild/design/planning-v03/WARDEN4_IMPLEMENTATION_SLICE_P3_T3_S2_BRIDGE_TRANSLATION_ONLY_DEFAULT_AND_EXPLICIT_LOAD_POLICY_v1.md"
+              "/Users/kikbot/Documents/WARDEN4/WARDEN-Model-Loader/design/planning-v03/WARDEN4_IMPLEMENTATION_SLICE_P3_T3_S1_RECLAIM_FAILURE_STATE_INTEGRITY_AND_DEGRADED_LOCK_v1.md",
+              "/Users/kikbot/Documents/WARDEN4/WARDEN-Model-Loader/design/planning-v03/WARDEN4_IMPLEMENTATION_SLICE_P3_T3_S2_BRIDGE_TRANSLATION_ONLY_DEFAULT_AND_EXPLICIT_LOAD_POLICY_v1.md"
             ],
             "loop_profile_binding": {
               "profile_id": "coding_slice",
               "version": "0.2.0"
             },
-            "objective": "Execute the bounded slice set for Recovery Integrity And Boundary Discipline. Start with Execute P3.T3.S1 inside Phase 03 W4L v0.3 Resilience And Admission without expanding beyond one bounded implementation claim.",
+            "objective": "Execute the bounded slice set for Recovery Integrity And Boundary Discipline. Start with Execute P3.T3.S1 inside Phase 03 WML v0.3 Resilience And Admission without expanding beyond one bounded implementation claim.",
             "policy_overrides": {},
             "skill_profile_binding": {
               "profile_id": "coding_skills",
@@ -274,7 +274,7 @@
                 ],
                 "dependencies": [],
                 "inputs": [
-                  "/Users/kikbot/Documents/WARDEN4/WARDEN4-Local-LLM-Loader-Rebuild/design/planning-v03/WARDEN4_IMPLEMENTATION_SLICE_P3_T3_S1_RECLAIM_FAILURE_STATE_INTEGRITY_AND_DEGRADED_LOCK_v1.md"
+                  "/Users/kikbot/Documents/WARDEN4/WARDEN-Model-Loader/design/planning-v03/WARDEN4_IMPLEMENTATION_SLICE_P3_T3_S1_RECLAIM_FAILURE_STATE_INTEGRITY_AND_DEGRADED_LOCK_v1.md"
                 ],
                 "metadata": {
                   "advance_requires_user_confirmation": true,
@@ -282,7 +282,7 @@
                   "live_test_required": true,
                   "original_locator": "P3.T3.S1",
                   "parent_phase": [
-                    "`WARDEN4_Phase_03_W4L_V03_Resilience_And_Admission_v1.md`"
+                    "`WARDEN4_Phase_03_WML_V03_Resilience_And_Admission_v1.md`"
                   ],
                   "parent_track": [
                     "Recovery Integrity And Boundary Discipline"
@@ -293,7 +293,7 @@
                   "task_id": "task-003",
                   "task_num": 3
                 },
-                "objective": "Execute P3.T3.S1 inside Phase 03 W4L v0.3 Resilience And Admission without expanding beyond one bounded implementation claim.",
+                "objective": "Execute P3.T3.S1 inside Phase 03 WML v0.3 Resilience And Admission without expanding beyond one bounded implementation claim.",
                 "policy_overrides": {
                   "closeout_policy_ref": "task_closeout_policy"
                 },
@@ -314,7 +314,7 @@
                   "slice-005"
                 ],
                 "inputs": [
-                  "/Users/kikbot/Documents/WARDEN4/WARDEN4-Local-LLM-Loader-Rebuild/design/planning-v03/WARDEN4_IMPLEMENTATION_SLICE_P3_T3_S2_BRIDGE_TRANSLATION_ONLY_DEFAULT_AND_EXPLICIT_LOAD_POLICY_v1.md"
+                  "/Users/kikbot/Documents/WARDEN4/WARDEN-Model-Loader/design/planning-v03/WARDEN4_IMPLEMENTATION_SLICE_P3_T3_S2_BRIDGE_TRANSLATION_ONLY_DEFAULT_AND_EXPLICIT_LOAD_POLICY_v1.md"
                 ],
                 "metadata": {
                   "advance_requires_user_confirmation": true,
@@ -322,7 +322,7 @@
                   "live_test_required": true,
                   "original_locator": "P3.T3.S2",
                   "parent_phase": [
-                    "`WARDEN4_Phase_03_W4L_V03_Resilience_And_Admission_v1.md`"
+                    "`WARDEN4_Phase_03_WML_V03_Resilience_And_Admission_v1.md`"
                   ],
                   "parent_track": [
                     "Recovery Integrity And Boundary Discipline"
@@ -333,7 +333,7 @@
                   "task_id": "task-003",
                   "task_num": 3
                 },
-                "objective": "Execute P3.T3.S2 inside Phase 03 W4L v0.3 Resilience And Admission without expanding beyond one bounded implementation claim.",
+                "objective": "Execute P3.T3.S2 inside Phase 03 WML v0.3 Resilience And Admission without expanding beyond one bounded implementation claim.",
                 "policy_overrides": {
                   "closeout_policy_ref": "task_closeout_policy"
                 },
@@ -346,7 +346,7 @@
             "title": "Recovery Integrity And Boundary Discipline"
           }
         ],
-        "title": "W4L v0.3 Resilience And Admission v1"
+        "title": "WML v0.3 Resilience And Admission v1"
       }
     ]
   }

@@ -1,16 +1,16 @@
-# W4L v0.3 Planning Spec
+# WML v0.3 Planning Spec
 
 ## Document Status
 
 - status: planning draft
 - purpose: bounded authority candidate for the next post-v0.2 PEM corpus
-- version target: W4L v0.3
+- version target: WML v0.3
 - predecessor baseline:
-  - `docs/W4L_V02_IMPLEMENTATION_SPEC.md`
+  - `docs/WML_V02_IMPLEMENTATION_SPEC.md`
 
 ## Objective
 
-Advance the closed W4L v0.2 runtime without reopening its accepted authority model.
+Advance the closed WML v0.2 runtime without reopening its accepted authority model.
 
 v0.3 should improve operational resilience and measurement quality while preserving:
 

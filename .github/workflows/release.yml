@@ -47,7 +47,7 @@ jobs:
         with:
           tag_name: ${{ github.event_name == 'workflow_dispatch' && inputs.tag || github.ref_name }}
           files: |
-            ${{ steps.package.outputs.out_dir }}/LoaderShell-${{ github.event_name == 'workflow_dispatch' && inputs.tag || github.ref_name }}-macos.app.zip
-            ${{ steps.package.outputs.out_dir }}/LoaderShell-${{ github.event_name == 'workflow_dispatch' && inputs.tag || github.ref_name }}-macos
+            ${{ steps.package.outputs.out_dir }}/WMLShell-${{ github.event_name == 'workflow_dispatch' && inputs.tag || github.ref_name }}-macos.app.zip
+            ${{ steps.package.outputs.out_dir }}/WMLShell-${{ github.event_name == 'workflow_dispatch' && inputs.tag || github.ref_name }}-macos
             ${{ steps.package.outputs.out_dir }}/SHA256SUMS.txt
           generate_release_notes: true

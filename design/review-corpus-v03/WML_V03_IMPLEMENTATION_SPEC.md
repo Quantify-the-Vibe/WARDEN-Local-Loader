@@ -1,14 +1,14 @@
-# W4L v0.3 Implementation Spec
+# WML v0.3 Implementation Spec
 
 ## Document Status
 
 - status: active execution source
 - purpose: authoritative implementation source for the next WEC-Py v0.3 corpus
-- version target: W4L v0.3
+- version target: WML v0.3
 - predecessor baseline:
-  - `docs/W4L_V02_IMPLEMENTATION_SPEC.md`
+  - `docs/WML_V02_IMPLEMENTATION_SPEC.md`
 - supersedes as planning source for execution:
-  - `docs/W4L_V03_PLANNING_SPEC.md`
+  - `docs/WML_V03_PLANNING_SPEC.md`
 
 ## Objective
 
@@ -20,6 +20,7 @@ v0.3 must:
 - keep host-protective fail-closed behavior
 - improve supervision behavior for hangs and repeated instability
 - improve memory estimation confidence for admission decisions
+- enforce generation-time admission against KV-cache growth
 - keep compatibility behavior aligned with canonical control semantics
 
 ## Implemented Baseline Carried From v0.2
@@ -74,7 +75,10 @@ Backoff schedule:
 
 Crash window rule:
 
-- maximum 3 crash-equivalent events inside 60 seconds
+- maximum 3 crash-equivalent events inside one crash window
+- crash window duration must be mathematically compatible with timeout-based crash events
+- invariant: `crash_window_seconds >= (max_crash_equivalent_timeout_seconds * 3)`
+- default profile for current timeout baseline: `900s` window when timeout class can be `300s`
 - event count above that window enters `failed_fast`
 - automatic restart stops in `failed_fast`
 
@@ -97,6 +101,7 @@ Admission projection uses conservative maximum of:
 
 - filesystem model-size estimate + fixed startup overhead + generation headroom
 - observed post-load footprint delta baseline for that model ID (if available)
+- hardware allocation evidence signal when available (Metal allocation APIs), otherwise remain on conservative fallback
 
 Policy:
 
@@ -104,14 +109,27 @@ Policy:
 - if confidence is insufficient, fail closed
 - never lower projection due to optimistic inference
 
+Load-settlement rule:
+
+- replace fixed timer assumptions with evidence-based settlement
+- model load is considered settled only after memory delta is flat across three consecutive polling ticks
+- if settlement does not stabilize within bounded timeout, fail closed
+
+Generation-time admission rule:
+
+- every generate request must run a pre-generate budget check
+- projected usage must include context-length-sensitive KV-cache growth estimate
+- if projected post-generate footprint may exceed ceiling, refuse generation with structured failure
+- no generate path may bypass this gate
+
 ### 5) Bridge Policy
 
-v0.3 enforces translation-only bridge behavior by default:
+v0.3 bridge compatibility policy:
 
-- bridge default does not auto-load
-- explicit model load through canonical `:8787` control path is required before bridge generation
-- bridge returns structured `explicit_load_required` when explicit load precondition is not satisfied
-- optional legacy bridge auto-load is feature-flag constrained (`W4L_OPENAI_BRIDGE_AUTOLOAD`)
+- bridge is translation-only by default
+- bridge must not initiate implicit auto-load in default mode
+- explicit model load remains a canonical control action on `:8787`
+- optional bridge auto-load may exist only behind explicit compatibility flag and must still enforce canonical admission policy
 - bridge must surface canonical failure/recovery semantics unchanged
 
 Second backend decision:
@@ -138,6 +156,7 @@ Projection rules:
 
 - `failed` with restart-eligible signal -> `degraded`
 - `failed_fast` -> `degraded_locked`
+- reclaim verification timeout/failure -> `degraded_locked` (not healthy `idle`)
 - `idle`/`ready` -> `healthy`
 
 ## Contract Requirements
@@ -170,7 +189,7 @@ Fail-closed requirements:
 
 - admission cannot prove safe -> deny load
 - post-load verification over ceiling -> terminate helper and fail
-- reclaim verification fails -> no healthy idle claim
+- reclaim verification fails or times out -> no healthy idle claim and no automatic transition to reusable idle
 - timeout-classified crash-equivalent event above policy -> `failed_fast`
 
 Operator recovery rule:

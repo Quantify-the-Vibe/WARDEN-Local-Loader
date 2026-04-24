@@ -54,7 +54,7 @@ Implemented now:
 - bridge default is translation-only and does not auto-load
 - requires explicit canonical load on `:8787` before bridge generation
 - returns `explicit_load_required` when load precondition is missing
-- optional legacy auto-load is feature-flag constrained (`W4L_OPENAI_BRIDGE_AUTOLOAD`)
+- optional legacy auto-load is feature-flag constrained (`WML_OPENAI_BRIDGE_AUTOLOAD`)
 - applies tokenizer chat template when available
 - falls back to structured prompt formatting for models without tokenizer chat templates
 

@@ -2,7 +2,7 @@ import Foundation
 
 @MainActor
 @Observable
-final class LoaderShellViewModel: LocalHTTPServerDelegate {
+final class WMLShellViewModel: LocalHTTPServerDelegate {
     struct ModelRecord: Identifiable, Equatable {
         let id: String
         let displayName: String
@@ -53,10 +53,10 @@ final class LoaderShellViewModel: LocalHTTPServerDelegate {
     - Do not claim an action was performed unless you only produced text.
     - If asked to write a file, respond with explicit content and clear manual save instructions.
     """
-    private static let bridgeAutoLoadEnvKey = "W4L_OPENAI_BRIDGE_AUTOLOAD"
-    private static let exposeDiagnosticsEnvKey = "W4L_EXPOSE_DIAGNOSTICS"
+    private static let bridgeAutoLoadEnvKey = "WML_OPENAI_BRIDGE_AUTOLOAD"
+    private static let exposeDiagnosticsEnvKey = "WML_EXPOSE_DIAGNOSTICS"
 
-    let shellTitle = "WARDEN4 Local Loader"
+    let shellTitle = "WARDEN Model Loader"
     let shellSubtitle = "MVP operator shell for the local model loader"
 
     var availableModels: [ModelRecord] = []

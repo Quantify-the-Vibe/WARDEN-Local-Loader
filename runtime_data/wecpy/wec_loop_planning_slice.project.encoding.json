@@ -4,7 +4,7 @@
     "binding_version": "0.2.0",
     "conflict_policy_ref": "default_conflict",
     "corpus_id": "w4l-v02-host-protective-runtime",
-    "corpus_location": "/Users/kikbot/Documents/WARDEN4/WARDEN4-Local-LLM-Loader-Rebuild/design/planning-v02",
+    "corpus_location": "/Users/kikbot/Documents/WARDEN4/WARDEN-Model-Loader/design/planning-v02",
     "corpus_version": "0.2.0",
     "ruleset_scope": "project",
     "severity_policy_ref": "default_severity"
@@ -17,8 +17,8 @@
     "review_policy_ref": "standard_review_policy"
   },
   "project_id": "warden4-local-llm-loader-rebuild",
-  "project_name": "WARDEN4 Local LLM Loader Rebuild",
-  "project_root": "/Users/kikbot/Documents/WARDEN4/WARDEN4-Local-LLM-Loader-Rebuild/runtime_data/wecpy",
+  "project_name": "WARDEN Model Loader (WML)",
+  "project_root": "/Users/kikbot/Documents/WARDEN4/WARDEN-Model-Loader/runtime_data/wecpy",
   "project_type": "subsystem",
   "registry_requirements": {
     "corpus_adapter_registry_version_range": ">=0.2.0,<0.3.0",
@@ -30,7 +30,7 @@
     "phases": [
       {
         "dependencies": [],
-        "objective": "Upgrade the working W4L v0.1 runtime into a host-protective loader that admits loads conservatively, verifies reclaim, and contains backend instability without taking down the operator process.",
+        "objective": "Upgrade the working WML v0.1 runtime into a host-protective loader that admits loads conservatively, verifies reclaim, and contains backend instability without taking down the operator process.",
         "phase_id": "phase-002",
         "tasks": [
           {
@@ -40,14 +40,14 @@
             ],
             "dependencies": [],
             "inputs": [
-              "/Users/kikbot/Documents/WARDEN4/WARDEN4-Local-LLM-Loader-Rebuild/design/planning-v02/WARDEN4_IMPLEMENTATION_SLICE_P2_T1_S1_MEMORY_MEASUREMENT_AND_BUDGET_CONSTANTS_BASELINE_v1.md",
-              "/Users/kikbot/Documents/WARDEN4/WARDEN4-Local-LLM-Loader-Rebuild/design/planning-v02/WARDEN4_IMPLEMENTATION_SLICE_P2_T1_S2_ADMISSION_GATE_BEFORE_HELPER_SPAWN_v1.md"
+              "/Users/kikbot/Documents/WARDEN4/WARDEN-Model-Loader/design/planning-v02/WARDEN4_IMPLEMENTATION_SLICE_P2_T1_S1_MEMORY_MEASUREMENT_AND_BUDGET_CONSTANTS_BASELINE_v1.md",
+              "/Users/kikbot/Documents/WARDEN4/WARDEN-Model-Loader/design/planning-v02/WARDEN4_IMPLEMENTATION_SLICE_P2_T1_S2_ADMISSION_GATE_BEFORE_HELPER_SPAWN_v1.md"
             ],
             "loop_profile_binding": {
               "profile_id": "coding_slice",
               "version": "0.2.0"
             },
-            "objective": "Execute the bounded slice set for Memory Budget Authority. Start with Execute P2.T1.S1 inside Phase 02 W4L v0.2 Host Protective Runtime without expanding beyond one bounded implementation claim.",
+            "objective": "Execute the bounded slice set for Memory Budget Authority. Start with Execute P2.T1.S1 inside Phase 02 WML v0.2 Host Protective Runtime without expanding beyond one bounded implementation claim.",
             "policy_overrides": {},
             "skill_profile_binding": {
               "profile_id": "coding_skills",
@@ -65,7 +65,7 @@
                 ],
                 "dependencies": [],
                 "inputs": [
-                  "/Users/kikbot/Documents/WARDEN4/WARDEN4-Local-LLM-Loader-Rebuild/design/planning-v02/WARDEN4_IMPLEMENTATION_SLICE_P2_T1_S1_MEMORY_MEASUREMENT_AND_BUDGET_CONSTANTS_BASELINE_v1.md"
+                  "/Users/kikbot/Documents/WARDEN4/WARDEN-Model-Loader/design/planning-v02/WARDEN4_IMPLEMENTATION_SLICE_P2_T1_S1_MEMORY_MEASUREMENT_AND_BUDGET_CONSTANTS_BASELINE_v1.md"
                 ],
                 "metadata": {
                   "advance_requires_user_confirmation": true,
@@ -73,7 +73,7 @@
                   "live_test_required": true,
                   "original_locator": "P2.T1.S1",
                   "parent_phase": [
-                    "`WARDEN4_Phase_02_W4L_V02_Host_Protective_Runtime_v1.md`"
+                    "`WARDEN4_Phase_02_WML_V02_Host_Protective_Runtime_v1.md`"
                   ],
                   "parent_track": [
                     "Memory Budget Authority"
@@ -84,7 +84,7 @@
                   "task_id": "task-001",
                   "task_num": 1
                 },
-                "objective": "Execute P2.T1.S1 inside Phase 02 W4L v0.2 Host Protective Runtime without expanding beyond one bounded implementation claim.",
+                "objective": "Execute P2.T1.S1 inside Phase 02 WML v0.2 Host Protective Runtime without expanding beyond one bounded implementation claim.",
                 "policy_overrides": {
                   "closeout_policy_ref": "task_closeout_policy"
                 },
@@ -104,7 +104,7 @@
                   "slice-001"
                 ],
                 "inputs": [
-                  "/Users/kikbot/Documents/WARDEN4/WARDEN4-Local-LLM-Loader-Rebuild/design/planning-v02/WARDEN4_IMPLEMENTATION_SLICE_P2_T1_S2_ADMISSION_GATE_BEFORE_HELPER_SPAWN_v1.md"
+                  "/Users/kikbot/Documents/WARDEN4/WARDEN-Model-Loader/design/planning-v02/WARDEN4_IMPLEMENTATION_SLICE_P2_T1_S2_ADMISSION_GATE_BEFORE_HELPER_SPAWN_v1.md"
                 ],
                 "metadata": {
                   "advance_requires_user_confirmation": true,
@@ -112,7 +112,7 @@
                   "live_test_required": true,
                   "original_locator": "P2.T1.S2",
                   "parent_phase": [
-                    "`WARDEN4_Phase_02_W4L_V02_Host_Protective_Runtime_v1.md`"
+                    "`WARDEN4_Phase_02_WML_V02_Host_Protective_Runtime_v1.md`"
                   ],
                   "parent_track": [
                     "Memory Budget Authority"
@@ -123,7 +123,7 @@
                   "task_id": "task-001",
                   "task_num": 1
                 },
-                "objective": "Execute P2.T1.S2 inside Phase 02 W4L v0.2 Host Protective Runtime without expanding beyond one bounded implementation claim.",
+                "objective": "Execute P2.T1.S2 inside Phase 02 WML v0.2 Host Protective Runtime without expanding beyond one bounded implementation claim.",
                 "policy_overrides": {
                   "closeout_policy_ref": "task_closeout_policy"
                 },
@@ -144,15 +144,15 @@
               "task-001"
             ],
             "inputs": [
-              "/Users/kikbot/Documents/WARDEN4/WARDEN4-Local-LLM-Loader-Rebuild/design/planning-v02/WARDEN4_IMPLEMENTATION_SLICE_P2_T2_S1_POST_LOAD_BUDGET_VERIFICATION_v1.md",
-              "/Users/kikbot/Documents/WARDEN4/WARDEN4-Local-LLM-Loader-Rebuild/design/planning-v02/WARDEN4_IMPLEMENTATION_SLICE_P2_T2_S2_RECLAIM_VERIFICATION_AFTER_RESET_v1.md",
-              "/Users/kikbot/Documents/WARDEN4/WARDEN4-Local-LLM-Loader-Rebuild/design/planning-v02/WARDEN4_IMPLEMENTATION_SLICE_P2_T2_S3_BUDGET_REPORTING_IN_STATUS_SURFACES_v1.md"
+              "/Users/kikbot/Documents/WARDEN4/WARDEN-Model-Loader/design/planning-v02/WARDEN4_IMPLEMENTATION_SLICE_P2_T2_S1_POST_LOAD_BUDGET_VERIFICATION_v1.md",
+              "/Users/kikbot/Documents/WARDEN4/WARDEN-Model-Loader/design/planning-v02/WARDEN4_IMPLEMENTATION_SLICE_P2_T2_S2_RECLAIM_VERIFICATION_AFTER_RESET_v1.md",
+              "/Users/kikbot/Documents/WARDEN4/WARDEN-Model-Loader/design/planning-v02/WARDEN4_IMPLEMENTATION_SLICE_P2_T2_S3_BUDGET_REPORTING_IN_STATUS_SURFACES_v1.md"
             ],
             "loop_profile_binding": {
               "profile_id": "coding_slice",
               "version": "0.2.0"
             },
-            "objective": "Execute the bounded slice set for Budget Verification And Reclaim. Start with Execute P2.T2.S1 inside Phase 02 W4L v0.2 Host Protective Runtime without expanding beyond one bounded implementation claim.",
+            "objective": "Execute the bounded slice set for Budget Verification And Reclaim. Start with Execute P2.T2.S1 inside Phase 02 WML v0.2 Host Protective Runtime without expanding beyond one bounded implementation claim.",
             "policy_overrides": {},
             "skill_profile_binding": {
               "profile_id": "coding_skills",
@@ -170,7 +170,7 @@
                 ],
                 "dependencies": [],
                 "inputs": [
-                  "/Users/kikbot/Documents/WARDEN4/WARDEN4-Local-LLM-Loader-Rebuild/design/planning-v02/WARDEN4_IMPLEMENTATION_SLICE_P2_T2_S1_POST_LOAD_BUDGET_VERIFICATION_v1.md"
+                  "/Users/kikbot/Documents/WARDEN4/WARDEN-Model-Loader/design/planning-v02/WARDEN4_IMPLEMENTATION_SLICE_P2_T2_S1_POST_LOAD_BUDGET_VERIFICATION_v1.md"
                 ],
                 "metadata": {
                   "advance_requires_user_confirmation": true,
@@ -178,7 +178,7 @@
                   "live_test_required": true,
                   "original_locator": "P2.T2.S1",
                   "parent_phase": [
-                    "`WARDEN4_Phase_02_W4L_V02_Host_Protective_Runtime_v1.md`"
+                    "`WARDEN4_Phase_02_WML_V02_Host_Protective_Runtime_v1.md`"
                   ],
                   "parent_track": [
                     "Budget Verification And Reclaim"
@@ -189,7 +189,7 @@
                   "task_id": "task-002",
                   "task_num": 2
                 },
-                "objective": "Execute P2.T2.S1 inside Phase 02 W4L v0.2 Host Protective Runtime without expanding beyond one bounded implementation claim.",
+                "objective": "Execute P2.T2.S1 inside Phase 02 WML v0.2 Host Protective Runtime without expanding beyond one bounded implementation claim.",
                 "policy_overrides": {
                   "closeout_policy_ref": "task_closeout_policy"
                 },
@@ -209,7 +209,7 @@
                   "slice-003"
                 ],
                 "inputs": [
-                  "/Users/kikbot/Documents/WARDEN4/WARDEN4-Local-LLM-Loader-Rebuild/design/planning-v02/WARDEN4_IMPLEMENTATION_SLICE_P2_T2_S2_RECLAIM_VERIFICATION_AFTER_RESET_v1.md"
+                  "/Users/kikbot/Documents/WARDEN4/WARDEN-Model-Loader/design/planning-v02/WARDEN4_IMPLEMENTATION_SLICE_P2_T2_S2_RECLAIM_VERIFICATION_AFTER_RESET_v1.md"
                 ],
                 "metadata": {
                   "advance_requires_user_confirmation": true,
@@ -217,7 +217,7 @@
                   "live_test_required": true,
                   "original_locator": "P2.T2.S2",
                   "parent_phase": [
-                    "`WARDEN4_Phase_02_W4L_V02_Host_Protective_Runtime_v1.md`"
+                    "`WARDEN4_Phase_02_WML_V02_Host_Protective_Runtime_v1.md`"
                   ],
                   "parent_track": [
                     "Budget Verification And Reclaim"
@@ -228,7 +228,7 @@
                   "task_id": "task-002",
                   "task_num": 2
                 },
-                "objective": "Execute P2.T2.S2 inside Phase 02 W4L v0.2 Host Protective Runtime without expanding beyond one bounded implementation claim.",
+                "objective": "Execute P2.T2.S2 inside Phase 02 WML v0.2 Host Protective Runtime without expanding beyond one bounded implementation claim.",
                 "policy_overrides": {
                   "closeout_policy_ref": "task_closeout_policy"
                 },
@@ -248,7 +248,7 @@
                   "slice-004"
                 ],
                 "inputs": [
-                  "/Users/kikbot/Documents/WARDEN4/WARDEN4-Local-LLM-Loader-Rebuild/design/planning-v02/WARDEN4_IMPLEMENTATION_SLICE_P2_T2_S3_BUDGET_REPORTING_IN_STATUS_SURFACES_v1.md"
+                  "/Users/kikbot/Documents/WARDEN4/WARDEN-Model-Loader/design/planning-v02/WARDEN4_IMPLEMENTATION_SLICE_P2_T2_S3_BUDGET_REPORTING_IN_STATUS_SURFACES_v1.md"
                 ],
                 "metadata": {
                   "advance_requires_user_confirmation": true,
@@ -256,7 +256,7 @@
                   "live_test_required": true,
                   "original_locator": "P2.T2.S3",
                   "parent_phase": [
-                    "`WARDEN4_Phase_02_W4L_V02_Host_Protective_Runtime_v1.md`"
+                    "`WARDEN4_Phase_02_WML_V02_Host_Protective_Runtime_v1.md`"
                   ],
                   "parent_track": [
                     "Budget Verification And Reclaim"
@@ -267,7 +267,7 @@
                   "task_id": "task-002",
                   "task_num": 2
                 },
-                "objective": "Execute P2.T2.S3 inside Phase 02 W4L v0.2 Host Protective Runtime without expanding beyond one bounded implementation claim.",
+                "objective": "Execute P2.T2.S3 inside Phase 02 WML v0.2 Host Protective Runtime without expanding beyond one bounded implementation claim.",
                 "policy_overrides": {
                   "closeout_policy_ref": "task_closeout_policy"
                 },
@@ -288,15 +288,15 @@
               "task-002"
             ],
             "inputs": [
-              "/Users/kikbot/Documents/WARDEN4/WARDEN4-Local-LLM-Loader-Rebuild/design/planning-v02/WARDEN4_IMPLEMENTATION_SLICE_P2_T3_S1_SUPERVISOR_EXTRACTION_AND_CRASH_ACCOUNTING_v1.md",
-              "/Users/kikbot/Documents/WARDEN4/WARDEN4-Local-LLM-Loader-Rebuild/design/planning-v02/WARDEN4_IMPLEMENTATION_SLICE_P2_T3_S2_BOUNDED_RESTART_AND_FAIL_FAST_POLICY_v1.md",
-              "/Users/kikbot/Documents/WARDEN4/WARDEN4-Local-LLM-Loader-Rebuild/design/planning-v02/WARDEN4_IMPLEMENTATION_SLICE_P2_T3_S3_COMPATIBILITY_BRIDGE_AND_OPERATOR_RECOVERY_ALIGNMENT_v1.md"
+              "/Users/kikbot/Documents/WARDEN4/WARDEN-Model-Loader/design/planning-v02/WARDEN4_IMPLEMENTATION_SLICE_P2_T3_S1_SUPERVISOR_EXTRACTION_AND_CRASH_ACCOUNTING_v1.md",
+              "/Users/kikbot/Documents/WARDEN4/WARDEN-Model-Loader/design/planning-v02/WARDEN4_IMPLEMENTATION_SLICE_P2_T3_S2_BOUNDED_RESTART_AND_FAIL_FAST_POLICY_v1.md",
+              "/Users/kikbot/Documents/WARDEN4/WARDEN-Model-Loader/design/planning-v02/WARDEN4_IMPLEMENTATION_SLICE_P2_T3_S3_COMPATIBILITY_BRIDGE_AND_OPERATOR_RECOVERY_ALIGNMENT_v1.md"
             ],
             "loop_profile_binding": {
               "profile_id": "coding_slice",
               "version": "0.2.0"
             },
-            "objective": "Execute the bounded slice set for Supervision And Fail-Fast. Start with Execute P2.T3.S1 inside Phase 02 W4L v0.2 Host Protective Runtime without expanding beyond one bounded implementation claim.",
+            "objective": "Execute the bounded slice set for Supervision And Fail-Fast. Start with Execute P2.T3.S1 inside Phase 02 WML v0.2 Host Protective Runtime without expanding beyond one bounded implementation claim.",
             "policy_overrides": {},
             "skill_profile_binding": {
               "profile_id": "coding_skills",
@@ -314,7 +314,7 @@
                 ],
                 "dependencies": [],
                 "inputs": [
-                  "/Users/kikbot/Documents/WARDEN4/WARDEN4-Local-LLM-Loader-Rebuild/design/planning-v02/WARDEN4_IMPLEMENTATION_SLICE_P2_T3_S1_SUPERVISOR_EXTRACTION_AND_CRASH_ACCOUNTING_v1.md"
+                  "/Users/kikbot/Documents/WARDEN4/WARDEN-Model-Loader/design/planning-v02/WARDEN4_IMPLEMENTATION_SLICE_P2_T3_S1_SUPERVISOR_EXTRACTION_AND_CRASH_ACCOUNTING_v1.md"
                 ],
                 "metadata": {
                   "advance_requires_user_confirmation": true,
@@ -322,7 +322,7 @@
                   "live_test_required": true,
                   "original_locator": "P2.T3.S1",
                   "parent_phase": [
-                    "`WARDEN4_Phase_02_W4L_V02_Host_Protective_Runtime_v1.md`"
+                    "`WARDEN4_Phase_02_WML_V02_Host_Protective_Runtime_v1.md`"
                   ],
                   "parent_track": [
                     "Supervision And Fail-Fast"
@@ -333,7 +333,7 @@
                   "task_id": "task-003",
                   "task_num": 3
                 },
-                "objective": "Execute P2.T3.S1 inside Phase 02 W4L v0.2 Host Protective Runtime without expanding beyond one bounded implementation claim.",
+                "objective": "Execute P2.T3.S1 inside Phase 02 WML v0.2 Host Protective Runtime without expanding beyond one bounded implementation claim.",
                 "policy_overrides": {
                   "closeout_policy_ref": "task_closeout_policy"
                 },
@@ -354,7 +354,7 @@
                   "slice-006"
                 ],
                 "inputs": [
-                  "/Users/kikbot/Documents/WARDEN4/WARDEN4-Local-LLM-Loader-Rebuild/design/planning-v02/WARDEN4_IMPLEMENTATION_SLICE_P2_T3_S2_BOUNDED_RESTART_AND_FAIL_FAST_POLICY_v1.md"
+                  "/Users/kikbot/Documents/WARDEN4/WARDEN-Model-Loader/design/planning-v02/WARDEN4_IMPLEMENTATION_SLICE_P2_T3_S2_BOUNDED_RESTART_AND_FAIL_FAST_POLICY_v1.md"
                 ],
                 "metadata": {
                   "advance_requires_user_confirmation": true,
@@ -362,7 +362,7 @@
                   "live_test_required": true,
                   "original_locator": "P2.T3.S2",
                   "parent_phase": [
-                    "`WARDEN4_Phase_02_W4L_V02_Host_Protective_Runtime_v1.md`"
+                    "`WARDEN4_Phase_02_WML_V02_Host_Protective_Runtime_v1.md`"
                   ],
                   "parent_track": [
                     "Supervision And Fail-Fast"
@@ -373,7 +373,7 @@
                   "task_id": "task-003",
                   "task_num": 3
                 },
-                "objective": "Execute P2.T3.S2 inside Phase 02 W4L v0.2 Host Protective Runtime without expanding beyond one bounded implementation claim.",
+                "objective": "Execute P2.T3.S2 inside Phase 02 WML v0.2 Host Protective Runtime without expanding beyond one bounded implementation claim.",
                 "policy_overrides": {
                   "closeout_policy_ref": "task_closeout_policy"
                 },
@@ -393,7 +393,7 @@
                   "slice-007"
                 ],
                 "inputs": [
-                  "/Users/kikbot/Documents/WARDEN4/WARDEN4-Local-LLM-Loader-Rebuild/design/planning-v02/WARDEN4_IMPLEMENTATION_SLICE_P2_T3_S3_COMPATIBILITY_BRIDGE_AND_OPERATOR_RECOVERY_ALIGNMENT_v1.md"
+                  "/Users/kikbot/Documents/WARDEN4/WARDEN-Model-Loader/design/planning-v02/WARDEN4_IMPLEMENTATION_SLICE_P2_T3_S3_COMPATIBILITY_BRIDGE_AND_OPERATOR_RECOVERY_ALIGNMENT_v1.md"
                 ],
                 "metadata": {
                   "advance_requires_user_confirmation": true,
@@ -401,7 +401,7 @@
                   "live_test_required": true,
                   "original_locator": "P2.T3.S3",
                   "parent_phase": [
-                    "`WARDEN4_Phase_02_W4L_V02_Host_Protective_Runtime_v1.md`"
+                    "`WARDEN4_Phase_02_WML_V02_Host_Protective_Runtime_v1.md`"
                   ],
                   "parent_track": [
                     "Supervision And Fail-Fast"
@@ -412,7 +412,7 @@
                   "task_id": "task-003",
                   "task_num": 3
                 },
-                "objective": "Execute P2.T3.S3 inside Phase 02 W4L v0.2 Host Protective Runtime without expanding beyond one bounded implementation claim.",
+                "objective": "Execute P2.T3.S3 inside Phase 02 WML v0.2 Host Protective Runtime without expanding beyond one bounded implementation claim.",
                 "policy_overrides": {
                   "closeout_policy_ref": "task_closeout_policy"
                 },
@@ -425,7 +425,7 @@
             "title": "Supervision And Fail-Fast"
           }
         ],
-        "title": "W4L v0.2 Host Protective Runtime v1"
+        "title": "WML v0.2 Host Protective Runtime v1"
       }
     ]
   }

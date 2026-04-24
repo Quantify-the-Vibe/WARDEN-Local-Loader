@@ -71,7 +71,7 @@ VERIFIED current implementation:
 - OpenAI-compatible bridge exists at `:8080/v1/chat/completions`
 - `pi-mono` connects through the bridge
 - reset path exists
-- packaged `.app` bundle exists under `dist/LoaderShell.app`
+- packaged `.app` bundle exists under `dist/WMLShell.app`
 
 Current limitations:
 
@@ -91,7 +91,7 @@ These changes are admitted for the next implementation spec, but are not yet imp
 - fail-closed refusal when safe admission cannot be proven
 - post-load budget verification
 - post-reset reclaim verification
-- supervisor extraction from `LoaderShellViewModel`
+- supervisor extraction from `WMLShellViewModel`
 - crash containment rules and bounded restart policy
 - structured memory budget reporting in status and backend-ready outputs
 

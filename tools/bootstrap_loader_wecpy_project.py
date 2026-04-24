@@ -271,7 +271,7 @@ def build_project_payload(
     return {
         "schema_version": "0.2.0",
         "project_id": "warden4-local-llm-loader-rebuild",
-        "project_name": "WARDEN4 Local LLM Loader Rebuild",
+        "project_name": "WARDEN Model Loader (WML)",
         "project_root": str(output_root),
         "project_type": "subsystem",
         "corpus_binding": {

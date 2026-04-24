@@ -1,21 +1,21 @@
-WARDEN4 Phase 02 W4L v0.2 Host Protective Runtime v1
+WARDEN4 Phase 02 WML v0.2 Host Protective Runtime v1
 Status: Active Planning Artifact Scope: Loader v0.2 host-protective hardening path
 Objective
-Upgrade the working W4L v0.1 runtime into a host-protective loader that admits loads conservatively, verifies reclaim, and contains backend instability without taking down the operator process.
+Upgrade the working WML v0.1 runtime into a host-protective loader that admits loads conservatively, verifies reclaim, and contains backend instability without taking down the operator process.
 
 Entry Gate
-- W4L v0.1 baseline is working and closed
-- `docs/W4L_V02_IMPLEMENTATION_SPEC.md` is the active execution source
+- WML v0.1 baseline is working and closed
+- `docs/WML_V02_IMPLEMENTATION_SPEC.md` is the active execution source
 - control contract remains on `:8787`
 - compatibility bridge remains on `:8080`
 - target host remains 16GB Apple Silicon macOS
 
 Controlling Canon
-- `/Users/kikbot/Documents/WARDEN4/WARDEN4-Local-LLM-Loader-Rebuild/README.md`
-- `/Users/kikbot/Documents/WARDEN4/WARDEN4-Local-LLM-Loader-Rebuild/docs/W4L_V02_IMPLEMENTATION_SPEC.md`
-- `/Users/kikbot/Documents/WARDEN4/WARDEN4-Local-LLM-Loader-Rebuild/docs/ARCHITECTURE.md`
-- `/Users/kikbot/Documents/WARDEN4/WARDEN4-Local-LLM-Loader-Rebuild/docs/INTEGRATION_NOTES_FOR_PI_MONO.md`
-- `/Users/kikbot/Documents/WARDEN4/WARDEN4-Local-LLM-Loader-Rebuild/docs/WEC_LOOP_EXECUTION_BACKLOG.md`
+- `/Users/kikbot/Documents/WARDEN4/WARDEN-Model-Loader/README.md`
+- `/Users/kikbot/Documents/WARDEN4/WARDEN-Model-Loader/docs/WML_V02_IMPLEMENTATION_SPEC.md`
+- `/Users/kikbot/Documents/WARDEN4/WARDEN-Model-Loader/docs/ARCHITECTURE.md`
+- `/Users/kikbot/Documents/WARDEN4/WARDEN-Model-Loader/docs/INTEGRATION_NOTES_FOR_PI_MONO.md`
+- `/Users/kikbot/Documents/WARDEN4/WARDEN-Model-Loader/docs/WEC_LOOP_EXECUTION_BACKLOG.md`
 
 Tracks And Slice Register
 Track 2.1 - Memory Budget Authority
@@ -70,6 +70,6 @@ Live Test Gate
 - the next slice stays blocked until that live result is explicitly confirmed
 
 Relationship To Other Planning Docs
-- this phase is the execution control surface for W4L v0.2
+- this phase is the execution control surface for WML v0.2
 - v0.1 planning artifacts remain historical baseline only
 - the broader backlog remains in `docs/WEC_LOOP_EXECUTION_BACKLOG.md`

@@ -1,11 +1,11 @@
 WARDEN4 Implementation Slice P2.T3.S1 Supervisor Extraction And Crash Accounting v1
 Status: Planned Slice Class: Phase-local execution Write Scope: Supervisor authority, crash accounting, and directly supporting docs/tests for P2.T3.S1
 Objective
-Execute P2.T3.S1 inside Phase 02 W4L v0.2 Host Protective Runtime without expanding beyond one bounded implementation claim.
+Execute P2.T3.S1 inside Phase 02 WML v0.2 Host Protective Runtime without expanding beyond one bounded implementation claim.
 Claim
 Extract one supervisor-owned runtime authority that owns lifecycle state, crash accounting, and structured helper failure handling while keeping the UI process alive.
 Parent Phase
-- `WARDEN4_Phase_02_W4L_V02_Host_Protective_Runtime_v1.md`
+- `WARDEN4_Phase_02_WML_V02_Host_Protective_Runtime_v1.md`
 Parent Track
 - Supervision And Fail-Fast
 Changes In Scope

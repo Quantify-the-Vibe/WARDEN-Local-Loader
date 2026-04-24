@@ -1,8 +1,8 @@
-# W4L Review Corpus Manifest
+# WML Review Corpus Manifest
 
 ## Purpose
 
-This folder is the approved design corpus copy for external review of the current W4L architecture and planning state.
+This folder is the approved design corpus copy for external review of the current WML architecture and planning state.
 
 Use this folder when:
 
@@ -15,9 +15,9 @@ Do not use the broader `docs/` folder when the goal is current-canon review.
 ## Included Files
 
 - `README.md`
-- `W4L_V02_IMPLEMENTATION_SPEC.md`
-- `W4L_V03_PLANNING_SPEC.md`
-- `W4L_V03_IMPLEMENTATION_SPEC.md`
+- `WML_V02_IMPLEMENTATION_SPEC.md`
+- `WML_V03_PLANNING_SPEC.md`
+- `WML_V03_IMPLEMENTATION_SPEC.md`
 - `LOADER_IMPLEMENTATION_SPEC.md`
 - `ARCHITECTURE.md`
 - `INTEGRATION_NOTES_FOR_PI_MONO.md`
@@ -45,4 +45,4 @@ If a reviewer proposes remediation, compare it against `REMEDIATION_INTERPRETATI
 
 Active execution authority in this corpus:
 
-- `W4L_V03_IMPLEMENTATION_SPEC.md`
+- `WML_V03_IMPLEMENTATION_SPEC.md`

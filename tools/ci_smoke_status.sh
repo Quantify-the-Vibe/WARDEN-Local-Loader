@@ -2,7 +2,7 @@
 set -euo pipefail
 
 ROOT_DIR="$(cd "$(dirname "${BASH_SOURCE[0]}")/.." && pwd)"
-BIN_PATH="${1:-$ROOT_DIR/.build/debug/LoaderShell}"
+BIN_PATH="${1:-$ROOT_DIR/.build/debug/WMLShell}"
 STATUS_URL="http://127.0.0.1:8787/status"
 LOG_PATH="$ROOT_DIR/artifacts/ci-smoke-loader.log"
 

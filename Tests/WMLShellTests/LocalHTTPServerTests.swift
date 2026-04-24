@@ -1,6 +1,6 @@
 import Foundation
 import Testing
-@testable import LoaderShell
+@testable import WMLShell
 
 struct LocalHTTPServerTests {
     @Test
@@ -75,14 +75,14 @@ struct LocalHTTPServerTests {
             statusCode: 401,
             body: Data("{}".utf8),
             headers: [
-                "WWW-Authenticate": #"Bearer realm="W4L Loader", charset="UTF-8""#,
+                "WWW-Authenticate": #"Bearer realm="WML Loader", charset="UTF-8""#,
             ]
         )
 
         let rendered = LocalHTTPServer.render(response: response)
         let renderedText = String(decoding: rendered, as: UTF8.self)
 
-        #expect(renderedText.contains("WWW-Authenticate: Bearer realm=\"W4L Loader\", charset=\"UTF-8\""))
+        #expect(renderedText.contains("WWW-Authenticate: Bearer realm=\"WML Loader\", charset=\"UTF-8\""))
     }
 
     @Test

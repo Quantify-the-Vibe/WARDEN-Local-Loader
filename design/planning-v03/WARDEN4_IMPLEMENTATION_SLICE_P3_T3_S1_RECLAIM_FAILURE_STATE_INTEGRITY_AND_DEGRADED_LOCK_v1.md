@@ -1,11 +1,11 @@
 WARDEN4 Implementation Slice P3.T3.S1 Reclaim Failure State Integrity And Degraded Lock v1
 Status: Planned Slice Class: Phase-local execution Write Scope: Reclaim-failure handling, status projection, and directly supporting docs/tests for P3.T3.S1
 Objective
-Execute P3.T3.S1 inside Phase 03 W4L v0.3 Resilience And Admission without expanding beyond one bounded implementation claim.
+Execute P3.T3.S1 inside Phase 03 WML v0.3 Resilience And Admission without expanding beyond one bounded implementation claim.
 Claim
 When memory reclaim verification fails or times out, runtime state remains degraded and locked for load reuse instead of reporting healthy idle.
 Parent Phase
-- `WARDEN4_Phase_03_W4L_V03_Resilience_And_Admission_v1.md`
+- `WARDEN4_Phase_03_WML_V03_Resilience_And_Admission_v1.md`
 Parent Track
 - Recovery Integrity And Boundary Discipline
 Changes In Scope

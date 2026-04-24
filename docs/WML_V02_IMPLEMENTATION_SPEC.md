@@ -1,18 +1,18 @@
-# W4L v0.2 Implementation Spec
+# WML v0.2 Implementation Spec
 
 ## Document Status
 
 - status: closed implemented baseline
-- purpose: authoritative record of the completed W4L v0.2 execution corpus
-- version target: W4L v0.2
+- purpose: authoritative record of the completed WML v0.2 execution corpus
+- version target: WML v0.2
 - supersedes as execution source:
   - v0.1 MVP slice corpus
 - superseded by planning for next work:
-  - `docs/W4L_V03_PLANNING_SPEC.md`
+  - `docs/WML_V03_PLANNING_SPEC.md`
 
 ## Objective
 
-Upgrade the working WARDEN4 Loader from a proven MVP runtime path into a host-protective local inference subsystem that:
+Upgrade the working WARDEN Model Loader from a proven MVP runtime path into a host-protective local inference subsystem that:
 
 - preserves the current working client boundary
 - protects a 16GB unified-memory macOS host
@@ -115,9 +115,9 @@ Explicitly left for later phases:
 
 ### Runtime Boundary
 
-- `LoaderShellView`
+- `WMLShellView`
   - operator controls only
-- `LoaderShellViewModel`
+- `WMLShellViewModel`
   - UI projection and bridge to supervisor-owned state
 - `LoaderSupervisor`
   - runtime authority for v0.2
@@ -139,7 +139,7 @@ Explicitly left for later phases:
 - crash counting
 - fail-fast transition
 
-`LoaderShellViewModel` owns:
+`WMLShellViewModel` owns:
 
 - presentation state derived from supervisor state
 - UI actions forwarded to supervisor

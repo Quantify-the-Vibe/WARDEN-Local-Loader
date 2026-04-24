@@ -1,7 +1,7 @@
 import SwiftUI
 
-struct LoaderShellView: View {
-    @Bindable var viewModel: LoaderShellViewModel
+struct WMLShellView: View {
+    @Bindable var viewModel: WMLShellViewModel
     @State private var isDiscoveryExpanded = true
     @State private var isLoadStateExpanded = true
     @State private var isHTTPContractExpanded = true

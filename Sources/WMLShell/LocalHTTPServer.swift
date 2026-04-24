@@ -47,7 +47,7 @@ final class LocalHTTPServer: @unchecked Sendable {
 
     private(set) var port: UInt16?
 
-    init(delegate: LocalHTTPServerDelegate, apiToken: String? = ProcessInfo.processInfo.environment["W4L_API_TOKEN"]) {
+    init(delegate: LocalHTTPServerDelegate, apiToken: String? = ProcessInfo.processInfo.environment["WML_API_TOKEN"]) {
         self.delegate = delegate
         if let token = apiToken?.trimmingCharacters(in: .whitespacesAndNewlines), !token.isEmpty {
             self.apiToken = token
@@ -245,7 +245,7 @@ final class LocalHTTPServer: @unchecked Sendable {
         if path == "/v1/chat/completions" {
             payload = [
                 "error": [
-                    "message": "Unauthorized. Send Authorization: Bearer <W4L_API_TOKEN> or X-Loader-Token.",
+                    "message": "Unauthorized. Send Authorization: Bearer <WML_API_TOKEN> or X-Loader-Token.",
                     "type": "authentication_error",
                     "code": "invalid_api_key",
                 ],
@@ -255,7 +255,7 @@ final class LocalHTTPServer: @unchecked Sendable {
                 "status": "failed",
                 "error": "unauthorized",
                 "detail": "Authorization required for this route.",
-                "hint": "Send Authorization: Bearer <W4L_API_TOKEN> or X-Loader-Token: <W4L_API_TOKEN>.",
+                "hint": "Send Authorization: Bearer <WML_API_TOKEN> or X-Loader-Token: <WML_API_TOKEN>.",
             ]
         }
         let body = (try? JSONSerialization.data(withJSONObject: payload, options: [.prettyPrinted])) ?? Data("{}".utf8)
@@ -263,7 +263,7 @@ final class LocalHTTPServer: @unchecked Sendable {
             statusCode: 401,
             body: body,
             headers: [
-                "WWW-Authenticate": #"Bearer realm="W4L Loader", charset="UTF-8""#,
+                "WWW-Authenticate": #"Bearer realm="WML Loader", charset="UTF-8""#,
             ]
         )
     }

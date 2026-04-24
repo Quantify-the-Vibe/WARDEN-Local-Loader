@@ -5,15 +5,15 @@
 	<key>CFBundleDevelopmentRegion</key>
 	<string>en</string>
 	<key>CFBundleDisplayName</key>
-	<string>WARDEN4 Loader Shell</string>
+	<string>WARDEN Model Loader Shell</string>
 	<key>CFBundleExecutable</key>
-	<string>LoaderShell</string>
+	<string>WMLShell</string>
 	<key>CFBundleIdentifier</key>
 	<string>com.warden4.loadershell</string>
 	<key>CFBundleInfoDictionaryVersion</key>
 	<string>6.0</string>
 	<key>CFBundleName</key>
-	<string>LoaderShell</string>
+	<string>WMLShell</string>
 	<key>CFBundlePackageType</key>
 	<string>APPL</string>
 	<key>CFBundleShortVersionString</key>

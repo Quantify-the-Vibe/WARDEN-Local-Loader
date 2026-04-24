@@ -1,4 +1,4 @@
-# WARDEN4 Local LLM Loader Rebuild
+# WARDEN Model Loader (WML)
 
 Local inference loader subsystem inside:
 
@@ -65,7 +65,7 @@ Not implemented now:
 
 Closed baseline chain:
 
-- `docs/W4L_V02_IMPLEMENTATION_SPEC.md`
+- `docs/WML_V02_IMPLEMENTATION_SPEC.md`
 - `docs/LOADER_IMPLEMENTATION_SPEC.md`
 - `docs/ARCHITECTURE.md`
 - `docs/INTEGRATION_NOTES_FOR_PI_MONO.md`
@@ -73,11 +73,11 @@ Closed baseline chain:
 
 Next planning source:
 
-- `docs/W4L_V03_PLANNING_SPEC.md`
+- `docs/WML_V03_PLANNING_SPEC.md`
 
 Active execution source:
 
-- `docs/W4L_V03_IMPLEMENTATION_SPEC.md`
+- `docs/WML_V03_IMPLEMENTATION_SPEC.md`
 
 The v0.2 docs define the closed implemented baseline.
 The v0.3 implementation spec is the active authority source for next corpus generation.
@@ -104,11 +104,11 @@ Implemented security controls:
 
 - local HTTP listener constrained to loopback endpoint intent (`127.0.0.1`)
 - request-body hard limit and timeout guards on inbound HTTP parsing
-- optional route authorization for control/generation routes via `W4L_API_TOKEN`
+- optional route authorization for control/generation routes via `WML_API_TOKEN`
 - default-redacted diagnostics in status payloads
-  - enable full diagnostics only with `W4L_EXPOSE_DIAGNOSTICS=1`
+  - enable full diagnostics only with `WML_EXPOSE_DIAGNOSTICS=1`
 - helper script path integrity checks
-  - optional explicit path via `W4L_HELPER_SCRIPT_PATH`
+  - optional explicit path via `WML_HELPER_SCRIPT_PATH`
   - refuses helper script symlinks and world-writable script files
 
 Recommended operator setup:
@@ -129,11 +129,11 @@ Authenticated route usage:
 - compatibility discovery route (not protected):
   - `GET /v1/models`
 - accepted auth headers:
-  - `Authorization: Bearer <W4L_API_TOKEN>`
-  - `X-Loader-Token: <W4L_API_TOKEN>`
+  - `Authorization: Bearer <WML_API_TOKEN>`
+  - `X-Loader-Token: <WML_API_TOKEN>`
 - failed auth returns:
   - `401 Unauthorized`
-  - `WWW-Authenticate: Bearer realm="W4L Loader", charset="UTF-8"`
+  - `WWW-Authenticate: Bearer realm="WML Loader", charset="UTF-8"`
 
 OpenAI bridge token-length behavior:
 
@@ -150,11 +150,11 @@ OpenAI bridge token-length behavior:
 
 Build and launch the packaged app:
 
-- `cd /Users/kikbot/Documents/WARDEN4/WARDEN4-Local-LLM-Loader-Rebuild && ./run-loader-app.sh`
+- `cd /Users/kikbot/Documents/WARDEN4/WARDEN-Model-Loader && ./run-loader-app.sh`
 
 Direct app path:
 
-- `/Users/kikbot/Documents/WARDEN4/WARDEN4-Local-LLM-Loader-Rebuild/dist/LoaderShell.app`
+- `/Users/kikbot/Documents/WARDEN4/WARDEN-Model-Loader/dist/WMLShell.app`
 
 ## CI/CD
 
@@ -167,8 +167,8 @@ GitHub Actions now defines two macOS pipelines:
   - builds launchable unsigned `.app`
   - runs smoke probe against `GET http://127.0.0.1:8787/status`
   - uploads artifacts:
-    - `LoaderShell-<ci-tag>-macos.app.zip`
-    - `LoaderShell-<ci-tag>-macos` (raw executable)
+    - `WMLShell-<ci-tag>-macos.app.zip`
+    - `WMLShell-<ci-tag>-macos` (raw executable)
     - `SHA256SUMS.txt`
     - `coverage-summary.txt`
     - `coverage.lcov`
@@ -191,8 +191,8 @@ Local CI helper commands:
 
 Launch from artifact after download:
 
-- app bundle: unzip `LoaderShell-<tag>-macos.app.zip`, then `open LoaderShell.app`
-- raw binary: `chmod +x LoaderShell-<tag>-macos && ./LoaderShell-<tag>-macos`
+- app bundle: unzip `WMLShell-<tag>-macos.app.zip`, then `open WMLShell.app`
+- raw binary: `chmod +x WMLShell-<tag>-macos && ./WMLShell-<tag>-macos`
 
 ## v0.2 Closure
 

@@ -18,15 +18,15 @@ That belongs to `PEM-002`.
 
 Primary implementation targets:
 
-- `Sources/LoaderShell/BackendLoader.swift`
-- `Sources/LoaderShell/MLXBackendLoader.swift`
-- `Sources/LoaderShell/LoaderSupervisor.swift`
-- `Sources/LoaderShell/LoaderShellViewModel.swift`
+- `Sources/WMLShell/BackendLoader.swift`
+- `Sources/WMLShell/MLXBackendLoader.swift`
+- `Sources/WMLShell/LoaderSupervisor.swift`
+- `Sources/WMLShell/WMLShellViewModel.swift`
 
 Primary test targets:
 
-- `Tests/LoaderShellTests/LoaderShellViewModelTests.swift`
-- `Tests/LoaderShellTests/LoaderSupervisorTests.swift` (new)
+- `Tests/WMLShellTests/WMLShellViewModelTests.swift`
+- `Tests/WMLShellTests/LoaderSupervisorTests.swift` (new)
 
 ## Required Design Decisions For This Slice
 

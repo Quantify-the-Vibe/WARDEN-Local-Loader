@@ -9,11 +9,11 @@ Entry Gate
 - first client remains `pi-mono`
 
 Controlling Canon
-- `/Users/kikbot/Documents/WARDEN4/WARDEN4-Local-LLM-Loader-Rebuild/README.md`
-- `/Users/kikbot/Documents/WARDEN4/WARDEN4-Local-LLM-Loader-Rebuild/docs/LOADER_IMPLEMENTATION_SPEC.md`
-- `/Users/kikbot/Documents/WARDEN4/WARDEN4-Local-LLM-Loader-Rebuild/docs/ARCHITECTURE.md`
-- `/Users/kikbot/Documents/WARDEN4/WARDEN4-Local-LLM-Loader-Rebuild/docs/INTEGRATION_NOTES_FOR_PI_MONO.md`
-- `/Users/kikbot/Documents/WARDEN4/WARDEN4-Local-LLM-Loader-Rebuild/docs/WEC_LOOP_EXECUTION_BACKLOG.md`
+- `/Users/kikbot/Documents/WARDEN4/WARDEN-Model-Loader/README.md`
+- `/Users/kikbot/Documents/WARDEN4/WARDEN-Model-Loader/docs/LOADER_IMPLEMENTATION_SPEC.md`
+- `/Users/kikbot/Documents/WARDEN4/WARDEN-Model-Loader/docs/ARCHITECTURE.md`
+- `/Users/kikbot/Documents/WARDEN4/WARDEN-Model-Loader/docs/INTEGRATION_NOTES_FOR_PI_MONO.md`
+- `/Users/kikbot/Documents/WARDEN4/WARDEN-Model-Loader/docs/WEC_LOOP_EXECUTION_BACKLOG.md`
 
 Tracks And Slice Register
 Track 1.1 - Operator Surface And Discovery

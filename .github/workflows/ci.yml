@@ -55,7 +55,7 @@ jobs:
         with:
           name: loadershell-macos-ci-${{ github.sha }}
           path: |
-            ${{ steps.package.outputs.out_dir }}/LoaderShell-ci-*.app.zip
-            ${{ steps.package.outputs.out_dir }}/LoaderShell-ci-*-macos
+            ${{ steps.package.outputs.out_dir }}/WMLShell-ci-*.app.zip
+            ${{ steps.package.outputs.out_dir }}/WMLShell-ci-*-macos
             ${{ steps.package.outputs.out_dir }}/SHA256SUMS.txt
           if-no-files-found: error

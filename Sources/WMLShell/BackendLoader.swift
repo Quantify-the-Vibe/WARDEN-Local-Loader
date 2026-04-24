@@ -29,7 +29,7 @@ struct BackendChatGenerateResult {
 @MainActor
 protocol BackendLoader: AnyObject {
     var runtimeEventHandler: ((BackendRuntimeEvent) -> Void)? { get set }
-    func load(model: LoaderShellViewModel.ModelRecord) async throws -> BackendReadyReport
+    func load(model: WMLShellViewModel.ModelRecord) async throws -> BackendReadyReport
     func generate(prompt: String) async throws -> String
     func generateChat(messages: [[String: String]], maxTokens: Int?) async throws -> BackendChatGenerateResult
     func shutdown() async

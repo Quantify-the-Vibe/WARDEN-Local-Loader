@@ -1,11 +1,11 @@
-# W4L v0.4 Planning Spec
+# WML v0.4 Planning Spec
 
 ## Document Status
 
 - status: planning draft
 - purpose: bounded authority candidate for the next PEM corpus
 - predecessor baseline:
-  - `docs/W4L_V03_IMPLEMENTATION_SPEC.md`
+  - `docs/WML_V03_IMPLEMENTATION_SPEC.md`
 
 ## Objective
 

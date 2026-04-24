@@ -1,11 +1,11 @@
 WARDEN4 Implementation Slice P3.T2.S2 Per Generate KV Sensitive Admission Gate v1
 Status: Planned Slice Class: Phase-local execution Write Scope: Generate-path admission checks, KV-sensitive projection logic, and directly supporting docs/tests for P3.T2.S2
 Objective
-Execute P3.T2.S2 inside Phase 03 W4L v0.3 Resilience And Admission without expanding beyond one bounded implementation claim.
+Execute P3.T2.S2 inside Phase 03 WML v0.3 Resilience And Admission without expanding beyond one bounded implementation claim.
 Claim
 Every generate request executes a pre-generate admission gate that projects KV-cache growth and refuses unsafe generation before budget breach occurs.
 Parent Phase
-- `WARDEN4_Phase_03_W4L_V03_Resilience_And_Admission_v1.md`
+- `WARDEN4_Phase_03_WML_V03_Resilience_And_Admission_v1.md`
 Parent Track
 - Dynamic Memory Admission
 Changes In Scope

@@ -3,25 +3,25 @@
 import PackageDescription
 
 let package = Package(
-    name: "WARDEN4LocalLLMLoaderRebuild",
+    name: "WARDENModelLoader",
     platforms: [
         .macOS(.v14),
     ],
     products: [
         .executable(
-            name: "LoaderShell",
-            targets: ["LoaderShell"]
+            name: "WMLShell",
+            targets: ["WMLShell"]
         ),
     ],
     targets: [
         .executableTarget(
-            name: "LoaderShell",
-            path: "Sources/LoaderShell"
+            name: "WMLShell",
+            path: "Sources/WMLShell"
         ),
         .testTarget(
-            name: "LoaderShellTests",
-            dependencies: ["LoaderShell"],
-            path: "Tests/LoaderShellTests"
+            name: "WMLShellTests",
+            dependencies: ["WMLShell"],
+            path: "Tests/WMLShellTests"
         ),
     ]
 )

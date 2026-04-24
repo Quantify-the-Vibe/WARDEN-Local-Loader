@@ -1,11 +1,11 @@
 WARDEN4 Implementation Slice P3.T1.S1 Timeout Classification And Crash Window Invariants v1
 Status: Planned Slice Class: Phase-local execution Write Scope: Supervisor timeout mapping, crash-window invariants, and directly supporting docs/tests for P3.T1.S1
 Objective
-Execute P3.T1.S1 inside Phase 03 W4L v0.3 Resilience And Admission without expanding beyond one bounded implementation claim.
+Execute P3.T1.S1 inside Phase 03 WML v0.3 Resilience And Admission without expanding beyond one bounded implementation claim.
 Claim
 Timeout failures are classified as crash-equivalent events and counted by a crash-window policy that is mathematically compatible with timeout durations.
 Parent Phase
-- `WARDEN4_Phase_03_W4L_V03_Resilience_And_Admission_v1.md`
+- `WARDEN4_Phase_03_WML_V03_Resilience_And_Admission_v1.md`
 Parent Track
 - Supervision Math And Restart Behavior
 Changes In Scope

@@ -1,11 +1,11 @@
 WARDEN4 Implementation Slice P3.T3.S2 Bridge Translation Only Default And Explicit Load Policy v1
 Status: Planned Slice Class: Phase-local execution Write Scope: Compatibility bridge request handling, load-authority routing, and directly supporting docs/tests for P3.T3.S2
 Objective
-Execute P3.T3.S2 inside Phase 03 W4L v0.3 Resilience And Admission without expanding beyond one bounded implementation claim.
+Execute P3.T3.S2 inside Phase 03 WML v0.3 Resilience And Admission without expanding beyond one bounded implementation claim.
 Claim
 Compatibility bridge operates as translation-only by default and does not implicitly mutate canonical model-load authority.
 Parent Phase
-- `WARDEN4_Phase_03_W4L_V03_Resilience_And_Admission_v1.md`
+- `WARDEN4_Phase_03_WML_V03_Resilience_And_Admission_v1.md`
 Parent Track
 - Recovery Integrity And Boundary Discipline
 Changes In Scope

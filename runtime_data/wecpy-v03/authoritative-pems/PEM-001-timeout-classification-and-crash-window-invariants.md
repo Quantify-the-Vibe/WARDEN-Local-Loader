@@ -7,13 +7,13 @@
 - `task_id`: `task-001`
 - `slice_id`: `slice-001`
 - `task_class`: `coding`
-- `objective`: `Execute P3.T1.S1 inside Phase 03 W4L v0.3 Resilience And Admission without expanding beyond one bounded implementation claim.`
+- `objective`: `Execute P3.T1.S1 inside Phase 03 WML v0.3 Resilience And Admission without expanding beyond one bounded implementation claim.`
 - `depends_on`:
   - `none`
 - `loop_profile_binding`: `coding_slice@0.2.0`
 - `skill_profile_binding`: `coding_skills@0.2.0`
 - `inputs`:
-  - `/Users/kikbot/Documents/WARDEN4/WARDEN4-Local-LLM-Loader-Rebuild/design/planning-v03/WARDEN4_IMPLEMENTATION_SLICE_P3_T1_S1_TIMEOUT_CLASSIFICATION_AND_CRASH_WINDOW_INVARIANTS_v1.md`
+  - `/Users/kikbot/Documents/WARDEN4/WARDEN-Model-Loader/design/planning-v03/WARDEN4_IMPLEMENTATION_SLICE_P3_T1_S1_TIMEOUT_CLASSIFICATION_AND_CRASH_WINDOW_INVARIANTS_v1.md`
 - `target_files`:
   - `none`
 - `tasks`:

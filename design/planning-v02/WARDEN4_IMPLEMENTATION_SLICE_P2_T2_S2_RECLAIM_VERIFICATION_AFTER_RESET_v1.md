@@ -1,11 +1,11 @@
 WARDEN4 Implementation Slice P2.T2.S2 Reclaim Verification After Reset v1
 Status: Planned Slice Class: Phase-local execution Write Scope: Reset reclaim verification and directly supporting docs/tests for P2.T2.S2
 Objective
-Execute P2.T2.S2 inside Phase 02 W4L v0.2 Host Protective Runtime without expanding beyond one bounded implementation claim.
+Execute P2.T2.S2 inside Phase 02 WML v0.2 Host Protective Runtime without expanding beyond one bounded implementation claim.
 Claim
 Reset does not return healthy reusable idle until helper termination and reclaim verification both pass within the configured reclaim slack.
 Parent Phase
-- `WARDEN4_Phase_02_W4L_V02_Host_Protective_Runtime_v1.md`
+- `WARDEN4_Phase_02_WML_V02_Host_Protective_Runtime_v1.md`
 Parent Track
 - Budget Verification And Reclaim
 Changes In Scope

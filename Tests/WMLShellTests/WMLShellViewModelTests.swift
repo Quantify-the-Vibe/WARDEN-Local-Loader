@@ -1,9 +1,9 @@
 import Dispatch
 import Foundation
 import Testing
-@testable import LoaderShell
+@testable import WMLShell
 
-struct LoaderShellViewModelTests {
+struct WMLShellViewModelTests {
     @MainActor
     @Test
     func supervisorEntersFailedFastAfterCrashWindowExceeded() {
@@ -147,7 +147,7 @@ struct LoaderShellViewModelTests {
     @MainActor
     @Test
     func statusPayloadIncludesBudgetSnapshot() async throws {
-        let viewModel = LoaderShellViewModel(
+        let viewModel = WMLShellViewModel(
             backendLoader: MockBackendLoader(),
             piMonoLauncher: .default(),
             memoryBudgetMonitor: MockMemoryBudgetMonitor(
@@ -188,7 +188,7 @@ struct LoaderShellViewModelTests {
     @MainActor
     @Test
     func failedMeasurementSurfacesStructuredStatus() async throws {
-        let viewModel = LoaderShellViewModel(
+        let viewModel = WMLShellViewModel(
             backendLoader: MockBackendLoader(),
             piMonoLauncher: .default(),
             memoryBudgetMonitor: MockMemoryBudgetMonitor(
@@ -212,7 +212,7 @@ struct LoaderShellViewModelTests {
     @MainActor
     @Test
     func loadFailsClosedWhenMeasurementUnavailable() async throws {
-        let viewModel = LoaderShellViewModel(
+        let viewModel = WMLShellViewModel(
             backendLoader: MockBackendLoader(),
             piMonoLauncher: .default(),
             memoryBudgetMonitor: MockMemoryBudgetMonitor(
@@ -226,7 +226,7 @@ struct LoaderShellViewModelTests {
             startHTTPServers: false
         )
         viewModel.availableModels = [
-            LoaderShellViewModel.ModelRecord(id: "mock", displayName: "mock", localPath: "/tmp/mock")
+            WMLShellViewModel.ModelRecord(id: "mock", displayName: "mock", localPath: "/tmp/mock")
         ]
         viewModel.selectedModelID = "mock"
 
@@ -240,7 +240,7 @@ struct LoaderShellViewModelTests {
     @MainActor
     @Test
     func loadFailsClosedWhenProjectedTotalExceedsCeiling() async throws {
-        let viewModel = LoaderShellViewModel(
+        let viewModel = WMLShellViewModel(
             backendLoader: MockBackendLoader(),
             piMonoLauncher: .default(),
             memoryBudgetMonitor: MockMemoryBudgetMonitor(
@@ -262,7 +262,7 @@ struct LoaderShellViewModelTests {
             startHTTPServers: false
         )
         viewModel.availableModels = [
-            LoaderShellViewModel.ModelRecord(id: "mock", displayName: "mock", localPath: "/tmp/mock")
+            WMLShellViewModel.ModelRecord(id: "mock", displayName: "mock", localPath: "/tmp/mock")
         ]
         viewModel.selectedModelID = "mock"
 
@@ -277,7 +277,7 @@ struct LoaderShellViewModelTests {
     @Test
     func loadTerminatesHelperWhenPostLoadVerificationFails() async throws {
         let backendLoader = MockBackendLoader()
-        let viewModel = LoaderShellViewModel(
+        let viewModel = WMLShellViewModel(
             backendLoader: backendLoader,
             piMonoLauncher: .default(),
             memoryBudgetMonitor: SequencedMemoryBudgetMonitor(snapshots: [
@@ -326,7 +326,7 @@ struct LoaderShellViewModelTests {
             startHTTPServers: false
         )
         viewModel.availableModels = [
-            LoaderShellViewModel.ModelRecord(id: "mock", displayName: "mock", localPath: "/tmp/mock")
+            WMLShellViewModel.ModelRecord(id: "mock", displayName: "mock", localPath: "/tmp/mock")
         ]
         viewModel.selectedModelID = "mock"
 
@@ -342,7 +342,7 @@ struct LoaderShellViewModelTests {
     @Test
     func loadReachesReadyWhenPostLoadVerificationPasses() async throws {
         let backendLoader = MockBackendLoader()
-        let viewModel = LoaderShellViewModel(
+        let viewModel = WMLShellViewModel(
             backendLoader: backendLoader,
             piMonoLauncher: .default(),
             memoryBudgetMonitor: SequencedMemoryBudgetMonitor(snapshots: [
@@ -400,7 +400,7 @@ struct LoaderShellViewModelTests {
             startHTTPServers: false
         )
         viewModel.availableModels = [
-            LoaderShellViewModel.ModelRecord(id: "mock", displayName: "mock", localPath: "/tmp/mock")
+            WMLShellViewModel.ModelRecord(id: "mock", displayName: "mock", localPath: "/tmp/mock")
         ]
         viewModel.selectedModelID = "mock"
 
@@ -415,7 +415,7 @@ struct LoaderShellViewModelTests {
     @Test
     func loadFailsClosedWhenPostLoadSettlementIsUnstable() async throws {
         let backendLoader = MockBackendLoader()
-        let viewModel = LoaderShellViewModel(
+        let viewModel = WMLShellViewModel(
             backendLoader: backendLoader,
             piMonoLauncher: .default(),
             memoryBudgetMonitor: OscillatingMemoryBudgetMonitor(
@@ -448,7 +448,7 @@ struct LoaderShellViewModelTests {
             startHTTPServers: false
         )
         viewModel.availableModels = [
-            LoaderShellViewModel.ModelRecord(id: "mock", displayName: "mock", localPath: "/tmp/mock")
+            WMLShellViewModel.ModelRecord(id: "mock", displayName: "mock", localPath: "/tmp/mock")
         ]
         viewModel.selectedModelID = "mock"
 
@@ -464,7 +464,7 @@ struct LoaderShellViewModelTests {
     @Test
     func observedBaselineProjectionCanDenyFutureAdmission() async throws {
         let backendLoader = MockBackendLoader()
-        let viewModel = LoaderShellViewModel(
+        let viewModel = WMLShellViewModel(
             backendLoader: backendLoader,
             piMonoLauncher: .default(),
             memoryBudgetMonitor: SequencedMemoryBudgetMonitor(snapshots: [
@@ -524,7 +524,7 @@ struct LoaderShellViewModelTests {
             startHTTPServers: false
         )
         viewModel.availableModels = [
-            LoaderShellViewModel.ModelRecord(id: "mock", displayName: "mock", localPath: "/tmp/mock")
+            WMLShellViewModel.ModelRecord(id: "mock", displayName: "mock", localPath: "/tmp/mock")
         ]
         viewModel.selectedModelID = "mock"
 
@@ -544,7 +544,7 @@ struct LoaderShellViewModelTests {
     @Test
     func generateRequestUsesPreAdmissionGateAndAllowsSafePrompt() async throws {
         let backendLoader = MockBackendLoader()
-        let viewModel = LoaderShellViewModel(
+        let viewModel = WMLShellViewModel(
             backendLoader: backendLoader,
             piMonoLauncher: .default(),
             memoryBudgetMonitor: MockMemoryBudgetMonitor(
@@ -567,7 +567,7 @@ struct LoaderShellViewModelTests {
             startHTTPServers: false
         )
         viewModel.availableModels = [
-            LoaderShellViewModel.ModelRecord(id: "mock", displayName: "mock", localPath: "/tmp/mock")
+            WMLShellViewModel.ModelRecord(id: "mock", displayName: "mock", localPath: "/tmp/mock")
         ]
         viewModel.selectedModelID = "mock"
 
@@ -581,7 +581,7 @@ struct LoaderShellViewModelTests {
     @Test
     func overBudgetGenerateIsDeniedBeforeBackendCall() async throws {
         let backendLoader = MockBackendLoader()
-        let viewModel = LoaderShellViewModel(
+        let viewModel = WMLShellViewModel(
             backendLoader: backendLoader,
             piMonoLauncher: .default(),
             memoryBudgetMonitor: MockMemoryBudgetMonitor(
@@ -604,7 +604,7 @@ struct LoaderShellViewModelTests {
             startHTTPServers: false
         )
         viewModel.availableModels = [
-            LoaderShellViewModel.ModelRecord(id: "mock", displayName: "mock", localPath: "/tmp/mock")
+            WMLShellViewModel.ModelRecord(id: "mock", displayName: "mock", localPath: "/tmp/mock")
         ]
         viewModel.selectedModelID = "mock"
 
@@ -619,7 +619,7 @@ struct LoaderShellViewModelTests {
     @Test
     func overBudgetChatGenerateIsDeniedBeforeGenerateCall() async throws {
         let backendLoader = MockBackendLoader()
-        let viewModel = LoaderShellViewModel(
+        let viewModel = WMLShellViewModel(
             backendLoader: backendLoader,
             piMonoLauncher: .default(),
             memoryBudgetMonitor: SequencedMemoryBudgetMonitor(snapshots: [
@@ -679,7 +679,7 @@ struct LoaderShellViewModelTests {
             startHTTPServers: false
         )
         viewModel.availableModels = [
-            LoaderShellViewModel.ModelRecord(id: "mock", displayName: "mock", localPath: "/tmp/mock")
+            WMLShellViewModel.ModelRecord(id: "mock", displayName: "mock", localPath: "/tmp/mock")
         ]
         viewModel.selectedModelID = "mock"
 
@@ -699,7 +699,7 @@ struct LoaderShellViewModelTests {
     @Test
     func resetReturnsIdleWhenReclaimVerificationPasses() async throws {
         let backendLoader = MockBackendLoader()
-        let viewModel = LoaderShellViewModel(
+        let viewModel = WMLShellViewModel(
             backendLoader: backendLoader,
             piMonoLauncher: .default(),
             memoryBudgetMonitor: SequencedMemoryBudgetMonitor(snapshots: [
@@ -750,7 +750,7 @@ struct LoaderShellViewModelTests {
     @Test
     func resetFailsWhenReclaimVerificationFails() async throws {
         let backendLoader = MockBackendLoader()
-        let viewModel = LoaderShellViewModel(
+        let viewModel = WMLShellViewModel(
             backendLoader: backendLoader,
             piMonoLauncher: .default(),
             memoryBudgetMonitor: SequencedMemoryBudgetMonitor(snapshots: [
@@ -810,7 +810,7 @@ struct LoaderShellViewModelTests {
     @Test
     func reclaimFailureProjectsDegradedLockedAndBlocksLoadReuse() async throws {
         let backendLoader = MockBackendLoader()
-        let viewModel = LoaderShellViewModel(
+        let viewModel = WMLShellViewModel(
             backendLoader: backendLoader,
             piMonoLauncher: .default(),
             memoryBudgetMonitor: SequencedMemoryBudgetMonitor(snapshots: [
@@ -850,7 +850,7 @@ struct LoaderShellViewModelTests {
             startHTTPServers: false
         )
         viewModel.availableModels = [
-            LoaderShellViewModel.ModelRecord(id: "mock", displayName: "mock", localPath: "/tmp/mock")
+            WMLShellViewModel.ModelRecord(id: "mock", displayName: "mock", localPath: "/tmp/mock")
         ]
         viewModel.selectedModelID = "mock"
 
@@ -871,7 +871,7 @@ struct LoaderShellViewModelTests {
     @Test
     func explicitRecoveryResetClearsDegradedLockedProjection() async throws {
         let backendLoader = MockBackendLoader()
-        let viewModel = LoaderShellViewModel(
+        let viewModel = WMLShellViewModel(
             backendLoader: backendLoader,
             piMonoLauncher: .default(),
             memoryBudgetMonitor: SequencedMemoryBudgetMonitor(snapshots: [
@@ -954,7 +954,7 @@ struct LoaderShellViewModelTests {
     @MainActor
     @Test
     func budgetReportSummaryProjectsSharedStatusState() async throws {
-        let viewModel = LoaderShellViewModel(
+        let viewModel = WMLShellViewModel(
             backendLoader: MockBackendLoader(),
             piMonoLauncher: .default(),
             memoryBudgetMonitor: MockMemoryBudgetMonitor(
@@ -985,7 +985,7 @@ struct LoaderShellViewModelTests {
     @Test
     func helperCrashTransitionsSupervisorStateWithoutKillingViewModel() async throws {
         let backendLoader = MockBackendLoader()
-        let viewModel = LoaderShellViewModel(
+        let viewModel = WMLShellViewModel(
             backendLoader: backendLoader,
             piMonoLauncher: .default(),
             memoryBudgetMonitor: SequencedMemoryBudgetMonitor(snapshots: [
@@ -1043,7 +1043,7 @@ struct LoaderShellViewModelTests {
             startHTTPServers: false
         )
         viewModel.availableModels = [
-            LoaderShellViewModel.ModelRecord(id: "mock", displayName: "mock", localPath: "/tmp/mock")
+            WMLShellViewModel.ModelRecord(id: "mock", displayName: "mock", localPath: "/tmp/mock")
         ]
         viewModel.selectedModelID = "mock"
 
@@ -1061,7 +1061,7 @@ struct LoaderShellViewModelTests {
     @Test
     func timeoutRuntimeEventProjectsTimeoutClassificationInViewModel() async throws {
         let backendLoader = MockBackendLoader()
-        let viewModel = LoaderShellViewModel(
+        let viewModel = WMLShellViewModel(
             backendLoader: backendLoader,
             piMonoLauncher: .default(),
             memoryBudgetMonitor: MockMemoryBudgetMonitor(
@@ -1096,7 +1096,7 @@ struct LoaderShellViewModelTests {
     func automaticRestartUsesBoundedBackoffSchedule() async throws {
         let backendLoader = MockBackendLoader()
         let delayRecorder = DelayRecorder()
-        let viewModel = LoaderShellViewModel(
+        let viewModel = WMLShellViewModel(
             backendLoader: backendLoader,
             piMonoLauncher: .default(),
             memoryBudgetMonitor: MockMemoryBudgetMonitor(
@@ -1122,7 +1122,7 @@ struct LoaderShellViewModelTests {
             startHTTPServers: false
         )
         viewModel.availableModels = [
-            LoaderShellViewModel.ModelRecord(id: "mock", displayName: "mock", localPath: "/tmp/mock")
+            WMLShellViewModel.ModelRecord(id: "mock", displayName: "mock", localPath: "/tmp/mock")
         ]
         viewModel.selectedModelID = "mock"
 
@@ -1152,7 +1152,7 @@ struct LoaderShellViewModelTests {
             maxCrashEquivalentTimeoutSeconds: 20,
             now: Date.init
         )
-        let viewModel = LoaderShellViewModel(
+        let viewModel = WMLShellViewModel(
             backendLoader: backendLoader,
             piMonoLauncher: .default(),
             supervisor: supervisor,
@@ -1179,7 +1179,7 @@ struct LoaderShellViewModelTests {
             startHTTPServers: false
         )
         viewModel.availableModels = [
-            LoaderShellViewModel.ModelRecord(id: "mock", displayName: "mock", localPath: "/tmp/mock")
+            WMLShellViewModel.ModelRecord(id: "mock", displayName: "mock", localPath: "/tmp/mock")
         ]
         viewModel.selectedModelID = "mock"
 
@@ -1203,7 +1203,7 @@ struct LoaderShellViewModelTests {
             now: Date.init
         )
         supervisor.handleRuntimeEvent(BackendRuntimeEvent.helperExitedUnexpectedly(pid: 1, terminationStatus: 9))
-        let viewModel = LoaderShellViewModel(
+        let viewModel = WMLShellViewModel(
             backendLoader: MockBackendLoader(),
             piMonoLauncher: .default(),
             supervisor: supervisor,
@@ -1226,7 +1226,7 @@ struct LoaderShellViewModelTests {
             startHTTPServers: false
         )
         viewModel.availableModels = [
-            LoaderShellViewModel.ModelRecord(id: "mock", displayName: "mock", localPath: "/tmp/mock")
+            WMLShellViewModel.ModelRecord(id: "mock", displayName: "mock", localPath: "/tmp/mock")
         ]
         viewModel.selectedModelID = "mock"
 
@@ -1247,7 +1247,7 @@ struct LoaderShellViewModelTests {
             now: Date.init
         )
         supervisor.handleRuntimeEvent(BackendRuntimeEvent.helperExitedUnexpectedly(pid: 1, terminationStatus: 9))
-        let viewModel = LoaderShellViewModel(
+        let viewModel = WMLShellViewModel(
             backendLoader: MockBackendLoader(),
             piMonoLauncher: .default(),
             supervisor: supervisor,
@@ -1300,7 +1300,7 @@ struct LoaderShellViewModelTests {
     @Test
     func openAIBridgeDefaultIsTranslationOnlyAndRequiresExplicitLoad() async throws {
         let backendLoader = MockBackendLoader()
-        let viewModel = LoaderShellViewModel(
+        let viewModel = WMLShellViewModel(
             backendLoader: backendLoader,
             piMonoLauncher: .default(),
             memoryBudgetMonitor: MockMemoryBudgetMonitor(
@@ -1323,7 +1323,7 @@ struct LoaderShellViewModelTests {
             startHTTPServers: false
         )
         viewModel.availableModels = [
-            LoaderShellViewModel.ModelRecord(id: "mock", displayName: "mock", localPath: "/tmp/mock")
+            WMLShellViewModel.ModelRecord(id: "mock", displayName: "mock", localPath: "/tmp/mock")
         ]
 
         let response = await viewModel.httpOpenAIChatCompletions(bodyJSON: [
@@ -1343,7 +1343,7 @@ struct LoaderShellViewModelTests {
     @Test
     func openAIBridgeLegacyAutoloadCanBeEnabledByFlag() async throws {
         let backendLoader = MockBackendLoader()
-        let viewModel = LoaderShellViewModel(
+        let viewModel = WMLShellViewModel(
             backendLoader: backendLoader,
             piMonoLauncher: .default(),
             memoryBudgetMonitor: SequencedMemoryBudgetMonitor(snapshots: [
@@ -1403,7 +1403,7 @@ struct LoaderShellViewModelTests {
             startHTTPServers: false
         )
         viewModel.availableModels = [
-            LoaderShellViewModel.ModelRecord(id: "mock", displayName: "mock", localPath: "/tmp/mock")
+            WMLShellViewModel.ModelRecord(id: "mock", displayName: "mock", localPath: "/tmp/mock")
         ]
 
         let response = await viewModel.httpOpenAIChatCompletions(bodyJSON: [
@@ -1424,7 +1424,7 @@ struct LoaderShellViewModelTests {
     @Test
     func openAIBridgeForwardsRequestedMaxCompletionTokens() async throws {
         let backendLoader = MockBackendLoader()
-        let viewModel = LoaderShellViewModel(
+        let viewModel = WMLShellViewModel(
             backendLoader: backendLoader,
             piMonoLauncher: .default(),
             memoryBudgetMonitor: SequencedMemoryBudgetMonitor(snapshots: [
@@ -1484,7 +1484,7 @@ struct LoaderShellViewModelTests {
             startHTTPServers: false
         )
         viewModel.availableModels = [
-            LoaderShellViewModel.ModelRecord(id: "mock", displayName: "mock", localPath: "/tmp/mock")
+            WMLShellViewModel.ModelRecord(id: "mock", displayName: "mock", localPath: "/tmp/mock")
         ]
 
         let response = await viewModel.httpOpenAIChatCompletions(bodyJSON: [
@@ -1508,7 +1508,7 @@ struct LoaderShellViewModelTests {
             promptTokens: 120,
             completionTokens: 4096
         )
-        let viewModel = LoaderShellViewModel(
+        let viewModel = WMLShellViewModel(
             backendLoader: backendLoader,
             piMonoLauncher: .default(),
             memoryBudgetMonitor: SequencedMemoryBudgetMonitor(snapshots: [
@@ -1568,7 +1568,7 @@ struct LoaderShellViewModelTests {
             startHTTPServers: false
         )
         viewModel.availableModels = [
-            LoaderShellViewModel.ModelRecord(id: "mock", displayName: "mock", localPath: "/tmp/mock")
+            WMLShellViewModel.ModelRecord(id: "mock", displayName: "mock", localPath: "/tmp/mock")
         ]
 
         let response = await viewModel.httpOpenAIChatCompletions(bodyJSON: [
@@ -1598,7 +1598,7 @@ struct LoaderShellViewModelTests {
             now: Date.init
         )
         supervisor.handleRuntimeEvent(BackendRuntimeEvent.helperExitedUnexpectedly(pid: 1, terminationStatus: 9))
-        let viewModel = LoaderShellViewModel(
+        let viewModel = WMLShellViewModel(
             backendLoader: MockBackendLoader(),
             piMonoLauncher: .default(),
             supervisor: supervisor,
@@ -1622,7 +1622,7 @@ struct LoaderShellViewModelTests {
             startHTTPServers: false
         )
         viewModel.availableModels = [
-            LoaderShellViewModel.ModelRecord(id: "mock", displayName: "mock", localPath: "/tmp/mock")
+            WMLShellViewModel.ModelRecord(id: "mock", displayName: "mock", localPath: "/tmp/mock")
         ]
 
         let response = await viewModel.httpOpenAIChatCompletions(bodyJSON: [
@@ -1648,7 +1648,7 @@ struct LoaderShellViewModelTests {
             now: Date.init
         )
         supervisor.handleRuntimeEvent(BackendRuntimeEvent.helperExitedUnexpectedly(pid: 1, terminationStatus: 9))
-        let viewModel = LoaderShellViewModel(
+        let viewModel = WMLShellViewModel(
             backendLoader: MockBackendLoader(),
             piMonoLauncher: .default(),
             supervisor: supervisor,
@@ -1696,7 +1696,7 @@ private final class MockBackendLoader: BackendLoader {
         completionTokens: 0
     )
 
-    func load(model: LoaderShellViewModel.ModelRecord) async throws -> BackendReadyReport {
+    func load(model: WMLShellViewModel.ModelRecord) async throws -> BackendReadyReport {
         loadCallCount += 1
         return BackendReadyReport(
             modelID: model.id,

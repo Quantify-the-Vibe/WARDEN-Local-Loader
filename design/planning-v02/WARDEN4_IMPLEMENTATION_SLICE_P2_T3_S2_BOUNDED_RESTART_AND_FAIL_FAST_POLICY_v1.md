@@ -1,11 +1,11 @@
 WARDEN4 Implementation Slice P2.T3.S2 Bounded Restart And Fail-Fast Policy v1
 Status: Planned Slice Class: Phase-local execution Write Scope: Restart window, fail-fast transitions, and directly supporting docs/tests for P2.T3.S2
 Objective
-Execute P2.T3.S2 inside Phase 02 W4L v0.2 Host Protective Runtime without expanding beyond one bounded implementation claim.
+Execute P2.T3.S2 inside Phase 02 WML v0.2 Host Protective Runtime without expanding beyond one bounded implementation claim.
 Claim
 Repeated helper instability inside the admitted crash window triggers bounded restart attempts and then a `failed_fast` state that blocks further load admission until explicit operator recovery.
 Parent Phase
-- `WARDEN4_Phase_02_W4L_V02_Host_Protective_Runtime_v1.md`
+- `WARDEN4_Phase_02_WML_V02_Host_Protective_Runtime_v1.md`
 Parent Track
 - Supervision And Fail-Fast
 Changes In Scope

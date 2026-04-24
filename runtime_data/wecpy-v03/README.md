@@ -7,13 +7,13 @@ Loaded execution artifact set for this project:
 - skill profile:
   - `coding_skills@0.2.0`
 - source planning corpus:
-  - `/Users/kikbot/Documents/WARDEN4/WARDEN4-Local-LLM-Loader-Rebuild/design/planning-v03/WARDEN4_Phase_03_W4L_V03_Resilience_And_Admission_v1.md`
-  - `/Users/kikbot/Documents/WARDEN4/WARDEN4-Local-LLM-Loader-Rebuild/design/planning-v03/WARDEN4_IMPLEMENTATION_SLICE_P3_T1_S1_TIMEOUT_CLASSIFICATION_AND_CRASH_WINDOW_INVARIANTS_v1.md`
-  - `/Users/kikbot/Documents/WARDEN4/WARDEN4-Local-LLM-Loader-Rebuild/design/planning-v03/WARDEN4_IMPLEMENTATION_SLICE_P3_T1_S2_RESTART_BACKOFF_EXECUTION_UNDER_SUPERVISOR_OWNERSHIP_v1.md`
-  - `/Users/kikbot/Documents/WARDEN4/WARDEN4-Local-LLM-Loader-Rebuild/design/planning-v03/WARDEN4_IMPLEMENTATION_SLICE_P3_T2_S1_EVIDENCE_BASED_LOAD_SETTLEMENT_AND_CONFIDENCE_UPGRADE_v1.md`
-  - `/Users/kikbot/Documents/WARDEN4/WARDEN4-Local-LLM-Loader-Rebuild/design/planning-v03/WARDEN4_IMPLEMENTATION_SLICE_P3_T2_S2_PER_GENERATE_KV_SENSITIVE_ADMISSION_GATE_v1.md`
-  - `/Users/kikbot/Documents/WARDEN4/WARDEN4-Local-LLM-Loader-Rebuild/design/planning-v03/WARDEN4_IMPLEMENTATION_SLICE_P3_T3_S1_RECLAIM_FAILURE_STATE_INTEGRITY_AND_DEGRADED_LOCK_v1.md`
-  - `/Users/kikbot/Documents/WARDEN4/WARDEN4-Local-LLM-Loader-Rebuild/design/planning-v03/WARDEN4_IMPLEMENTATION_SLICE_P3_T3_S2_BRIDGE_TRANSLATION_ONLY_DEFAULT_AND_EXPLICIT_LOAD_POLICY_v1.md`
+  - `/Users/kikbot/Documents/WARDEN4/WARDEN-Model-Loader/design/planning-v03/WARDEN4_Phase_03_WML_V03_Resilience_And_Admission_v1.md`
+  - `/Users/kikbot/Documents/WARDEN4/WARDEN-Model-Loader/design/planning-v03/WARDEN4_IMPLEMENTATION_SLICE_P3_T1_S1_TIMEOUT_CLASSIFICATION_AND_CRASH_WINDOW_INVARIANTS_v1.md`
+  - `/Users/kikbot/Documents/WARDEN4/WARDEN-Model-Loader/design/planning-v03/WARDEN4_IMPLEMENTATION_SLICE_P3_T1_S2_RESTART_BACKOFF_EXECUTION_UNDER_SUPERVISOR_OWNERSHIP_v1.md`
+  - `/Users/kikbot/Documents/WARDEN4/WARDEN-Model-Loader/design/planning-v03/WARDEN4_IMPLEMENTATION_SLICE_P3_T2_S1_EVIDENCE_BASED_LOAD_SETTLEMENT_AND_CONFIDENCE_UPGRADE_v1.md`
+  - `/Users/kikbot/Documents/WARDEN4/WARDEN-Model-Loader/design/planning-v03/WARDEN4_IMPLEMENTATION_SLICE_P3_T2_S2_PER_GENERATE_KV_SENSITIVE_ADMISSION_GATE_v1.md`
+  - `/Users/kikbot/Documents/WARDEN4/WARDEN-Model-Loader/design/planning-v03/WARDEN4_IMPLEMENTATION_SLICE_P3_T3_S1_RECLAIM_FAILURE_STATE_INTEGRITY_AND_DEGRADED_LOCK_v1.md`
+  - `/Users/kikbot/Documents/WARDEN4/WARDEN-Model-Loader/design/planning-v03/WARDEN4_IMPLEMENTATION_SLICE_P3_T3_S2_BRIDGE_TRANSLATION_ONLY_DEFAULT_AND_EXPLICIT_LOAD_POLICY_v1.md`
 
 Generated artifacts:
 
@@ -27,7 +27,7 @@ Generation basis:
 - WEC-Py source root:
   - `/Users/kikbot/Documents/Playground/WEC-Py/src`
 - local bootstrap:
-  - `/Users/kikbot/Documents/WARDEN4/WARDEN4-Local-LLM-Loader-Rebuild/tools/bootstrap_loader_wecpy_project.py`
+  - `/Users/kikbot/Documents/WARDEN4/WARDEN-Model-Loader/tools/bootstrap_loader_wecpy_project.py`
 
 Current generated shape:
 

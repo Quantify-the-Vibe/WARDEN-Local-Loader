@@ -1,6 +1,6 @@
 import Foundation
 import Testing
-@testable import LoaderShell
+@testable import WMLShell
 
 struct LoaderSupervisorTests {
     @MainActor

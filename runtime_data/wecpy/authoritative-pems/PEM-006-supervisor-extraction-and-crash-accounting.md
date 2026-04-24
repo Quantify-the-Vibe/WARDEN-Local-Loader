@@ -7,13 +7,13 @@
 - `task_id`: `task-003`
 - `slice_id`: `slice-006`
 - `task_class`: `coding`
-- `objective`: `Execute P2.T3.S1 inside Phase 02 W4L v0.2 Host Protective Runtime without expanding beyond one bounded implementation claim.`
+- `objective`: `Execute P2.T3.S1 inside Phase 02 WML v0.2 Host Protective Runtime without expanding beyond one bounded implementation claim.`
 - `depends_on`:
   - `none`
 - `loop_profile_binding`: `coding_slice@0.2.0`
 - `skill_profile_binding`: `coding_skills@0.2.0`
 - `inputs`:
-  - `/Users/kikbot/Documents/WARDEN4/WARDEN4-Local-LLM-Loader-Rebuild/design/planning-v02/WARDEN4_IMPLEMENTATION_SLICE_P2_T3_S1_SUPERVISOR_EXTRACTION_AND_CRASH_ACCOUNTING_v1.md`
+  - `/Users/kikbot/Documents/WARDEN4/WARDEN-Model-Loader/design/planning-v02/WARDEN4_IMPLEMENTATION_SLICE_P2_T3_S1_SUPERVISOR_EXTRACTION_AND_CRASH_ACCOUNTING_v1.md`
 - `target_files`:
   - `none`
 - `tasks`:

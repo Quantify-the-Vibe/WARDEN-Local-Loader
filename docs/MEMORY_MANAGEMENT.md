@@ -7,8 +7,8 @@
   - not active canon
   - not approved review corpus input
 - superseded by:
-  - `docs/W4L_V02_IMPLEMENTATION_SPEC.md`
-  - `docs/W4L_V03_PLANNING_SPEC.md`
+  - `docs/WML_V02_IMPLEMENTATION_SPEC.md`
+  - `docs/WML_V03_PLANNING_SPEC.md`
 - reason:
   - contains superseded slice-2 planning assumptions that do not describe current code
 
@@ -46,7 +46,7 @@ Do not use this file in the active design review corpus.
 ### Allocation Targets
 
 - macOS system reserve: ~2GB (kernel, daemons, WindowServer)
-- `LoaderShell.app` process: ~200MB
+- `WMLShell.app` process: ~200MB
 - `mlx_loader_helper.py` process overhead (excluding model weights): ~300MB
 - `pi-mono` process: ~300MB
 - Terminal and shell: ~100MB
@@ -116,7 +116,7 @@ Do not use this file in the active design review corpus.
 - error type: `MemoryError.ceilingExceeded`
 - fields: projected bytes, ceiling bytes, model estimate bytes
 - behavior: do not spawn helper, return structured failure to caller
-- UI consequence: `LoaderShellViewModel` transitions to `failed` state, operator sees the structured detail
+- UI consequence: `WMLShellViewModel` transitions to `failed` state, operator sees the structured detail
 
 
 ## Post-Load Verification
@@ -189,8 +189,8 @@ Do not use this file in the active design review corpus.
 
 ### `MemoryBudget` Struct
 
-- location: new source file `Sources/LoaderShell/MemoryBudget.swift`
-- visibility: internal to `LoaderShell` module
+- location: new source file `Sources/WMLShell/MemoryBudget.swift`
+- visibility: internal to `WMLShell` module
 - responsibilities:
   - expose `currentFootprint() throws -> Int64` — reads `phys_footprint` via `task_info`
   - expose `estimateModelSize(at path: String) -> Int64` — directory walk, sums file sizes
@@ -211,7 +211,7 @@ Do not use this file in the active design review corpus.
 - if post-load check throws, call `shutdown()` and re-throw as `BackendFailureReport`
 - include memory fields in returned `BackendReadyReport`
 
-### Integration in `LoaderShellViewModel`
+### Integration in `WMLShellViewModel`
 
 - `loadButtonPressed()` handles `BackendFailureReport` with code `memory_ceiling_exceeded` distinctly
 - status detail surfaces the projected vs. ceiling values to the operator

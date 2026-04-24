@@ -1,11 +1,11 @@
 WARDEN4 Implementation Slice P2.T1.S2 Admission Gate Before Helper Spawn v1
 Status: Planned Slice Class: Phase-local execution Write Scope: Load admission logic, structured refusal path, and directly supporting docs/tests for P2.T1.S2
 Objective
-Execute P2.T1.S2 inside Phase 02 W4L v0.2 Host Protective Runtime without expanding beyond one bounded implementation claim.
+Execute P2.T1.S2 inside Phase 02 WML v0.2 Host Protective Runtime without expanding beyond one bounded implementation claim.
 Claim
 Refuse unsafe loads before helper spawn by using the selected measurement source, explicit budget constants, and fail-closed structured error paths.
 Parent Phase
-- `WARDEN4_Phase_02_W4L_V02_Host_Protective_Runtime_v1.md`
+- `WARDEN4_Phase_02_WML_V02_Host_Protective_Runtime_v1.md`
 Parent Track
 - Memory Budget Authority
 Changes In Scope
